@@ -1,6 +1,6 @@
 # OpenPIV
 
-OpenPIV consists in a Python and c++ modules for scripting and executing the analysis of 
+OpenPIV consists of Python and c++ modules for scripting and executing the analysis of 
 a set of PIV image pairs. 
 
 ## Warning
