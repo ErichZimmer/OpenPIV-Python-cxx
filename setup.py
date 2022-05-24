@@ -13,6 +13,7 @@ def configuration(parent_package='',top_path=None):
     )
     
     config.add_subpackage('openpiv_cxx')
+        
     return config
 
 
@@ -32,7 +33,7 @@ def setup_package():
     req_py = ">={}".format(python_min_version)
     
     metadata = dict(
-        name="OpenPIV-Python-cxx",
+        name="openpiv_cxx",
         maintainer="OpenPIV Developers",
         #maintainer_email="",
         #url="",

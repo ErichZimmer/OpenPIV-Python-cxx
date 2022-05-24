@@ -1,6 +1,6 @@
 def configuration(parent_package='',top_path=None):
     from numpy.distutils.misc_util import Configuration
-    config = Configuration('openpiv',parent_package,top_path)
+    config = Configuration('openpiv_cxx',parent_package,top_path)
     config.add_subpackage('preprocess')
     config.add_subpackage('process')
     config.make_config_py()

@@ -139,8 +139,10 @@ def get_rect_coordinates(frame_a, window_size, overlap):
 def fft_correlate_images(
     image_a,
     image_b,
-    window_size = 32
+    window_size = 32,
     overlap = 16,
+    algorithm = "standard",
+    correlation_method = "circular",
     thread_count = 1,
     thread_execution = "bulk-pool"
 ):
@@ -162,6 +164,13 @@ def fft_correlate_images(
         The number of pixels by which two adjacent windows overlap,
         [default: 16 pix].
     
+    algorithm : string {'standard'}
+        Which correlation algorithm to use.
+        
+    correlation_method : string {'circular'}
+        Which correlation method to use where 'circular' is periodic 
+        (e.g. not padded) and 'linear' is padded to size 2*window_size.
+        
     thread_count : int
         The number of threads to use with values < 1 automatically setting thread_count
         to the maximum of concurrent threads - 1, [default: 1].
@@ -179,14 +188,20 @@ def fft_correlate_images(
     """
         
     if thread_execution not in ["pool", "bulk-pool"]:
-        raise ValueError(f"Unsupported thread initializer methed. {thread_execution}")
+        raise ValueError(f"Unsupported thread initializer method: {thread_execution}.")
+        
+    if algorithm not in ["standard"]:
+        raise ValueError(f"Unsupported correlation algorithm: {algorithm}.")
+    
+    if correlation_method not in ["circular"]:
+        raise ValueError(f"Unsupported correlation method: {correlation_method}.")
     
     if thread_execution == "pool":
         thread_execution = 0
     else:
         thread_execution = 1
     
-    return _proc.img2corr(
+    return _proc.img2corr_standard(
         image_a,
         image_b,
         int(window_size),

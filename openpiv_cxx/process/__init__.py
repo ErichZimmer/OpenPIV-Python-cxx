@@ -1,1 +1,1 @@
-import _process
+from _process import .

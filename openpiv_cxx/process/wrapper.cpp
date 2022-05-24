@@ -123,24 +123,20 @@ std::string get_execution_type(int execution_type)
         return "bulk-pool";
 }
 
-std::vector<double> process_cmatrix(
-    std::vector<double> cmatrix,
+void process_cmatrix(
+    double* cmatrix,
+    double* results,
+    uint32_t maxStep,
     uint32_t stride_2d,
     core::size stride_1d,
     uint16_t num_peaks,
     uint16_t peak_radius
 ){
     auto corrCut = core::gf_image(stride_1d);
-    uint32_t maxStep = cmatrix.size() / stride_2d;
-    
-    // overide user input
-    num_peaks = 2; 
-    peak_radius = 1;
     
     std::vector<uint32_t> center{ peak_radius, peak_radius };
     
     // allocate array for results (couldn't pass list of arrays)
-    std::vector<double> results(maxStep * 4);
     uint32_t U =  maxStep * 0;
     uint32_t V = maxStep * 1;
     uint32_t PH = maxStep * 2;
@@ -149,8 +145,8 @@ std::vector<double> process_cmatrix(
     for (uint32_t step = 0; step < maxStep; ++step)
     {
         std::copy(
-            cmatrix.begin() + (step  * stride_2d),
-            cmatrix.begin() + ((step + 1) * stride_2d),
+            cmatrix + (step  * stride_2d),
+            cmatrix + ((step + 1) * stride_2d),
             corrCut.begin()
         );
         core::peaks_t<core::g_f> peaks = core::find_peaks( corrCut, num_peaks, peak_radius );
@@ -175,8 +171,6 @@ std::vector<double> process_cmatrix(
         if ( peaks[1][ {center[0], center[1]} ] > 0 )
             results[step + P2P] = peaks[0][ {center[0], center[1]} ] / peaks[1][ {center[0], center[1]} ];
     }
-
-    return results;
 }
 
 // ----------------
@@ -281,31 +275,30 @@ py::array_t<double> find_subpixel_wrapper(
     uint32_t wY = np_buff.shape[1];
     uint32_t wX = np_buff.shape[2];
     uint32_t stride_3d = wX * wY;
-    
+    uint32_t maxStep = np_buff.size / stride_3d;
     auto stride_2d = core::size{wY, wX};
     
-    std::vector<double> cmatrix(np_cmatrix.size());
-    std::memcpy(cmatrix.data(),np_cmatrix.data(),np_cmatrix.size()*sizeof(double));
+    // get cmatrix pointer
+    double* cmatrix = (double*) np_buff.ptr;
     
-    // call pure C++ function
-    auto result = process_cmatrix(
+    // get result array pointer
+    std::vector<ssize_t> dims{ 4, np_buff.shape[0] };
+    py::array_t<double> py_result( maxStep * 4 );
+    
+    auto buf_res = py_result.request();
+    double* result_ptr  = (double*) buf_res.ptr;
+    
+    // call pure  C++ function
+    process_cmatrix(
         cmatrix,
+        result_ptr,
+        maxStep,
         stride_3d,
         stride_2d,
         num_peaks,
         peak_radius
     );
-    
-    std::vector<ssize_t> dims{ 4, np_buff.shape[0] };
-    py::array_t<double> py_result( result.size() );
-    
-    // std::memcpy(py_result.data(),result.data(),result.size()*sizeof(double));
-    auto buf_res = py_result.request();
-    double* ptr_in  = (double*) buf_res.ptr;
-    
-    for (int i = 0; i < result.size(); ++i)
-        ptr_in[i] = result[i];
-    
+
     py_result.resize( dims );
    
     return py_result;
@@ -318,6 +311,6 @@ PYBIND11_MODULE(_process,m)
 {
     m.doc() = "pybind11 wrapper of main openpivcore functions";
 
-    m.def("img2corr", &fft_correlate_images_standard_wrapper, "Correlate two imaged via FFT cross-correlation");
+    m.def("img2corr_standard", &fft_correlate_images_standard_wrapper, "Correlate two imaged via FFT cross-correlation");
     m.def("corr2vec", &find_subpixel_wrapper, "Extract displacement and peak information from correlation matrixes");
 }
