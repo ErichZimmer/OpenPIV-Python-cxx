@@ -34,8 +34,8 @@ add_library(openpivcore SHARED IMPORTED)
 set_target_properties(
    openpivcore
    PROPERTIES
-       IMPORTED_LOCATION ${OPENPIV_CXX_DIR}/build/out/Debug/openpivcore.dll
-       IMPORTED_IMPLIB ${OPENPIV_CXX_DIR}/build/openpiv/Debug/openpivcore.lib
+       IMPORTED_LOCATION ${OPENPIV_CXX_DIR}/build/out/Release/openpivcore.dll
+       IMPORTED_IMPLIB ${OPENPIV_CXX_DIR}/build/openpiv/Release/openpivcore.lib
 )
 
 # find pybind11
@@ -55,5 +55,5 @@ target_link_libraries(
   openpivcore)
 
 # include dlls to build
-file(GLOB DIST_DLLS "${OPENPIV_CXX_DIR}/build/out/Debug/*.dll")
+file(GLOB DIST_DLLS "${OPENPIV_CXX_DIR}/build/out/Release/*.dll")
 file(COPY ${DIST_DLLS} DESTINATION ${LIB_COPY_DIR})
