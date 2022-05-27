@@ -17,26 +17,37 @@ set(process_VERSION_MINOR 1)
 set(process_VERSION_PATCH 0)
 
 # set output path
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${LIB_COPY_DIR})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${LIB_COPY_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${LIB_COPY_DIR})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${LIB_COPY_DIR})
 
 # get relative path to packages from vcpkg
 set(PKG_PATHS ${OPENPIV_CXX_DIR}/external/vcpkg/packages)
 
 # include packages... why can't find_package() not fing configuration file?
 find_package(cxxopts PATHS ${PKG_PATHS}/cxxopts_${VCPKG_TARGET_TRIPLET} REQUIRED)
-find_package(Async++ PATHS ${PKG_PATHS}/Async++_${VCPKG_TARGET_TRIPLET})
+find_package(Async++ PATHS ${PKG_PATHS}/Asyncplusplus_${VCPKG_TARGET_TRIPLET})
 find_package(Threads REQUIRED)
 find_package(fmt PATHS ${PKG_PATHS}/fmt_${VCPKG_TARGET_TRIPLET} REQUIRED)
 
 # find openpivcore dynamic library
 add_library(openpivcore SHARED IMPORTED)
-set_target_properties(
-   openpivcore
-   PROPERTIES
-       IMPORTED_LOCATION ${OPENPIV_CXX_DIR}/build/out/Release/openpivcore.dll
-       IMPORTED_IMPLIB ${OPENPIV_CXX_DIR}/build/openpiv/Release/openpivcore.lib
-)
+if (WIN32)
+    set_target_properties(
+       openpivcore
+       PROPERTIES
+           IMPORTED_LOCATION ${OPENPIV_CXX_DIR}/build/out/Release/openpivcore.dll
+           IMPORTED_IMPLIB ${OPENPIV_CXX_DIR}/build/openpiv/Release/openpivcore.lib
+    )
+else (UNIX)
+    set_target_properties(
+           openpivcore
+           PROPERTIES
+               IMPORTED_LOCATION ${OPENPIV_CXX_DIR}/build/out/Release/libopenpivcore.so
+        )
+## else()
+##     message( FATAL_ERROR "Could not locate openpivcore dynamic library.")
+endif()
+
 
 # find pybind11
 find_package(pybind11 PATHS ${PYBIND11_DIR} REQUIRED)
@@ -55,5 +66,9 @@ target_link_libraries(
   openpivcore)
 
 # include dlls to build
-file(GLOB DIST_DLLS "${OPENPIV_CXX_DIR}/build/out/Release/*.dll")
+if (WIN32)
+    file(GLOB DIST_DLLS "${OPENPIV_CXX_DIR}/build/out/Release/*.dll")
+else (UNIX)
+    file(GLOB DIST_DLLS "${OPENPIV_CXX_DIR}/build/out/Release/*.so")
+endif()
 file(COPY ${DIST_DLLS} DESTINATION ${LIB_COPY_DIR})

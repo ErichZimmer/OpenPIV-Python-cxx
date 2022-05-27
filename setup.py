@@ -8,8 +8,8 @@ def configuration(parent_package='',top_path=None):
     config.set_options(
         ignore_setup_xxx_py=True,
         assume_default_configuration=True,
-        delegate_options_to_subpackages=True
-        #quiet=True
+        delegate_options_to_subpackages=True,
+        quiet=True
     )
     
     config.add_subpackage('openpiv_cxx')

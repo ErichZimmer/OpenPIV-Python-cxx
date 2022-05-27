@@ -28,7 +28,10 @@ void process_cmatrix_2x3(
     if (threads >= 1)
         thread_count = static_cast<uint32_t>(threads);
         
-    std::vector<uint32_t> center{ peak_radius, peak_radius };
+    constexpr uint16_t num_peaks = 2;
+    constexpr uint16_t radius = 1;
+        
+    std::vector<uint32_t> center{ radius, radius };
     
     // allocate sections for results (couldn't pass list of arrays)
     uint32_t U =  maxStep * 0;
@@ -44,7 +47,7 @@ void process_cmatrix_2x3(
         &stride_1d, 
         &U, &V, &PH, &P2P,
         &num_peaks,
-        &peak_radius,
+        &radius,
         &center
      ]( uint32_t step )
     {
@@ -55,10 +58,7 @@ void process_cmatrix_2x3(
             corrCut.begin()
         );
         // find peaks
-        constexpr uint16_t num_peaks = 2;
-        constexpr uint16_t radius = 1;
-        
-        core::peaks_t<core::g_f> peaks = core::find_peaks( corrCut, num_peaks, peak_radius );
+        core::peaks_t<core::g_f> peaks = core::find_peaks( corrCut, num_peaks, radius );
         
         // sub-pixel fitting
         if ( peaks.size() != num_peaks )

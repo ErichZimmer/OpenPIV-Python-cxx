@@ -1,4 +1,4 @@
-import _process as _proc
+from ._libs import _process as _proc
 import numpy as np
 
 """This module contains a c++ implementation of the basic
@@ -146,7 +146,7 @@ def fft_correlate_images(
     thread_count = 1,
     thread_execution = "bulk-pool"
 ):
-     """ Standard FFT based cross-correlation of two images. 
+    """ Standard FFT based cross-correlation of two images. 
 
 
     Parameters
@@ -208,4 +208,48 @@ def fft_correlate_images(
         int(overlap),
         int(thread_count),
         thread_execution
+    )
+
+
+def subpixel_approximation(
+    corr,
+    kernel = "2x3",
+    thread_count = 1
+):
+    """ Standard subpixel estimation. 
+
+
+    Parameters
+    ----------
+    corr : 3d np.ndarray
+        A three dimensional array with axis 0 being the two dimensional correlation matrix
+        of an interrogation window.
+        
+    kernel : string {'2x3'}
+        Type of kernel used to find the subpixel peak. Kernels with '2xN' are 2 1D subpixel
+        estimations that are 'N' elements wide.
+        
+    thread_count : int
+        The number of threads to use with values < 1 automatically setting thread_count
+        to the maximum of concurrent threads - 1, [default: 1].
+    
+    
+    Returns
+    -------
+    corr : 3d np.ndarray
+        A three dimensional array with axis 0 being the two dimensional correlation matrix
+        of an interrogation window.
+        
+    """
+        
+    if kernel not in ["2x3"]:
+        raise ValueError(f"Unsupported peak search pethod method: {kernel}.")
+    
+    if kernel == "2x3":
+        kernel = 0
+    
+    return _proc.corr2vec(
+        corr,
+        kernel,
+        int(thread_count),
     )

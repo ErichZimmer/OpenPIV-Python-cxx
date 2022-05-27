@@ -111,6 +111,7 @@ py::array_t<double> fft_correlate_images_standard_wrapper( // big function name 
 
 py::array_t<double> find_subpixel_wrapper(
     py::array_t<double, py::array::c_style | py::array::forcecast> np_cmatrix,
+    int search_method,
     int thread_count
 ){
     // check inputs
@@ -137,7 +138,7 @@ py::array_t<double> find_subpixel_wrapper(
     double* result_ptr  = (double*) buf_res.ptr;
     
     // call pure  C++ function
-    process_cmatrix(
+    process_cmatrix_2x3(
         cmatrix,
         result_ptr,
         maxStep,
