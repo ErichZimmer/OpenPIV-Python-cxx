@@ -11,18 +11,20 @@ def has_flag(compiler, flagname):
 
 
 def cpp_flag(compiler):
-    """Return the -std=c++[11/14] compiler flag"""    
-    if has_flag(compiler, '-std=c++14'):
+    """Return the -std=c++[11/14] compiler flag"""
+    if has_flag(compiler, '-std=c++17'):
+        return '-std=c++17'
+    elif has_flag(compiler, '-std=c++14'):
         return '-std=c++14'
     elif has_flag(compiler, '-std=c++11'):
         return '-std=c++11'
     else:
         raise RuntimeError('Unsupported compiler -- at least C++11 support is needed!')
-        
-        
+
+
 def pre_build_hook(build_ext, ext):
     cc = build_ext._cxx_compiler
-    
+
     args = ext.extra_compile_args
 
     if cc.compiler_type == 'msvc':
@@ -31,6 +33,7 @@ def pre_build_hook(build_ext, ext):
         # Don't export library symbols
         if has_flag(cc, '-fvisibility=hidden'):
             args.append('-fvisibility=hidden')
+        args.append(cpp_flag(cc))
 
 
 def configuration(parent_package='', top_path=None):
@@ -38,26 +41,27 @@ def configuration(parent_package='', top_path=None):
     from os.path import dirname, join
     from glob import glob
     import pybind11
-    
+
     include_dirs = [pybind11.get_include(True), pybind11.get_include(False)]
 
     config = Configuration(
-        'spatial_filters', 
-        parent_package, 
+        'spatial_filters',
+        parent_package,
         top_path
     )
-    
+
     base_path = dirname(__file__)
-    
-    src_files = sorted(glob(join(base_path, "*.cpp")) + glob(join(base_path, "*.h"))) 
-    
+
+    src_files = sorted(glob(join(base_path, "*.cpp")) + glob(join(base_path, "*.h")))
+
     ext = config.add_extension(
         'spatial_filters_cpp',
         sources=src_files,
         include_dirs=include_dirs,
-        language='c++'
+        language='c++',
+        extra_compile_args=['-std=c++17']
     )
-    
+
     ext._pre_build_hook = pre_build_hook
     return config
 

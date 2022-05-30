@@ -38,16 +38,21 @@ if (WIN32)
            IMPORTED_LOCATION ${OPENPIV_CXX_DIR}/build/out/Release/openpivcore.dll
            IMPORTED_IMPLIB ${OPENPIV_CXX_DIR}/build/openpiv/Release/openpivcore.lib
     )
-else (UNIX)
+elseif (UNIX && APPLE)
     set_target_properties(
            openpivcore
            PROPERTIES
-               IMPORTED_LOCATION ${OPENPIV_CXX_DIR}/build/out/Release/libopenpivcore.so
+               IMPORTED_LOCATION ${OPENPIV_CXX_DIR}/build/openpiv/libopenpivcore.dylib
         )
-## else()
-##     message( FATAL_ERROR "Could not locate openpivcore dynamic library.")
+elseif (UNIX)
+    set_target_properties(
+           openpivcore
+           PROPERTIES
+               IMPORTED_LOCATION ${OPENPIV_CXX_DIR}/build/openpiv/libopenpivcore.so
+        )
+else()
+    message( FATAL_ERROR "Could not locate openpivcore dynamic library.")
 endif()
-
 
 # find pybind11
 find_package(pybind11 PATHS ${PYBIND11_DIR} REQUIRED)
@@ -68,7 +73,9 @@ target_link_libraries(
 # include dlls to build
 if (WIN32)
     file(GLOB DIST_DLLS "${OPENPIV_CXX_DIR}/build/out/Release/*.dll")
-else (UNIX)
-    file(GLOB DIST_DLLS "${OPENPIV_CXX_DIR}/build/out/Release/*.so")
+elseif (UNIX && APPLE)
+    file(GLOB DIST_DLLS "${OPENPIV_CXX_DIR}/build/openpiv/*.dylib")
+elseif (UNIX)
+    file(GLOB DIST_DLLS "${OPENPIV_CXX_DIR}/build/openpiv/*.so")
 endif()
 file(COPY ${DIST_DLLS} DESTINATION ${LIB_COPY_DIR})
