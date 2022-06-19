@@ -1,8 +1,16 @@
-from ._libs import _process as _proc
+from . import _process as _proc
 import numpy as np
 
 """This module contains a c++ implementation of the basic
 cross-correlation algorithm for PIV image processing."""
+
+__all__ = [
+    "get_field_shape",
+    "get_coordinates",
+    "get_rect_coordinates",
+    "fft_correlate_images",
+    "correlation_to_displacement"
+]
 
 def get_field_shape(image_size, window_size, overlap):
     """Compute the shape of the resulting flow field.
@@ -63,11 +71,11 @@ def get_coordinates(image_size, window_size, overlap):
 
     Returns
     -------
-    x : 2d np.ndarray
+    x : 2D np.ndarray
         a two dimensional array containing the x coordinates of the
         interrogation window centers, in pixels.
 
-    y : 2d np.ndarray
+    y : 2D np.ndarray
         A two dimensional array containing the y coordinates of the
         interrogation window centers, in pixels.
     """
@@ -118,11 +126,11 @@ def get_rect_coordinates(frame_a, window_size, overlap):
 
     Returns
     -------
-    x : 2d np.ndarray
+    x : 2D np.ndarray
         a two dimensional array containing the x coordinates of the
         interrogation window centers, in pixels.
 
-    y : 2d np.ndarray
+    y : 2D np.ndarray
         A two dimensional array containing the y coordinates of the
         interrogation window centers, in pixels.
     """
@@ -141,20 +149,20 @@ def fft_correlate_images(
     image_b,
     window_size = 32,
     overlap = 16,
-    algorithm = "standard",
+    algorithm = "scc",
     correlation_method = "circular",
+    normalized_correlation = False,
     thread_count = 1,
-    thread_execution = "bulk-pool"
 ):
     """ Standard FFT based cross-correlation of two images. 
 
 
     Parameters
     ----------
-    frame_a : 2d np.ndarray
+    frame_a : 2D np.ndarray
         A two dimensionional array containing grey levels of the first frame.
 
-    frame_b : 2d np.ndarray
+    frame_b : 2D np.ndarray
         A two dimensionional array containing grey levels of the second frame.
 
     window_size : int
@@ -164,92 +172,153 @@ def fft_correlate_images(
         The number of pixels by which two adjacent windows overlap,
         [default: 16 pix].
     
-    algorithm : string {'standard'}
-        Which correlation algorithm to use.
+    algorithm : string {'scc'}
+        Which correlation algorithm to use where 'scc' = standard cross correlation and
+        'ncc' = normalized cross correlation.
         
-    correlation_method : string {'circular'}
+    correlation_method : string {'circular', 'linear'}
         Which correlation method to use where 'circular' is periodic 
         (e.g. not padded) and 'linear' is padded to size 2*window_size.
         
     thread_count : int
         The number of threads to use with values < 1 automatically setting thread_count
         to the maximum of concurrent threads - 1, [default: 1].
-        
-    thread_execution : string {'pool', 'bulk-pool'}
-        How the thread-pool is used, [default: 'pool'].
-    
-    
+
+
     Returns
     -------
-    corr : 3d np.ndarray
+    corr : 3D np.ndarray
         A three dimensional array with axis 0 being the two dimensional correlation matrix
         of an interrogation window.
         
-    """
-        
-    if thread_execution not in ["pool", "bulk-pool"]:
-        raise ValueError(f"Unsupported thread initializer method: {thread_execution}.")
-        
-    if algorithm not in ["standard"]:
+    """ 
+    if algorithm not in ["scc", "ncc"]:
         raise ValueError(f"Unsupported correlation algorithm: {algorithm}.")
     
-    if correlation_method not in ["circular"]:
+    if correlation_method not in ["circular", "linear"]:
         raise ValueError(f"Unsupported correlation method: {correlation_method}.")
     
-    if thread_execution == "pool":
-        thread_execution = 0
+    if algorithm == "scc":
+        algorithm = 0 # non-normalized
     else:
-        thread_execution = 1
+        algorithm = 1 # normalized
+        
+    if correlation_method == "circular":
+        correlation_method = 0 # circular
+    else:
+        correlation_method = 1 # linear
+
     
     return _proc.img2corr_standard(
         image_a,
         image_b,
         int(window_size),
         int(overlap),
+        algorithm,
+        correlation_method,
         int(thread_count),
-        thread_execution
     )
 
 
-def subpixel_approximation(
+def correlation_to_displacement(
     corr,
+    n_rows = None, 
+    n_cols = None,
     kernel = "2x3",
-    thread_count = 1
+    limit_peak_search = True,
+    thread_count = 1,
+    return_type = "first_peak"
 ):
     """ Standard subpixel estimation. 
 
 
     Parameters
     ----------
-    corr : 3d np.ndarray
+    corr : 3D np.ndarray
         A three dimensional array with axis 0 being the two dimensional correlation matrix
         of an interrogation window.
-        
+    
+    n_rows, n_cols : int
+        Number of rows and columns of the vector field being evaluated, output of
+        get_field_shape.
+            
     kernel : string {'2x3'}
         Type of kernel used to find the subpixel peak. Kernels with '2xN' are 2 1D subpixel
         estimations that are 'N' elements wide.
+    
+    limit_peak_search : bool
+        Limit peak search area to a quarter of the size of the interrogation window if the 
+        width and height of the interrogation window is greater than 12.
         
     thread_count : int
         The number of threads to use with values < 1 automatically setting thread_count
-        to the maximum of concurrent threads - 1, [default: 1].
+        to the maximum of concurrent threads - 1.
     
-    
+    return_type : string {'first_peak', 'second_peak', 'third_peak', 'all_peaks'}
+        Which [u, v] peak data to return.
+        
+        
     Returns
     -------
-    corr : 3d np.ndarray
-        A three dimensional array with axis 0 being the two dimensional correlation matrix
-        of an interrogation window.
+    u, v: 2D np.ndarray
+        2D array of displacements in pixels/dt.
         
     """
         
     if kernel not in ["2x3"]:
         raise ValueError(f"Unsupported peak search pethod method: {kernel}.")
     
+    if return_type not in ["first_peak", "second_peak", "third_peak", "all_peaks"]:
+        raise ValueError(f"Unsupported return type: {return_type}.")
+    
     if kernel == "2x3":
         kernel = 0
     
-    return _proc.corr2vec(
-        corr,
+    if limit_peak_search == True:
+        limit_peak_search = 1
+    else:
+        limit_peak_search = 0
+    
+    if n_rows == None or n_cols == None:
+        shape = (8, -1)
+    else:
+        shape = (8, n_rows, n_cols)
+    
+    if return_type   == "first_peak":  return_type = 1
+    elif return_type == "second_peak": return_type = 2
+    elif return_type == "third_peak":  return_type = 3
+    else:                              return_type = 0
+    
+    if limit_peak_search == True and corr.shape[1] >= 12 and corr.shape[1] >= 12:
+        corr_slice = ( # use the one-quarter rule for limited peak search
+            slice(0, corr.shape[0]),
+            slice(corr.shape[1] // 2 - corr.shape[1] // 4, corr.shape[1] // 2 + corr.shape[1] // 4),
+            slice(corr.shape[2] // 2 - corr.shape[2] // 4, corr.shape[2] // 2 + corr.shape[2] // 4)
+        )
+    else:
+        corr_slice = (
+            slice(0, corr.shape[0]),
+            slice(0, corr.shape[1]),
+            slice(0, corr.shape[2])
+        )
+        
+    u1, v1, peakHeight, peak2peak, u2, v2, u3, v3 = _proc.corr2vec(
+        corr[corr_slice],
         kernel,
+        limit_peak_search,
         int(thread_count),
-    )
+        return_type
+    ).reshape(shape)
+    
+    if return_type   == 1:
+        return u1, v1, peakHeight, peak2peak
+    elif return_type == 2:
+        return u2, v2, peakHeight, peak2peak
+    elif return_type == 3:
+        return u3, v3, peakHeight, peak2peak
+    else:
+        return (
+            u1, v1, peakHeight, peak2peak,
+            u2, v2, 
+            u3, v3
+        )

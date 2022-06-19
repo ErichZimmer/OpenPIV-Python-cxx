@@ -3,8 +3,9 @@
 
 namespace constants
 {
-   constexpr float PI = 22/7;
-   using imgDtype = float;
+    using imgDtype = float;
+    constexpr imgDtype PI = 22.0/7.0;
+
 }
 
 #endif

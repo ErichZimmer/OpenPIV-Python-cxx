@@ -1,0 +1,2 @@
+add_subdirectory(spatial_filters)
+add_subdirectory(process)

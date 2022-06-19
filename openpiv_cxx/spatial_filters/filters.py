@@ -1,13 +1,22 @@
 """
 Module for filtering Particle Image Velocimetry (PIV) images to attain a higher quality image.
 """
-from .spatial_filters_cpp import _intensity_cap, _threshold_binarization,\
+from ._spatial_filters import _intensity_cap, _threshold_binarization,\
     _gaussian_lowpass_filter, _gaussian_highpass_filter, _local_variance_normalization,\
     _test_wrapper
 from numpy import pad as pad_array, percentile, clip
 
-kernel_size_error = "kernel_size must be an odd number"
+__all__ = [
+    "intensity_cap",
+    "threshold_binarization",
+    "gaussian_filter",
+    "highpass_filter",
+    "variance_normalization_filter",
+    "contrast_stretch"
+]
 
+kernel_size_error = "kernel_size must be an odd number"
+    
 def intensity_cap(img, std_mult = 2.0):
     """
     Set pixels higher than calculated threshold to said threshold. 

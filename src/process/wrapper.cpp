@@ -1,15 +1,8 @@
 // std
-#include <atomic>
-#include <chrono>
 #include <cinttypes>
 #include <fstream>
 #include <iostream>
-#include <thread>
 #include <vector>
-#include <cmath>
-
-// utils
-#include "threadpool.hpp"
 
 // openpiv
 #include "core/image.h"
@@ -22,8 +15,9 @@
 #include <pybind11/numpy.h>
 
 // wrapper functions
-#include "cc_standard.h"
-#include "subpixel.h"
+#include "cc_scc.h"
+#include "cc_ncc.h"
+#include "cc_subpixel.h"
 
 namespace py = pybind11;
 using namespace openpiv;
@@ -32,14 +26,17 @@ using namespace openpiv;
 // Python interface
 // ----------------
 
+#pragma warning(disable: 4244)
+
 // wrap C++ function with NumPy array IO
 py::array_t<double> fft_correlate_images_standard_wrapper( // big function name lol
     py::array_t<double, py::array::c_style | py::array::forcecast> np_img_a,
     py::array_t<double, py::array::c_style | py::array::forcecast> np_img_b,
     int window_size,
     int overlap,
-    int thread_count,
-    int thread_execution
+    int correlation_algorithm,
+    int correlation_method,
+    int thread_count
 ){
     // check inputs
     if ( np_img_a.ndim() != 2 )
@@ -75,15 +72,27 @@ py::array_t<double> fft_correlate_images_standard_wrapper( // big function name 
     std::memcpy(img_a.data(),np_img_a.data(),np_img_a.size()*sizeof(double));
     std::memcpy(img_b.data(),np_img_b.data(),np_img_b.size()*sizeof(double));
     
+    std::vector<double> result; 
+    
     // call pure C++ function
-    auto result = process_images_standard(
-        img_a,
-        img_b,
-        window_size_t,
-        overlap_t,
-        thread_count,
-        thread_execution
-    );
+    if (correlation_algorithm == 1)
+        result = process_images_ncc(
+            img_a,
+            img_b,
+            window_size_t,
+            overlap_t,
+            correlation_method,
+            thread_count
+        );
+    else
+        result = process_images_scc(
+            img_a,
+            img_b,
+            window_size_t,
+            overlap_t,
+            correlation_method,
+            thread_count
+        );
     
     // return 3-D NumPy array  
     uint32_t window_num = result.size() / (window_size * window_size);
@@ -112,6 +121,8 @@ py::array_t<double> fft_correlate_images_standard_wrapper( // big function name 
 py::array_t<double> find_subpixel_wrapper(
     py::array_t<double, py::array::c_style | py::array::forcecast> np_cmatrix,
     int search_method,
+    int limit_peak_search,
+    int num_peaks,
     int thread_count
 ){
     // check inputs
@@ -131,8 +142,8 @@ py::array_t<double> find_subpixel_wrapper(
     double* cmatrix = (double*) np_buff.ptr;
     
     // get result array pointer
-    std::vector<ssize_t> dims{ 4, np_buff.shape[0] };
-    py::array_t<double> py_result( maxStep * 4 );
+    std::vector<ssize_t> dims{ 8, np_buff.shape[0] };
+    py::array_t<double> py_result( maxStep * 8 );
     
     auto buf_res = py_result.request();
     double* result_ptr  = (double*) buf_res.ptr;
@@ -144,6 +155,8 @@ py::array_t<double> find_subpixel_wrapper(
         maxStep,
         stride_3d,
         stride_2d,
+        limit_peak_search,
+        num_peaks,
         thread_count
     );
 
@@ -152,7 +165,7 @@ py::array_t<double> find_subpixel_wrapper(
     return py_result;
 }
 
-
+#pragma warning(default: 4244)
 
 // wrap as Python module
 PYBIND11_MODULE(_process,m)
