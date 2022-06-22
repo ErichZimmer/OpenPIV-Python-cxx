@@ -2,11 +2,8 @@
 #define CC_SUBPIXEL_H
 
 // std
-#include <thread>
+#include <cinttypes>
 #include <vector>
-
-// utils
-#include "threadpool.hpp"
 
 // openpiv
 #include "core/image.h"

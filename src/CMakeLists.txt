@@ -1,2 +1,3 @@
-add_subdirectory(spatial_filters)
+add_subdirectory(filters)
 add_subdirectory(process)
+##add_subdirectory(validation)

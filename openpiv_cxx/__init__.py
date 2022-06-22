@@ -1,3 +1,20 @@
+"""
+OpenPIV-cxx: A Python PIV package with a c++ backend
+================================================
+
+
+Subpackages
+-----------
+Using any of these subpackages requires an explicit import. For example,
+``import openpiv_cxx.process``.
+
+
+ preprocess --- Filter PIV images
+ process    --- Correlation and subpixel approximation
+ smooth     --- Smooth vector fields
+ validation --- Validate vector fields
+"""
+
 try:
     import openpiv_cxx.__set_path__
 except ImportError as e:

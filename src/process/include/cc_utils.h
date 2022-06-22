@@ -3,9 +3,8 @@
 
 // std
 #include <vector>
-#include <iostream>
-#include <string>
-#include <cinttypes>
+// #include <cinttypes>
+#include <cstddef>
 
 // openpiv
 #include "core/rect.h"
@@ -20,15 +19,15 @@ std::string get_execution_type(int);
 
 
 core::gf_image placeIntoPadded(
-    core::gf_image&,
-    core::size&,
+    const core::gf_image&,
+    const core::size&,
     const core::rect&,
     double
 );
 
 
 double meanI(
-    core::gf_image&,
+    const core::gf_image&,
     std::size_t,
     std::size_t,
     std::size_t,
@@ -36,7 +35,7 @@ double meanI(
 );
 
 std::vector<double> mean_std(
-    core::gf_image&,
+    const core::gf_image&,
     std::size_t,
     std::size_t,
     std::size_t,
@@ -47,15 +46,15 @@ std::vector<double> mean_std(
 void applyScalarToImage(
     core::gf_image&,
     double,
-    ssize_t
+    std::size_t
 );
 
 
 void placeIntoCmatrix(
     std::vector<double>&,
-    core::gf_image,
-    core::size,
-    core::rect,
+    const core::gf_image&,
+    const core::size&,
+    const core::rect&,
     uint32_t
 );
 

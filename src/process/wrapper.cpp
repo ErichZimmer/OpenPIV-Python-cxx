@@ -15,8 +15,12 @@
 #include <pybind11/numpy.h>
 
 // wrapper functions
-#include "cc_scc.h"
-#include "cc_ncc.h"
+#ifdef USE_FFTW
+    #include "fftw_correlation.h"
+#else
+    #include "openpiv_correlation.h"
+#endif
+
 #include "cc_subpixel.h"
 
 namespace py = pybind11;
