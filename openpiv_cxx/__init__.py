@@ -13,6 +13,7 @@ Using any of these subpackages requires an explicit import. For example,
  process    --- Correlation and subpixel approximation
  smooth     --- Smooth vector fields
  validation --- Validate vector fields
+ windef     --- PIV evaluation and window deformation
 """
 
 try:
@@ -24,9 +25,12 @@ except ImportError as e:
     raise ImportError(msg) from e;
     
 submodules = [
+    "interpolate",
+    "preprocess",
     "process",
-    "spatial_filters",
-    "smooth"
+    "smooth",
+    "validate",
+    "windef"
 ]
 
 __all__ = submodules

@@ -10,6 +10,8 @@ setup_vcpkg_before_project()
 
 project(openpiv_cxx)
 
+enable_language(CXX)
+
 set(CMAKE_CXX_STANDARD 17)
   
 set(openpiv_cxx_VERSION_MAJOR 0)

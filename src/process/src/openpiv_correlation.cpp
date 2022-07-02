@@ -7,9 +7,9 @@ Table of Contents
 ~~~~~~~~~~~~~~~~~
 1: comments
 14: includes
-43: auto-correlation
-140: standard cross-correlation
-232: normalized cross-correlation
+43: standard cross-correlation
+140: normalized cross-correlation
+232: auto-correlation
 */
 
 #include "openpiv_correlation.h"
@@ -231,7 +231,7 @@ std::vector<double> process_images_ncc(
 
 
 //auto-correlation
-std::vector<double> process_images_ncc(
+std::vector<double> process_images_auto(
     core::gf_image& img_a,
     uint32_t size = 32,
     uint32_t overlap_size = 16,

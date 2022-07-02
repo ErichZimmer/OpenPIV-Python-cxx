@@ -29,8 +29,9 @@ void parallel_bulk( // for future parallel
             for ( std::size_t j=row; j<row + chunk_size_; ++j )
                 lambda(j);
         };
-    processor(); // would be multi-threaded later...
-    row += chunk_size_;
+        
+        processor(); // would be multi-threaded later...
+        row += chunk_size_;
     }
 }
 

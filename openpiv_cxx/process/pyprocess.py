@@ -151,7 +151,6 @@ def fft_correlate_images(
     overlap = 16,
     algorithm = "scc",
     correlation_method = "circular",
-    normalized_correlation = False,
     thread_count = 1,
 ):
     """ Standard FFT based cross-correlation of two images. 

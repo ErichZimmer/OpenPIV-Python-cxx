@@ -30,7 +30,7 @@ py::array_t<imgDtype> intensity_cap_wrapper(
    
    int N = input.shape()[0], M = input.shape()[1];
 
-   py::array_t<imgDtype> result = py::array_t<imgDtype>(buf1);
+   py::array_t<imgDtype> result = py::array_t<imgDtype>(buf1.size);
    auto buf2 = result.request();
    
    imgDtype* ptr_out = (imgDtype*) buf2.ptr;

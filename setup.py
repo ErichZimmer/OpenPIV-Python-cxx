@@ -36,16 +36,18 @@ req_py = ">={}".format(python_min_version)
 setup(
     name="OpenPIV-cxx",
     description="OpenPIV-Python with c++ backend",
-    version="0.1.3",
+    version="0.1.9",
     license="GPLv3",
     install_requires=req_dps, 
     python_requires=req_py,
     packages=[
         'openpiv_cxx',
+        'openpiv_cxx.interpolate',
         'openpiv_cxx.process',
         'openpiv_cxx.preprocess',
         'openpiv_cxx.validation',
-        'openpiv_cxx.smooth'
+        'openpiv_cxx.smooth',
+        'openpiv_cxx.windef'
     ],
     cmake_args=[
         f"-DTRIPLET_TO_USE={ return_cxx_triplet() }",
