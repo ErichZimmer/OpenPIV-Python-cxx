@@ -1,53 +1,59 @@
-def configuration(parent_package='',top_path=None):
-    import os
-    if os.path.exists('MANIFEST'):
-        os.remove('MANIFEST')
-        
-    from numpy.distutils.misc_util import Configuration
-    config = Configuration(None,parent_package,top_path)
-    config.set_options(
-        ignore_setup_xxx_py=True,
-        assume_default_configuration=True,
-        delegate_options_to_subpackages=True,
-        quiet=True
-    )
-    
-    config.add_subpackage('openpiv_cxx')
-        
-    return config
+from skbuild import setup
+from setuptools import find_packages
+from sys import executable
+from glob import glob
+from os.path import join
 
+from openpiv_cxx._build_utilities.vcpkg_get_triplet import return_cxx_triplet
 
-def setup_package():
-    from distutils.command.sdist import sdist
-    
-    numpy_min_version = "1.22"
-    pybind11_min_version = "2.8" 
-    python_min_version = "3.8"
-    
-    req_dps = [
-        "numpy>={}".format(numpy_min_version),
-        "pybind11>={}".format(pybind11_min_version)
-        
-    ]
-    
-    req_py = ">={}".format(python_min_version)
-    
-    metadata = dict(
-        name="openpiv_cxx",
-        maintainer="OpenPIV Developers",
-        #maintainer_email="",
-        #url="",
-        #download_url="",
-        #project_url="",
-        liscense="GPLv3",
-        install_requires = req_dps,
-        python_requires = req_py,
-        cmdclass={'sdist': sdist},
-        zip_safe=False
-    )
-    
+import platform
+import pathlib
+import pybind11
 
-if __name__ == '__main__':
-    from numpy.distutils.core import setup
+openpiv_cxx_dir = str(pathlib.Path.home()).replace("\\", "/") + '/openpiv-c--qt'
+pybind11_dir = pybind11.get_cmake_dir().replace("\\", "/") 
+
+if platform.system() == "Windows":
+    dynamic_libs = glob(join(openpiv_cxx_dir, "build/out/Release/*.dll"))
+    if len(dynamic_libs) < 3:
+        raise Exception("Please build openpiv-c--qt with Release config")
+else:
+    pass
+
+numpy_min_version = "1.22"
+pybind11_min_version = "2.8" 
+python_min_version = "3.8"
+
+#req_dps = [
+#    "numpy>={}".format(numpy_min_version),
+#    "pybind11>={}".format(pybind11_min_version)
+#    
+#]
+
+req_dps = ['numpy']
+req_py = ">={}".format(python_min_version)
     
-    setup(**configuration(top_path='').todict())
+setup(
+    name="OpenPIV-cxx",
+    description="OpenPIV-Python with c++ backend",
+    version="0.1.9",
+    license="GPLv3",
+    install_requires=req_dps, 
+    python_requires=req_py,
+    packages=[
+        'openpiv_cxx',
+        'openpiv_cxx.interpolate',
+        'openpiv_cxx.process',
+        'openpiv_cxx.preprocess',
+        'openpiv_cxx.validation',
+        'openpiv_cxx.smooth',
+        'openpiv_cxx.windef'
+    ],
+    cmake_args=[
+        f"-DTRIPLET_TO_USE={ return_cxx_triplet() }",
+        f"-DOPENPIV_CXX_DIR={ openpiv_cxx_dir }",
+        f"-DPYBIND11_DIR={ pybind11_dir }",
+        f"-DPYTHON_EXECUTABLE={ executable }"
+    ],
+    zip_safe=False
+)
