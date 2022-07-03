@@ -36,7 +36,7 @@ def bilinear2D(y, x, z, yi = None, xi = None):
     References
     ----------
     [1] Wikipedia contributors. (2022, April 10). Bilinear interpolation. In Wikipedia, The Free
-        Encyclopedia. Retrieved April 1, 2022, from
+        Encyclopedia. Retrieved June 1, 2022, from
         https://en.wikipedia.org/wiki/Bilinear_interpolation
     """
     # store original dtype
