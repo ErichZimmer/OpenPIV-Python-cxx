@@ -12,7 +12,10 @@ is a lot of bugs and the API may change.
 
     
 ### To build from source
-
+ - Follow the instructions on [openpiv-c--qt](https://github.com/OpenPIV/openpiv-c--qt) and compile openpivcore.
+ - Git clone this repository.
+ - Activate virtual python environment and run `python setup.py install`.
+ - If an error occurs about `_libs` folder not being found, that means that the CMake build was not executed. Run `python CMakeSetup.py build` at the directory specified by the error.
 
 
 ## Documentation
