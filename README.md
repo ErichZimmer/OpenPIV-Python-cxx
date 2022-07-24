@@ -40,6 +40,6 @@ Copyright statement: `smoothn.py` is a Python version of `smoothn.m` originally 
  
  - Taylor, Z., Gurka, R., Kopp, G., & Liberzon, A. (2010). Long-Duration Time-Resolved PIV to Study Unsteady Aerodynamics. IEEE Transactions On Instrumentation And Measurement, 59(12), 3262-3269. https://doi.org/10.1109/tim.2010.2047149
  
- - Wikipedia contributors. (2022, April 10). Bilinear interpolation. In Wikipedia, The Free Encyclopedia. Retrieved April 1, 2022, from https://en.wikipedia.org/wiki/Bilinear_interpolation
+ - Wikipedia contributors. (2022, April 10). Bilinear interpolation. In Wikipedia, The Free Encyclopedia. Retrieved July 1, 2022, from https://en.wikipedia.org/wiki/Bilinear_interpolation
  
  - Wikipedia contributors. (2022, March 18). Whittaker-Shannon interpolation formula. In Wikipedia, The Free Encyclopedia. Retrieved June 30, 2022, from https://en.wikipedia.org/w/index.php?title=Whittaker%E2%80%93Shannon_interpolation_formula&oldid=1077909297
