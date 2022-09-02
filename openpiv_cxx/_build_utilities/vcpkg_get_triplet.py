@@ -1,8 +1,8 @@
-def return_cxx_triplet(path_to_pkg = "openpiv-c--qt/external/vcpkg/packages"):
+def return_cxx_triplet(openpivcore_dir):
     from os import listdir
-    import pathlib
+    from os.path import join
     
-    openpiv_cxx_dir = str(str(pathlib.Path.home())).replace('\\', '/') + '/' + path_to_pkg
-    test_file = listdir(openpiv_cxx_dir)[0]
+    path_to_pkg = join(openpivcore_dir, "external/vcpkg/packages")
+    test_file = listdir(path_to_pkg)[0]
     
     return test_file.split('_')[1]

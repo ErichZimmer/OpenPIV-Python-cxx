@@ -1,4 +1,3 @@
-numpy
-pybind11
 setuptools
 scikit-build
+numpy

@@ -1,5 +1,5 @@
-#ifndef CC_UTILS_H
-#define CC_UTILS_H
+#ifndef OPENPIV_UTILS_H
+#define OPENPIV_UTILS_H
 
 // std
 #include <vector>
@@ -12,16 +12,27 @@
 #include "core/image_utils.h"
 #include "core/vector.h"
 
+// pybind11
+#include <pybind11/pybind11.h>
+#include <pybind11/numpy.h>
+
 using namespace openpiv;
+namespace py = pybind11;
 
 
 std::string get_execution_type(int);
 
 
-core::gf_image placeIntoPadded(
+core::gf_image convert_image(
+    py::array_t<double, py::array::c_style | py::array::forcecast>&
+);
+
+
+void placeIntoPadded(
     const core::gf_image&,
-    const core::size&,
-    const core::rect&,
+    core::gf_image&,
+    int, int,
+    int, int,
     double
 );
 

@@ -21,18 +21,21 @@
 using namespace openpiv;
 
 struct is_peak_struct{
-    uint32_t h = 0;
-    uint32_t w = 0;
+    std::uint32_t h = 0;
+    std::uint32_t w = 0;
     core::g_f val = 0.0;
     bool ispeak = false;
 };
 
 
-core::peaks_t<core::g_f> find_peaks_brute( const core::gf_image& im, uint16_t num_peaks, uint32_t peak_radius )
-{
+core::peaks_t<core::g_f> find_peaks_brute(
+    const core::gf_image& im, 
+    std::uint16_t num_peaks,
+    std::uint32_t peak_radius
+){
     core::peaks_t<core::g_f> result;
-    const uint32_t result_w = 2*peak_radius + 1;
-    const uint32_t result_h = result_w;
+    const std::uint32_t result_w = 2*peak_radius + 1;
+    const std::uint32_t result_h = result_w;
 
     // create vector of peak indexes    
     auto bl = im.rect().bottomLeft();
@@ -43,13 +46,13 @@ core::peaks_t<core::g_f> find_peaks_brute( const core::gf_image& im, uint16_t nu
 
     for (auto i=num_peaks; i>0; --i)
     {
-        for ( uint32_t h=peak_radius; h<im.height()-2*peak_radius; ++h )
+        for ( std::uint32_t h=peak_radius; h<im.height()-2*peak_radius; ++h )
         {
             const core::g_f* above = im.line( h-1 );
             const core::g_f* line = im.line( h );
             const core::g_f* below = im.line( h+1 );
 
-            for ( uint32_t w=peak_radius; w<im.width()-peak_radius; ++w )
+            for ( std::uint32_t w=peak_radius; w<im.width()-peak_radius; ++w )
             {
                 if ( line[w-1] < line[w] && line[w+1] < line[w] && above[w] < line[w]  && below[w] < line[w] && // is local peak?
                      line[w] > temp_peak.val && line[w] < previous_max) // is correct local peak?
@@ -86,28 +89,28 @@ core::peaks_t<core::g_f> find_peaks_brute( const core::gf_image& im, uint16_t nu
 void process_cmatrix_2x3(
     double* cmatrix,
     double* results,
-    uint32_t maxStep,
-    uint32_t stride_2d,
-    core::size stride_1d,
+    std::uint32_t maxStep,
+    std::uint32_t stride_2d,
+    std::vector<std::uint32_t> stride_1d,
     int limit_peak_search,
     int threads,
     int return_type
     
 ){
-    uint32_t thread_count = std::thread::hardware_concurrency()-1;
+    std::uint32_t thread_count = std::thread::hardware_concurrency()-1;
 
     if (threads >= 1)
-        thread_count = static_cast<uint32_t>(threads);
+        thread_count = static_cast<std::uint32_t>(threads);
 
     // allocate sections for results (couldn't pass list of arrays)
-    uint32_t U   = maxStep * 0;
-    uint32_t V   = maxStep * 1;
-    uint32_t PH  = maxStep * 2;
-    uint32_t P2P = maxStep * 3;
-    uint32_t U2  = maxStep * 4;
-    uint32_t V2  = maxStep * 5;
-    uint32_t U3  = maxStep * 6;
-    uint32_t V3  = maxStep * 7;
+    std::uint32_t U   = maxStep * 0;
+    std::uint32_t V   = maxStep * 1;
+    std::uint32_t PH  = maxStep * 2;
+    std::uint32_t P2P = maxStep * 3;
+    std::uint32_t U2  = maxStep * 4;
+    std::uint32_t V2  = maxStep * 5;
+    std::uint32_t U3  = maxStep * 6;
+    std::uint32_t V3  = maxStep * 7;
 
     auto processor = [
         cmatrix,
@@ -119,12 +122,12 @@ void process_cmatrix_2x3(
         &U2, &V2,
         &U3, &V3,
         return_type
-     ]( uint32_t step )
+     ]( std::uint32_t step )
     {
         uint16_t num_peaks = 3;
         constexpr uint16_t radius = 1;
 
-        auto corrCut = core::gf_image(stride_1d);
+        auto corrCut = core::gf_image( {stride_1d[0], stride_1d[0]} );
 
         std::copy(
             cmatrix + (step  * stride_2d),
@@ -149,22 +152,22 @@ void process_cmatrix_2x3(
         if (return_type == 1 || return_type == 0) // peak 1
         {
             uv = core::fit_simple_gaussian( peaks[0] );
-            results[step + U] = uv[0] - stride_1d.width()/2;
-            results[step + V] = uv[1] - stride_1d.height()/2;
+            results[step + U] = uv[0] - static_cast<double>( stride_1d[0]/2 );
+            results[step + V] = uv[1] - static_cast<double>( stride_1d[1]/2 );
         }
 
         if (return_type == 2 || return_type == 0) // peak 2
         {
             uv = core::fit_simple_gaussian( peaks[1] );
-            results[step + U2] = uv[0] - stride_1d.width()/2;
-            results[step + V2] = uv[1] - stride_1d.height()/2;
+            results[step + U2] = uv[0] - static_cast<double>( stride_1d[0]/2 );
+            results[step + V2] = uv[1] - static_cast<double>( stride_1d[1]/2 );
         }
 
         if (return_type == 3 || return_type == 0) // peak 3
         {
             uv = core::fit_simple_gaussian( peaks[2] );
-            results[step + U3] = uv[0] - stride_1d.width()/2;
-            results[step + V3] = uv[1] - stride_1d.height()/2;
+            results[step + U3] = uv[0] - static_cast<double>( stride_1d[0]/2 );
+            results[step + V3] = uv[1] - static_cast<double>( stride_1d[1]/2 );
         }
 
         // primary peak information
@@ -186,12 +189,12 @@ void process_cmatrix_2x3(
     chunk_sizes.back() = maxStep - (thread_count-1)*chunk_size;
 
 
-    size_t i = 0;
+    std::uint32_t i = 0;
     for ( const auto& chunk_size_ : chunk_sizes )
     {
         pool.enqueue(
             [i, chunk_size_, &processor]() {
-                for ( size_t j=i; j<i + chunk_size_; ++j )
+                for ( std::uint32_t j = i; j < i + chunk_size_; ++j )
                     processor(j);
             } );
         i += chunk_size_;

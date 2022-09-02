@@ -1,6 +1,9 @@
 """
 Module for validating Particle Image Velocimetry (PIV) data (vectors) to attain a higher quality vector field.
 """
+# Note: typing.Union doesn't work with np.ndarray
+from typing import Optional
+
 import numpy as np
 
 __all__ = [
@@ -13,7 +16,15 @@ __all__ = [
 ###############################################################################
 
 
-def sig2noise_val(u, v, s2n, w=None, threshold=1.05, mask = None, convention = "openpiv"):
+def sig2noise_val(
+    u: np.ndarray, 
+    v: np.ndarray, 
+    s2n: np.ndarray,
+    w: Optional[np.ndarray] = None, 
+    threshold: float = 1.05, 
+    mask: Optional[np.ndarray] = None, 
+    convention: str = "openpiv"
+) -> np.ndarray:
     """Eliminate spurious vectors from cross-correlation signal to noise ratio.
 
     Replace spurious vectors with zero if signal to noise ratio

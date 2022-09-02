@@ -9,18 +9,18 @@ add_library(openpivcore SHARED IMPORTED)
 if (WIN32)
     set_target_properties(openpivcore
        PROPERTIES
-           IMPORTED_LOCATION ${OPENPIV_CXX_DIR}/build/out/Release/openpivcore.dll
-           IMPORTED_IMPLIB ${OPENPIV_CXX_DIR}/build/openpiv/Release/openpivcore.lib
+           IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/_libs/openpivcore.dll
+           IMPORTED_IMPLIB ${PROJECT_SOURCE_DIR}/_libs/openpivcore.lib
     )
 elseif (UNIX && APPLE)
     set_target_properties(openpivcore
         PROPERTIES
-           IMPORTED_LOCATION ${OPENPIV_CXX_DIR}/build/out/libopenpivcore.dylib
+           IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/_libs/libopenpivcore.dylib
     )
 elseif (UNIX)
     set_target_properties(openpivcore
         PROPERTIES
-           IMPORTED_LOCATION ${OPENPIV_CXX_DIR}/build/out/libopenpivcore.so
+           IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/_libs/libopenpivcore.so
     )
  else()
      message( FATAL_ERROR "Could not locate openpivcore dynamic library.")
@@ -54,13 +54,6 @@ target_link_libraries(_process
 
 install(TARGETS _process DESTINATION openpiv_cxx/process)
 
-# include dlls to build
-if (WIN32)
-    file(GLOB DIST_DLLS "${OPENPIV_CXX_DIR}/build/out/Release/*.dll")
-elseif (UNIX && APPLE)
-    file(GLOB DIST_DLLS "${OPENPIV_CXX_DIR}/build/out/*.dylib")
-elseif (UNIX)
-    file(GLOB DIST_DLLS "${OPENPIV_CXX_DIR}/build/out/*.so")
-endif()
+file(GLOB DIST_DLLS "${PROJECT_SOURCE_DIR}/_libs/*")
 
 install(FILES ${DIST_DLLS} DESTINATION openpiv_cxx/_libs)

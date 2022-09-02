@@ -1,5 +1,5 @@
-from numpy import arange, meshgrid
-from openpiv_cxx.interpolate import bilinear2D, whittaker2D
+from numpy import arange, meshgrid, ndarray
+from openpiv_cxx.interpolate import bilinear2D, whittaker2D, taylor_expansion2D
 
 
 __all__ = [
@@ -8,10 +8,12 @@ __all__ = [
 ]
 
 def create_deformation_field(
-    frame, 
-    x, y, 
-    u, v
-):
+    frame: ndarray, 
+    x: ndarray,
+    y: ndarray, 
+    u: ndarray, 
+    v: ndarray
+) -> tuple( [[ndarray] * 4] ):
     """
     Deform an image by window deformation where a new grid is defined based
     on the grid and displacements of the previous pass and pixel values are
@@ -20,23 +22,23 @@ def create_deformation_field(
     
     Parameters
     ----------
-    frame : 2d np.ndarray, dtype=np.int32
+    frame : 2d ndarray, dtype=np.int32
         An two dimensions array of integers containing grey levels of
         the first frame.
     
-    x : 2D np.ndarray
+    x : 2D ndarray
         A two dimensional array containing the x coordinates of the
         interrogation window centers, in pixels.
     
-    y : 2D np.ndarray
+    y : 2D ndarray
         A two dimensional array containing the y coordinates of the
         interrogation window centers, in pixels.
     
-    u : 2D np.ndarray
+    u : 2D ndarray
         A two dimensional array containing the u velocity component,
         in pixels/seconds.
     
-    v : 2D np.ndarray
+    v : 2D ndarray
         A two dimensional array containing the v velocity component,
         in pixels/seconds.
     
@@ -61,58 +63,69 @@ def create_deformation_field(
 
 
 def deform_windows(
-    frame_a,
-    frame_b,
-    x, 
-    y, 
-    u, 
-    v, 
-    radius=1,
-    deformation_order = 1
-):
+    frame_a: ndarray,
+    frame_b: ndarray,
+    x: ndarray, 
+    y: ndarray, 
+    u: ndarray, 
+    v: ndarray, 
+    deformation_method: str = "whittaker-shanon",
+    order: int  = 1,
+    radius: int = 1,
+    deformation_order: int = 1
+) -> tuple( [ndarray, ndarray] ):
     """
     Deform an image by window deformation where a new grid is defined based
     on the grid and displacements of the previous pass and pixel values are
-    interpolated onto the new grid.
+    interpolated onto the new grid. Currently, two deformation algorithms are
+    implemented, Whittaker-Shanon (sinc) and Taylor expansions with finite
+    differences. Taylor expansions interpolation is usually much faster and 
+    provides good results.
     
     
     Parameters
     ----------
-    frame_a : 2D np.ndarray, dtype=np.int32
+    frame_a : 2D ndarray, dtype=np.int32
         A two dimensions array of integers containing grey levels of
         the first frame.
         
-    frame_b : 2D np.ndarray, dtype=np.int32
+    frame_b : 2D ndarray, dtype=np.int32
         A two dimensions array of integers containing grey levels of
         the second frame.
     
-    x : 2D np.ndarray
+    x : 2D ndarray
         A two dimensional array containing the x coordinates of the
         interrogation window centers, in pixels.
     
-    y : 2D np.ndarray
+    y : 2D ndarray
         A two dimensional array containing the y coordinates of the
         interrogation window centers, in pixels.
     
-    u : 2D np.ndarray
+    u : 2D ndarray
         A two dimensional array containing the u velocity component,
         in pixels/seconds.
     
-    v : 2D np.ndarray
+    v : 2D ndarray
         A two dimensional array containing the v velocity component,
         in pixels/seconds.
-    
+        
+    order : scalar
+        The order of the Taylor expansions interpolation kernel.
+        
     radius : scalar
         The radius of the Whittaker-Shannon interpolation kernel.
+    
+    deformation_method : str
+        Type of deformation to use.
         
     deformation_order : scalar
-        Type of deformation to use where '1' deforms the second image
+        Order of deformation to use where '1' deforms the second image
         and '2' deforms both image symetrically.
 
     
     Returns
     -------
-    frame_def_a, frame_def_b : 2D np.ndarray
+    frame_def_a, frame_def_b : 2D ndarray
         A deformed image based on the meshgrid and displacements of the
         previous pass
 
@@ -130,29 +143,42 @@ def deform_windows(
         u, v
     )
     
+    if deformation_method.lower() == "whittaker-shanon":
+        deform_algo = whittaker2D
+        
+    elif deformation_method.lower() == "taylor expansions":
+        deform_algo = taylor_expansion2D
+        
+    else:
+        raise ValueError(
+            f"Deformation method {deformation_method} not supported. \n\
+             Supported algorithms are 'whittaker-shanon' and 'taylor expansions'"
+        )
+    
+    
     if deformation_order == 1:
-        frame_def_a = frame_a
+        frame_def_a = frame_a.copy()
 
-        frame_def_b = whittaker2D(
+        frame_def_b = deform_algo(
             frame_b, 
             y_new - vt, 
             x_new + ut, 
-            radius
+            order
         )
     
     else:
-        frame_def_a = whittaker2D(
+        frame_def_a = deform_algo(
             frame_a, 
             y_new - vt / 2, 
             x_new - ut / 2, 
-            radius
+            order
         )
         
-        frame_def_b = whittaker2D(
+        frame_def_b = deform_algo(
             frame_b, 
             y_new + vt / 2, 
             x_new + ut / 2, 
-            radius
+            order
         )
 
     return frame_def_a, frame_def_b

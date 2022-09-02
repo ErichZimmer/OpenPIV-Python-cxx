@@ -1,4 +1,4 @@
-from numpy import array
+from numpy import array, ndarray
 from numpy.ma import MaskedArray
 from openpiv_cxx import process as piv_proc
 from openpiv_cxx.interpolate import bilinear2D, whittaker2D
@@ -10,13 +10,12 @@ __all__ = [
 ]
 
 def first_pass(
-    frame_a, 
-    frame_b,
-    window_size,
-    overlap,
-    correlation_method="circular",
-    normalized_correlation=False,
-):
+    frame_a: ndarray, 
+    frame_b: ndarray,
+    window_size: int = 32,
+    overlap: int = 16,
+    correlation_method: str = "circular"
+) -> tuple( [[ndarray] * 5] ):
     """
     First pass of the PIV evaluation.
     This function does the PIV evaluation of the first pass. It returns
@@ -27,10 +26,10 @@ def first_pass(
     
     Parameters
     ----------
-    frame_a : 2D np.ndarray
+    frame_a : 2D ndarray
         The first image.
         
-    frame_b : 2D np.ndarray
+    frame_b : 2D ndarray
         The second image.
         
     window_size : int
@@ -53,22 +52,16 @@ def first_pass(
         
     u : 2D np.array
         Array containing the v displacement for every interrogation window.
-    """
-
-    #     if do_sig2noise is False or iterations != 1:
-    #         sig2noise_method = None  # this indicates to get out nans
     
-    if normalized_correlation == True:
-        algorithm = 'ncc'
-    else:
-        algorithm = 'scc'
+    s2n : 2D np.array 
+        Array consisting of signal to noise ratio values.
+    """
     
     cmatrix = piv_proc.fft_correlate_images(
         frame_a,
         frame_b,
         window_size,
         overlap,
-        algorithm,
         correlation_method,
         thread_count = 1
     )
@@ -97,33 +90,34 @@ def first_pass(
 
 
 def multipass_img_deform(
-    frame_a,
-    frame_b,
-    x_old,
-    y_old,
-    u_old,
-    v_old,
-    window_size,
-    overlap,
-    correlation_method="circular",
-    normalized_correlation=False,
-    deformation_method="symmetric",
-    radius=2
-):
+    frame_a: ndarray,
+    frame_b: ndarray,
+    x_old: ndarray,
+    y_old: ndarray,
+    u_old: ndarray,
+    v_old: ndarray,
+    window_size: int,
+    overlap: int,
+    correlation_method: str = "circular",
+    deformation_method: str = "symmetric",
+    deformation_algorithm: str = "taylor expansions",
+    order: int = 1,
+    radius: int = 2
+)-> tuple( [[ndarray] * 5] ):
     """
     Multi pass of the PIV evaluation.
     This function does the PIV evaluation of the second and other passes.
     It returns the coordinates of the interrogation window centres,
     the displacement u, v for each interrogation window as well as
-    the signal to noise ratio array (which is filled with NaNs if opted out).
+    the signal to noise ratio array.
     
     
     Parameters
     ----------
-    frame_a : 2D np.ndarray
+    frame_a : 2D ndarray
         The first image.
 
-    frame_b : 2D np.ndarray
+    frame_b : 2D ndarray
         The second image.
 
     window_size : tuple of ints
@@ -132,21 +126,34 @@ def multipass_img_deform(
     overlap : tuple of ints
         The overlap of the interrogation window, e.g. window_size/2.
 
-    x_old : 2D np.ndarray
+    x_old : 2D ndarray
         The x coordinates of the vector field of the previous pass.
 
-    y_old : 2D np.ndarray
+    y_old : 2D ndarray
         The y coordinates of the vector field of the previous pass.
 
-    u_old : 2D np.ndarray
+    u_old : 2D ndarray
         The u displacement of the vector field of the previous pass
         in case of the image mask - u_old and v_old are MaskedArrays.
 
-    v_old : 2D np.ndarray
+    v_old : 2D ndarray
         The v displacement of the vector field of the previous pass.
-
-    radius : int
-        The order of the spline interpolation used for the image deformation.
+        
+    correlation_method : str
+        Type of correlation to use where linear is zero padded to
+        2N*2M (must remain power of 2 unless FFTW is used).
+    
+    deformation_algorithm : str
+        Type of deformation to use.
+        
+    deformation_method : str
+        Order/type of deformation to use.
+        
+    order : scalar
+        The order of the Taylor expansions interpolation kernel.
+        
+    radius : scalar
+        The radius of the Whittaker-Shannon interpolation kernel.   
 
 
     Returns
@@ -190,47 +197,33 @@ def multipass_img_deform(
         
     u_pre = bilinear2D(y_old, x_old, u_old, y_int, x_int)
     v_pre = bilinear2D(y_old, x_old, v_old, y_int, x_int)
-
-    x_new, y_new, ut, vt = create_deformation_field(
-        frame_a, 
-        x, y,
-        u_pre, v_pre
-    )
     
-    if deformation_method == "second image":
-        frame_b = whittaker2D(
-            frame_b.astype("float64"), # so we don't lose any data
-            y_new - vt,
-            x_new + ut,
-            radius
-        )
-        
-    elif deformation_method == "symmetric":
-        frame_a = whittaker2D(
-            frame_a.astype("float64"), 
-            y_new - vt / 2,
-            x_new - ut / 2,
-            radius
-        )
-        frame_b = whittaker2D(
-            frame_b.astype("float64"), 
-            y_new + vt / 2,
-            x_new + ut / 2,
-            radius
-        )
-    
+    if deformation_method == "symmetric":
+        deform_order = 2
+    elif deformation_method == "second image":
+        deform_order = 1
     else:
         raise ValueError(
-            "Deformation method not supported"
+            f"Deformation method {deformation_method} not supported"
         )
+    
+    frame_a, frame_b = deform_windows(
+        frame_a.astype("float64"), # force the result to be float64
+        frame_b.astype("float64"),
+        x, y, 
+        u_pre, v_pre,
+        order = order,
+        radius = radius,
+        deformation_method = deformation_algorithm,
+        deformation_order = deform_order
+    )
         
     x, y, u, v, s2n = first_pass(
         frame_a,
         frame_b,
         window_size,
         overlap,
-        correlation_method,
-        normalized_correlation
+        correlation_method
     )
 
     u += u_pre

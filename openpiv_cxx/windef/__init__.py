@@ -7,7 +7,7 @@ Window Deformation
 ==================
 
    create_deformation_field - Create deformation field
-   deform_windows - Deform windows from deformation field
+   deform_windows - Deform images from deformation field
    
 PIV Analysis
 ============

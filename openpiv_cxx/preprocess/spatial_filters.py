@@ -2,9 +2,9 @@
 Module for filtering Particle Image Velocimetry (PIV) images to attain a higher quality image.
 """
 from ._spatial_filters import _intensity_cap, _threshold_binarization,\
-    _gaussian_lowpass_filter, _gaussian_highpass_filter, _local_variance_normalization,\
-    _test_wrapper
-from numpy import pad as pad_array, percentile, clip
+    _lowpass_filter, _highpass_filter, _local_variance_normalization,\
+    _gaussian_kernel
+from numpy import pad as pad_array, percentile, clip, ndarray
 
 __all__ = [
     "intensity_cap",
@@ -17,14 +17,17 @@ __all__ = [
 
 kernel_size_error = "kernel_size must be an odd number"
     
-def intensity_cap(img, std_mult = 2.0):
+def intensity_cap(
+    img: ndarray, 
+    std_mult: int = 2.0
+) -> ndarray:
     """
     Set pixels higher than calculated threshold to said threshold. 
     The threshold value is calcualted by img_mean + std_mult * img_std.
     
     Parameters
     ----------
-    img: 2d np.ndarray
+    img: 2d ndarray
         a two dimensional array containing pixel intenensities.
         
     std_mult: float
@@ -32,7 +35,7 @@ def intensity_cap(img, std_mult = 2.0):
         
     Returns
     -------
-    img: 2d np.ndarray
+    img: 2d ndarray
         a filtered two dimensional array of the input image
     """
     # store original image dtype
@@ -52,14 +55,17 @@ def intensity_cap(img, std_mult = 2.0):
     return new_img
 
 
-def threshold_binarization(img, threshold=0.5):
+def threshold_binarization(
+    img: ndarray, 
+    threshold: float = 0.5
+) -> ndarray:
     """
     A threshold binarization filter.
     
     Parameters
     ----------
     
-    img : 2d np.ndarray 
+    img : 2d ndarray 
         a two dimensional array containing pixel intenensities.
         
     kernel_size : int
@@ -71,7 +77,7 @@ def threshold_binarization(img, threshold=0.5):
     Returns
     -------
     
-    new_img : 2d np.ndarray
+    new_img : 2d ndarray
         a two dimensional array containing pixel intenensities.
     """
     # store original image dtype
@@ -103,14 +109,18 @@ def threshold_binarization(img, threshold=0.5):
     return new_img
 
 
-def gaussian_filter(img, kernel_size=3, sigma=1.0):
+def gaussian_filter(
+    img: ndarray, 
+    kernel_size: int = 3, 
+    sigma: float = 1.0
+) -> ndarray:
     """
     A simple sliding window gaussian low pass filter.
     
     Parameters
     ----------
     
-    img : 2d np.ndarray
+    img : 2d ndarray
         a two dimensional array containing pixel intenensities.
         
     kernel_size : int
@@ -122,7 +132,7 @@ def gaussian_filter(img, kernel_size=3, sigma=1.0):
     Returns
     -------
     
-    new_img : 2d np.ndarray
+    new_img : 2d ndarray
         a two dimensional array containing pixel intenensities.
     """
     
@@ -151,12 +161,13 @@ def gaussian_filter(img, kernel_size=3, sigma=1.0):
     if max_ > 1: 
         buffer1 = buffer1.astype("float32")
         buffer1 /= max_
-        
+    
+    kernel = _gaussian_kernel(kernel_size, sigma)
+    
     # extract filtered image
-    new_img = _gaussian_lowpass_filter(
+    new_img = _lowpass_filter(
         buffer1,
-        kernel_size, 
-        float(sigma)
+        kernel
     )
     
     # remove padding
@@ -175,14 +186,19 @@ def gaussian_filter(img, kernel_size=3, sigma=1.0):
     return new_img
 
 
-def highpass_filter(img, kernel_size=3, sigma=1.0, clip_at_zero=True):
+def highpass_filter(
+    img: ndarray, 
+    kernel_size: int = 3, 
+    sigma: float = 1.0, 
+    clip_at_zero: bool = True
+) -> ndarray:
     """
     A simple sliding window gaussian high pass filter.
     
     Parameters
     ----------
     
-    img : 2d np.ndarray
+    img : 2d ndarray
         a two dimensional array containing pixel intenensities.
         
     kernel_size : int
@@ -194,7 +210,7 @@ def highpass_filter(img, kernel_size=3, sigma=1.0, clip_at_zero=True):
     Returns
     -------
     
-    new_img : 2d np.ndarray
+    new_img : 2d ndarray
         a two dimensional array containing pixel intenensities.
     """
     if kernel_size % 2 != 1:
@@ -222,12 +238,13 @@ def highpass_filter(img, kernel_size=3, sigma=1.0, clip_at_zero=True):
     if max_ > 1: 
         buffer1 = buffer1.astype("float32")
         buffer1 /= max_
-        
+    
+    kernel = _gaussian_kernel(kernel_size, sigma)
+    
     # extract filtered image
     new_img = _gaussian_highpass_filter(
         buffer1,
-        kernel_size, 
-        float(sigma),
+        kernel,
         bool(clip_at_zero)
     )
     
@@ -247,14 +264,20 @@ def highpass_filter(img, kernel_size=3, sigma=1.0, clip_at_zero=True):
     return new_img
 
 
-def variance_normalization_filter(img, kernel_size=3, sigma1=1.0, sigma2=1.0, clip_at_zero=True):
+def variance_normalization_filter(
+    img: ndarray, 
+    kernel_size: int = 3, 
+    sigma1: float = 1.0, 
+    sigma2: float = 1.0, 
+    clip_at_zero: bool = True
+) -> ndarray:
     """
     A simple gaussian variance normalization filter.
     
     Parameters
     ----------
     
-    img : 2d np.ndarray
+    img : 2d ndarray
         a two dimensional array containing pixel intenensities.
         
     kernel_size : int
@@ -269,7 +292,7 @@ def variance_normalization_filter(img, kernel_size=3, sigma1=1.0, sigma2=1.0, cl
     Returns
     -------
     
-    new_img : 2d np.ndarray
+    new_img : 2d ndarray
         a two dimensional array containing pixel intenensities.
     """
     if kernel_size % 2 != 1:
@@ -322,14 +345,18 @@ def variance_normalization_filter(img, kernel_size=3, sigma1=1.0, sigma2=1.0, cl
     return new_img
 
 
-def contrast_stretch(img, lower_limit = 2, upper_limit = 98):
+def contrast_stretch(
+    img: ndarray, 
+    lower_limit: float = 2.0, 
+    upper_limit: float = 98.0
+) -> ndarray:
     """
     Simple percentile-based contrast stretching.
 
     Parameters
     ----------
 
-    img : 2d np.ndarray
+    img : 2d ndarray
         a two dimensional array containing pixel intenensities.
 
     lower_limit: int

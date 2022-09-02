@@ -1,6 +1,6 @@
 """
 OpenPIV-cxx: A Python PIV package with a c++ backend
-================================================
+====================================================
 
 
 Subpackages
@@ -9,11 +9,13 @@ Using any of these subpackages requires an explicit import. For example,
 ``import openpiv_cxx.process``.
 
 
- preprocess --- Filter PIV images
- process    --- Correlation and subpixel approximation
- smooth     --- Smooth vector fields
- validation --- Validate vector fields
- windef     --- PIV evaluation and window deformation
+ interpolate --- Interpolate and map images
+ preprocess  --- Filter PIV images
+ process     --- Correlation and subpixel approximation
+ smooth      --- Smooth vector fields
+ tools       --- Image and vector tools
+ validation  --- Validate vector fields
+ windef      --- Window deformation algorithms
 """
 
 try:
@@ -26,10 +28,11 @@ except ImportError as e:
     
 submodules = [
     "interpolate",
-    "preprocess",
+    "preprocess"
     "process",
     "smooth",
-    "validate",
+    "tools",
+    "validation",
     "windef"
 ]
 

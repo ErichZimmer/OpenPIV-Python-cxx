@@ -1,8 +1,9 @@
-from . import _process as _proc
-import numpy as np
-
 """This module contains a c++ implementation of the basic
 cross-correlation algorithm for PIV image processing."""
+
+import numpy as np
+from typing import Union, Optional
+from . import _process as _proc
 
 __all__ = [
     "get_field_shape",
@@ -12,9 +13,12 @@ __all__ = [
     "correlation_to_displacement"
 ]
 
-def get_field_shape(image_size, window_size, overlap):
+def get_field_shape(
+    image_size: tuple( [int, int] ),
+    window_size: int,
+    overlap: int
+) -> tuple( [int, int] ):
     """Compute the shape of the resulting flow field.
-
     Given the image size, the interrogation window size and
     the overlap size, it is possible to calculate the number
     of rows and columns of the resulting flow field.
@@ -47,7 +51,11 @@ def get_field_shape(image_size, window_size, overlap):
     return field_shape
 
 
-def get_coordinates(image_size, window_size, overlap):
+def get_coordinates(
+    image_size: tuple( [int, int] ),
+    window_size: int,
+    overlap: int
+) -> tuple( [np.ndarray, np.ndarray] ):
     """Compute the x, y coordinates of the centers of the interrogation windows.
     the origin (0,0) is like in the image, top left corner
     positive x is an increasing column index from left to right
@@ -102,7 +110,11 @@ def get_coordinates(image_size, window_size, overlap):
     return np.meshgrid(x, y)
 
 
-def get_rect_coordinates(frame_a, window_size, overlap):
+def get_rect_coordinates(
+    image_size: tuple( [int, int] ),
+    window_size: tuple( [int, int] ),
+    overlap: tuple( [int, int] )
+) -> tuple( [np.ndarray, np.ndarray] ):
     """Compute the x, y coordinates of the centers of the interrogation windows.
     the origin (0,0) is like in the image, top left corner
     positive x is an increasing column index from left to right
@@ -136,24 +148,25 @@ def get_rect_coordinates(frame_a, window_size, overlap):
     """
     if isinstance(window_size, tuple) == False and isinstance(window_size, list) == False:
         window_size = [window_size, window_size]
+    
     if isinstance(overlap, tuple) == False and isinstance(overlap, list) == False:
         overlap = [overlap, overlap]
-    _, y = get_coordinates(frame_a, window_size[0], overlap[0])
-    x, _ = get_coordinates(frame_a, window_size[1], overlap[1])
+    
+    _, y = get_coordinates(image_size, window_size[0], overlap[0])
+    x, _ = get_coordinates(image_size, window_size[1], overlap[1])
     
     return np.meshgrid(x[0,:], y[:,0])
 
 
 def fft_correlate_images(
-    image_a,
-    image_b,
-    window_size = 32,
-    overlap = 16,
-    algorithm = "scc",
-    correlation_method = "circular",
-    thread_count = 1,
-):
-    """ Standard FFT based cross-correlation of two images. 
+    image_a: np.ndarray,
+    image_b: np.ndarray,
+    window_size: int = 32,
+    overlap: int = 16,
+    correlation_method: str = "circular",
+    thread_count: int = 1
+) -> np.ndarray:
+    """Standard FFT based cross-correlation of two images. 
 
 
     Parameters
@@ -170,10 +183,6 @@ def fft_correlate_images(
     overlap : int
         The number of pixels by which two adjacent windows overlap,
         [default: 16 pix].
-    
-    algorithm : string {'scc'}
-        Which correlation algorithm to use where 'scc' = standard cross correlation and
-        'ncc' = normalized cross correlation.
         
     correlation_method : string {'circular', 'linear'}
         Which correlation method to use where 'circular' is periodic 
@@ -191,16 +200,14 @@ def fft_correlate_images(
         of an interrogation window.
         
     """ 
-    if algorithm not in ["scc", "ncc"]:
-        raise ValueError(f"Unsupported correlation algorithm: {algorithm}.")
-    
     if correlation_method not in ["circular", "linear"]:
         raise ValueError(f"Unsupported correlation method: {correlation_method}.")
     
-    if algorithm == "scc":
-        algorithm = 0 # non-normalized
-    else:
-        algorithm = 1 # normalized
+    if image_a.dtype != "float64":
+        image_a = image_a.astype("float64")
+    
+    if image_b.dtype != "float64":
+        image_b = image_b.astype("float64")
         
     if correlation_method == "circular":
         correlation_method = 0 # circular
@@ -208,26 +215,25 @@ def fft_correlate_images(
         correlation_method = 1 # linear
 
     
-    return _proc.img2corr_standard(
+    return _proc._img2corr_standard(
         image_a,
         image_b,
         int(window_size),
         int(overlap),
-        algorithm,
         correlation_method,
-        int(thread_count),
+        int(thread_count)
     )
 
 
 def correlation_to_displacement(
-    corr,
-    n_rows = None, 
-    n_cols = None,
-    kernel = "2x3",
-    limit_peak_search = True,
-    thread_count = 1,
-    return_type = "first_peak"
-):
+    corr: np.ndarray,
+    n_rows: Optional[int] = None, 
+    n_cols: Optional[int] = None,
+    kernel: str = "2x3",
+    limit_peak_search: bool = True,
+    thread_count: int = 1,
+    return_type: str = "first_peak"
+) -> tuple( [[np.ndarray] * 4] ):
     """ Standard subpixel estimation. 
 
 
@@ -265,7 +271,7 @@ def correlation_to_displacement(
     """
         
     if kernel not in ["2x3"]:
-        raise ValueError(f"Unsupported peak search pethod method: {kernel}.")
+        raise ValueError(f"Unsupported peak search method method: {kernel}.")
     
     if return_type not in ["first_peak", "second_peak", "third_peak", "all_peaks"]:
         raise ValueError(f"Unsupported return type: {return_type}.")
@@ -301,7 +307,7 @@ def correlation_to_displacement(
             slice(0, corr.shape[2])
         )
         
-    u1, v1, peakHeight, peak2peak, u2, v2, u3, v3 = _proc.corr2vec(
+    u1, v1, peakHeight, peak2peak, u2, v2, u3, v3 = _proc._corr2vec(
         corr[corr_slice],
         kernel,
         limit_peak_search,

@@ -1,4 +1,4 @@
-#include "cc_utils.h"
+#include "openpiv_utils.h"
 
 using namespace openpiv;
 
@@ -11,33 +11,48 @@ std::string get_execution_type(int execution_type)
         return "bulk-pool";
 }
 
+core::gf_image convert_image(
+    py::array_t<double, py::array::c_style | py::array::forcecast>& np_img
+){
+    core::gf_image img(
+        static_cast<std::uint32_t>(np_img.shape(1)), 
+        static_cast<std::uint32_t>(np_img.shape(0))
+    );
+    
+    std::memcpy(
+        img.data(),
+        np_img.data(),
+        np_img.size()*sizeof(double)
+    );
+    
+    return img;
+}
 
-core::gf_image placeIntoPadded(
+void placeIntoPadded(
     const core::gf_image& image,
-    const core::size& padSize,
-    const core::rect& ia,
+    core::gf_image& intWindow,
+    int y1,
+    int y2,
+    int x1,
+    int x2,
     double meanI = 0
 ){
-    core::gf_image result{ padSize.height(), padSize.width()}; 
+    const std::size_t padY = intWindow.height() / 2 - (y2 - y1) / 2;
+    const std::size_t padX = intWindow.width()  / 2 - (x2 - x1) / 2;
 
-    const size_t padY = padSize.height() / 2 - ia.height() / 2;
-    const size_t padX = padSize.width() / 2 - ia.width() / 2;
+    std::size_t imgY = y1;
+    std::size_t imgX = x1;
 
-    std::size_t imgY = ia.bottom();
-    std::size_t imgX = ia.left();
-
-    std::size_t maxRow = ia.height();
-    std::size_t maxCol = ia.width();
+    std::size_t maxRow = y2 - y1;
+    std::size_t maxCol = x2 - x1;
 
     std::size_t image_stride = image.width();
-    std::size_t result_stride = result.width();
+    std::size_t result_stride = intWindow.width();
 
     for (std::size_t row = 0; row < maxRow; ++row)
-    {
         for (std::size_t col = 0; col < maxCol; ++col)
-            result[(padY + row) * result_stride + padX + col] = image[(imgY + row) * image_stride + imgX + col] - meanI;
-    }    
-    return result;
+            intWindow[(padY + row) * result_stride + padX + col] = 
+                image[(imgY + row) * image_stride  + imgX + col] - meanI;
 }
 
 
@@ -49,7 +64,7 @@ double meanI(
     std::size_t x2
 ){
     double sum = 0;
-    double mean, std_;
+    double mean = 0, std_ = 0;
     
     std::size_t deltaY = (y2 - y1), deltaX = (x2 - x1);
     std::size_t N_M = deltaY * deltaX;
@@ -74,7 +89,7 @@ std::vector<double> mean_std(
     std::size_t x2
 ){
     double img_sum = 0, img_std_temp = 0;
-    double img_mean, img_std;
+    double img_mean = 0, img_std = 0;
     
     std::size_t deltaY = (y2 - y1), deltaX = (x2 - x1);
     std::size_t N_M = deltaY * deltaX;
@@ -90,7 +105,7 @@ std::vector<double> mean_std(
     }
 
     img_mean = img_sum / N_M;
-    img_std = sqrt( (img_std_temp / N_M) + (img_mean*img_mean) - (2*img_mean*img_mean) );
+    img_std = std::sqrt( (img_std_temp / N_M) + (img_mean*img_mean) - (2*img_mean*img_mean) );
 
     std::vector<double> stat_out(2);
     stat_out[0] = img_mean; 
@@ -115,12 +130,12 @@ void placeIntoCmatrix(
     const core::gf_image& output,
     const core::size& padSize,
     const core::rect& ia,
-    uint32_t ind
+    std::size_t ind
 ){
-    const size_t padY = padSize.height() / 2 - ia.height() / 2;
-    const size_t padX = padSize.width() / 2 - ia.width() / 2;
+    const std::size_t padY = padSize.height() / 2 - ia.height() / 2;
+    const std::size_t padX = padSize.width() / 2 - ia.width() / 2;
 
-    size_t k = 0;
+    std::size_t k = 0;
     std::size_t output_stride = output.width();
     std::size_t window_stride = ia.area();
 

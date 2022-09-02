@@ -21,7 +21,8 @@ set(openpiv_cxx_VERSION_PATCH 0)
 # get relative path to packages from vcpkg
 set(PKG_PATHS ${OPENPIV_CXX_DIR}/external/vcpkg/packages)
 
-# find pybind11
-find_package(pybind11 PATHS ${PYBIND11_DIR} REQUIRED)
+# include external sources
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/extern/extras)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/extern/pybind11)
 
 add_subdirectory(src)
