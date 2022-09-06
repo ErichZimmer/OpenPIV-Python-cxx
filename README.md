@@ -37,20 +37,20 @@ Documentation is inspired by [openpiv_tk_gui](https://github.com/OpenPIV/openpiv
 Find the [detailed documentation on readthedocs.io](https://openpiv-python-cxx.readthedocs.io/en/latest/index.html)
 
 ## To-do:
- [ ] Full compatability with OpenPIV-Python
- [ ] Contour finding for mask images
- [ ] dynamic/algorithmic masking
- [ ] two-phase separation
- [ ] FFTW-double (or float) precision for much faster processing
- [ ] Error correlation-based correction algorithm
- [ ] Repeated correlation
- [ ] 2D NxN subpixel centroid approximation
- [ ] Image dewarping and transformations
- [ ] spatial correlation (direct cross-correlation)
- [ ] 5 point gaussian subpixel approximation
- [ ] 2D 3x3 gaussian subpixel approximation 
- [ ] 3D PIV?
- [ ] transcribe repository to numba and pythran
+ - [ ] Full compatability with OpenPIV-Python
+ - [ ] Contour finding for mask images
+ - [ ] dynamic/algorithmic masking
+ - [ ] two-phase separation
+ - [ ] FFTW-double (or float) precision for much faster processing
+ - [ ] Error correlation-based correction algorithm
+ - [ ] Repeated correlation
+ - [ ] 2D NxN subpixel centroid approximation
+ - [ ] Image dewarping and transformations
+ - [ ] spatial correlation (direct cross-correlation)
+ - [ ] 5 point gaussian subpixel approximation
+ - [ ] 2D 3x3 gaussian subpixel approximation 
+ - [ ] 3D PIV?
+ - [ ] transcribe repository to numba and pythran
 
 ## Contributors
 
