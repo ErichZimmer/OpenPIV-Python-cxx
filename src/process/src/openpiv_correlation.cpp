@@ -143,7 +143,7 @@ std::vector<double> process_images_standard(
         std::vector<size_t> chunk_sizes( thread_count, chunk_size );
         chunk_sizes.back() = grid.size() - (thread_count-1)*chunk_size;
 
-        std::std::size_t i = 0;
+        std::size_t i = 0;
         for ( const auto& chunk_size_ : chunk_sizes )
         {
             pool.enqueue(

@@ -25,26 +25,28 @@ When building this package, set your current directory to this package in the te
 
 ### Optional dependencies
 To further increase accuracy and performance, some functions utilize extra third-party packages. For instance, the smoothing algorithm implented by references 1 and 2 use SciPy minimization functions. Here are some optional, but not needed dependencies:
- - scipy : all-in-one post processing algorithm
+ - scipy and pylab : all-in-one post processing algorithm (smoothn)
  - scikit-image : addditional image pre-processing
- - matplotlib  : data visualization and publications
+ - matplotlib  : data visualization and publication ready plots
  - pandas : data visualization and analysis 
  - ffmpeg : loading and creating movies
- - openpiv_tk_gui : GUI for OpenPIV-Python (needs some modifications for this repository)
+ - openpiv_tk_gui : GUI for OpenPIV-Python (currently needs some modifications for this repository)
  
-
+### Optional dependencies
+Documentation is inspired by [openpiv_tk_gui](https://github.com/OpenPIV/openpiv_tk_gui)
+Find the [detailed documentation on readthedocs.io](https://openpiv-python-cxx.readthedocs.io/en/latest/index.html)
 
 ## To-do:
- [ ] full compatability with OpenPIV-Python
- [ ] contour finding for mask images
- [ ] FFTW-double precesion for much faster processing
+ [ ] Full compatability with OpenPIV-Python
+ [ ] Contour finding for mask images
+ [ ] dynamic/algorithmic masking
+ [ ] two-phase separation
+ [ ] FFTW-double (or float) precision for much faster processing
  [ ] Error correlation-based correction algorithm
  [ ] Repeated correlation
  [ ] 2D NxN subpixel centroid approximation
  [ ] Image dewarping and transformations
  [ ] spatial correlation (direct cross-correlation)
- [ ] two-phase separation
- [ ] dynamic masking
  [ ] 5 point gaussian subpixel approximation
  [ ] 2D 3x3 gaussian subpixel approximation 
  [ ] 3D PIV?

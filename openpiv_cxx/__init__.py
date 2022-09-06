@@ -2,12 +2,10 @@
 OpenPIV-cxx: A Python PIV package with a c++ backend
 ====================================================
 
-
 Subpackages
 -----------
 Using any of these subpackages requires an explicit import. For example,
 ``import openpiv_cxx.process``.
-
 
  interpolate --- Interpolate and map images
  preprocess  --- Filter PIV images

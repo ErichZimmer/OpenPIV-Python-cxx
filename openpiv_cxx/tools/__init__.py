@@ -5,22 +5,22 @@ Tools
 
 Image Tools
 ===========
-
-   imread - Load images
-   imsave - Save images with 8-bit depths
-   negative - get negative of 8-bit images
+   
+   imread - load an image
+   imsave - save an image
+   negative - flip an 8-bit image
 
 
 Vector Tools
 ============
 
-   save - Save vector field
-   transform_coordinates - Convert from image to physical coordinates
-   uniform_scaling - Apply uniform scaling to x, y, u, v components
+   save - save a vector field
+   transform_coordinates - convert image to physical coordinate system
+   uniform_scaling - apply uniform scaling
    
 """
 
-from .image_tools import *
-from .vector_tools import *
+from ._image_tools import *
+from ._vector_tools import *
 
 __all__ = [s for s in dir() if not s.startswith('_')]

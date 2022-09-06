@@ -66,7 +66,7 @@ void placeIntoCmatrix(
     const core::gf_image&,
     const core::size&,
     const core::rect&,
-    uint32_t
+    std::size_t
 );
 
 #endif

@@ -16,26 +16,14 @@ def main():
     openpiv_cxx_dir = join(external_dir, "openpiv-c--qt")
     
     if exists("_libs") != True:
-        while True:
-            answer = input("_libs folder not found. " + 
-                           "Would you like to build openpivcore? ")
-            
-            if answer.lower() in ['n', "no"]:
-                build = False; break
-                
-            elif answer.lower() in ['y', "yes"]:
-                build = True; break
-                
-            else:
-                print("Invalid response. Valid responses are 'n', 'no', 'y', and 'yes'")
+        print("Warning: could not locate _libs folder.\n" + 
+              "Creating _libs folder and libraries")
         
-        if build:
-            _libs_path = join(current_full_path, "_libs")
-            print(_libs_path)
-            mkdir(_libs_path)
-            
-            build_openpivcore(openpiv_cxx_dir, _libs_path)
-            
+        _libs_path = join(current_full_path, "_libs")
+        mkdir(_libs_path)
+        
+        build_openpivcore(openpiv_cxx_dir, _libs_path)
+        
     # for cmake
     if system().lower() == "windows":
         openpiv_cxx_dir = openpiv_cxx_dir.replace('\\', '/')
@@ -58,11 +46,13 @@ def main():
         python_requires=req_py,
         packages=[
             'openpiv_cxx',
+            'openpiv_cxx.input_checker',
             'openpiv_cxx.interpolate',
             'openpiv_cxx.process',
             'openpiv_cxx.preprocess',
             'openpiv_cxx.validation',
             'openpiv_cxx.smooth',
+            'openpiv_cxx.tools',
             'openpiv_cxx.windef'
         ],
         cmake_args=[
