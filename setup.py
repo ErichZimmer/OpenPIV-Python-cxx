@@ -11,22 +11,17 @@ from openpiv_cxx._build_utilities.build_libs import build_openpivcore
 import pathlib
 
 def main():
-    current_full_path = pathlib.Path().resolve()
+    current_full_path = ""
     external_dir = join(current_full_path, "extern")
     openpiv_cxx_dir = join(external_dir, "openpiv-c--qt")
     
-    if exists("_libs") != True:
+    _libs_path = "_libs"
+    if exists(_libs_path) != True:
         print("Warning: could not locate _libs folder.\n" + 
               "Creating _libs folder and libraries")
         
-        _libs_path = join(current_full_path, "_libs")
-        mkdir(_libs_path)
-        
+        mkdir(_libs_path)        
         build_openpivcore(openpiv_cxx_dir, _libs_path)
-        
-    # for cmake
-    if system().lower() == "windows":
-        openpiv_cxx_dir = openpiv_cxx_dir.replace('\\', '/')
     
     python_min_version = 3.6
     
@@ -56,8 +51,7 @@ def main():
             'openpiv_cxx.windef'
         ],
         cmake_args=[
-            f"-DTRIPLET_TO_USE={ return_cxx_triplet(openpiv_cxx_dir) }",
-            f"-DOPENPIV_CXX_DIR={ openpiv_cxx_dir }"
+            f"-DTRIPLET_TO_USE={ return_cxx_triplet(openpiv_cxx_dir) }"
         ],
         zip_safe=False
     )

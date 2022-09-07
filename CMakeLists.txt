@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 3.8)
 
 # pickup environment to get vcpkg cmake files
+set(OPENPIV_CXX_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extern/openpiv-c--qt)
+
 set(vcpkg_root ${OPENPIV_CXX_DIR}/external/vcpkg)
 set(VCPKG_TARGET_TRIPLET "${TRIPLET_TO_USE}" CACHE STRING "")
 set(CMAKE_TOOL_CHAIN_FILE ${OPENPIV_CXX_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake)
 
+ 
 include(${OPENPIV_CXX_DIR}/cmake/utils.cmake)
 setup_vcpkg_before_project()
 
