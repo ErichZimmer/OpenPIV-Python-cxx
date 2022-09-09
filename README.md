@@ -1,4 +1,4 @@
-[![Windows](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_windows.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_windows.yml) [![Linux](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_linux.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_linux.yml)
+[![Windows](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_windows.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_windows.yml) [![Linux](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_linux.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_linux.yml) [![macOS](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_macos.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_macos.yml)
 
 # OpenPIV
 
