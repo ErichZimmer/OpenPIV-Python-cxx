@@ -12,7 +12,7 @@ if (WIN32)
            IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/_libs/openpivcore.dll
            IMPORTED_IMPLIB ${PROJECT_SOURCE_DIR}/_libs/openpivcore.lib
     )
-elseif (UNIX && APPLE)
+elseif (APPLE)
     set_target_properties(openpivcore
         PROPERTIES
            IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/_libs/libopenpivcore.dylib
@@ -23,7 +23,7 @@ elseif (UNIX)
            IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/_libs/libopenpivcore.so
     )
  else()
-     message( FATAL_ERROR "Could not locate openpivcore dynamic library.")
+     message( FATAL_ERROR "Could not determine OS.")
 endif()
 
 # include wrapper sources

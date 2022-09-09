@@ -31,13 +31,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt install pkg-config curl zip unzip tar
-          free -m
-          uname -a
-          df -h
-          ulimit -a
-          set -e -o pipefail
-          mkdir builds
-          cd builds
           
       - name: update submodules
         run: |
