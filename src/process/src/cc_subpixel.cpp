@@ -20,6 +20,7 @@
 
 using namespace openpiv;
 
+/*
 struct is_peak_struct{
     std::uint32_t h = 0;
     std::uint32_t w = 0;
@@ -84,6 +85,7 @@ core::peaks_t<core::g_f> find_peaks_brute(
     // result.resize(num_peaks);
     return result;
 }
+*/
 
 
 void process_cmatrix_2x3(
@@ -136,7 +138,7 @@ void process_cmatrix_2x3(
         );
 
         // find peaks
-        core::peaks_t<core::g_f> peaks = find_peaks_brute( corrCut, num_peaks, radius );
+        core::peaks_t<core::g_f> peaks = core::find_peaks( corrCut, num_peaks, radius );
 
         // sub-pixel fitting
         if ( peaks.size() != num_peaks )

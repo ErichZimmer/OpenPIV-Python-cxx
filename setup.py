@@ -17,7 +17,7 @@ def main():
     
     _libs_path = "_libs"
     if exists(_libs_path) != True:
-        print("Warning: could not locate _libs folder.\n" + 
+        print("Warning: could not locate _libs folder\n" + 
               "Creating _libs folder and libraries")
         
         mkdir(_libs_path)        
