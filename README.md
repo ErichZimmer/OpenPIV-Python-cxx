@@ -1,3 +1,5 @@
+[![Windows Build tests](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_windows.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_windows.yml)
+
 # OpenPIV
 
 OpenPIV consists of Python and c++ modules for scripting and executing the analysis of 
