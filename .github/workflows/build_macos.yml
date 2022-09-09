@@ -18,7 +18,7 @@ jobs:
     if: "github.repository == 'ErichZimmer/OpenPIV-Python-cxx' || github.repository == ''"
     runs-on: macos-latest
     strategy:
-      # max-parallel: 3
+      max-parallel: 1
       matrix:
         python-version: ["3.8"]
 
