@@ -18,6 +18,11 @@ jobs:
     if: "github.repository == 'ErichZimmer/OpenPIV-Python-cxx' || github.repository == ''"
     runs-on: ubuntu-18.04
     steps:
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
+          
       - uses: actions/checkout@v3
         with:
           submodules: recursive
