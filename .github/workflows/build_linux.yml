@@ -27,10 +27,10 @@ jobs:
         with:
           submodules: recursive
           
-      - name: Configuring Test Environment
-        run: |
-          sudo apt-get update
-          sudo apt install build-essential pkg-config curl zip unzip tar
+     # - name: Configuring Test Environment
+     #   run: |
+     #     sudo apt-get update
+     #     sudo apt install build-essential pkg-config curl zip unzip tar
           
       - name: Update Submodules
         run: |
