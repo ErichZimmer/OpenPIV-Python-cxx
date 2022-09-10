@@ -20,3 +20,10 @@ from ._correlation_based import *
 from ._vector_based import *
 
 __all__ = [s for s in dir() if not s.startswith('_')]
+
+
+###############################################################################
+#                   Aliases for compatability with OpenPIV-Python             #
+###############################################################################
+
+local_median_val = local_median

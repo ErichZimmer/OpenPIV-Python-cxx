@@ -45,18 +45,18 @@ py::array_t<double> fft_correlate_window_wrapper(
             np_img_b
         );
 
-    std::vector<std::uint32_t> field_shape(2);
-    field_shape[0] = static_cast<std::uint32_t>(np_img_a.shape(1));
-    field_shape[1] = static_cast<std::uint32_t>(np_img_a.shape(0));
+    std::vector<std::size_t> field_shape(2);
+    field_shape[0] = static_cast<std::size_t>(np_img_a.shape(1));
+    field_shape[1] = static_cast<std::size_t>(np_img_a.shape(0));
     
 
     // return 2-D NumPy array  
-    std::size_t                ndim   = 2;
-    std::vector<std::uint32_t> shape   = { field_shape[0], field_shape[1] };
-    std::vector<std::uint32_t> strides = {
-        sizeof(double)*field_shape[0] * field_shape[1], 
-        sizeof(double)*field_shape[1],
-        sizeof(double) 
+    std::size_t              ndim    = 2;
+    std::vector<std::size_t> shape   = { field_shape[0], field_shape[1] };
+    std::vector<std::size_t> strides = {
+        static_cast<std::size_t>(sizeof(double)) * field_shape[0] * field_shape[1], 
+        static_cast<std::size_t>(sizeof(double)) * field_shape[1],
+        static_cast<std::size_t>(sizeof(double))
     };
 
     // return 3-D NumPy array
@@ -109,16 +109,16 @@ py::array_t<double> fft_correlate_images_standard_wrapper( // big function name 
         );
 
     // return 3-D NumPy array  
-    std::uint32_t window_num = result.size() / (window_size * window_size);
-    std::uint32_t stride_3d = window_size * window_size;
-    std::uint32_t stride_2d = window_size;
+    std::size_t window_num = result.size() / (window_size * window_size);
+    std::size_t stride_3d = window_size * window_size;
+    std::size_t stride_2d = window_size;
 
-    std::size_t                ndim   = 3;
-    std::vector<std::uint32_t> shape   = { window_num, stride_2d, stride_2d };
-    std::vector<std::uint32_t> strides = {
-        sizeof(double)*stride_3d, 
-        sizeof(double)*stride_2d,
-        sizeof(double) 
+    std::size_t              ndim    = 3;
+    std::vector<std::size_t> shape   = { window_num, stride_2d, stride_2d };
+    std::vector<std::size_t> strides = {
+        static_cast<std::size_t>(sizeof(double))*stride_3d, 
+        static_cast<std::size_t>(sizeof(double))*stride_2d,
+        static_cast<std::size_t>(sizeof(double))
     };
 
     return py::array(py::buffer_info(
@@ -159,9 +159,9 @@ py::array_t<double> find_subpixel_wrapper(
     double* cmatrix_ptr = (double*) np_buff.ptr;
 
     // get result array pointer
-    std::vector<std::uint32_t> dims{
+    std::vector<std::size_t> dims{
         8,
-        static_cast<std::uint32_t>(np_buff.shape[0])
+        static_cast<std::size_t>(np_buff.shape[0])
     };
     py::array_t<double> py_result( maxStep * 8 );
 

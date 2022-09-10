@@ -4,7 +4,7 @@
 namespace constants
 {
     using imgDtype = float;
-    constexpr imgDtype PI = 22.0/7.0;
+    constexpr imgDtype PI = static_cast<imgDtype>(22.0/7.0);
 
 }
 

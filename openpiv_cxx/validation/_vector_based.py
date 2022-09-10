@@ -247,13 +247,10 @@ def local_difference(
         
     if buffer_v.dtype != "float64":
         buffer_v = buffer_v.astype("float64")
-    
-    ind = np.zeros(buffer_u.shape, dtype = int)
-    
-    _difference_test(
+        
+    ind = _difference_test(
         buffer_u,
         buffer_v,
-        ind,
         threshold
     )
     
@@ -353,13 +350,10 @@ def local_median(
         
     if buffer_v.dtype != "float64":
         buffer_v = buffer_v.astype("float64")
-    
-    ind = np.zeros(buffer_u.shape, dtype = int)
-    
-    _local_median_test(
+        
+    ind = _local_median_test(
         buffer_u,
         buffer_v,
-        ind,
         threshold,
         int(size),
         int(kernel_min_size)
@@ -464,13 +458,10 @@ def normalized_local_median(
         
     if buffer_v.dtype != "float64":
         buffer_v = buffer_v.astype("float64")
-    
-    ind = np.zeros(buffer_u.shape, dtype = int)
-    
-    _normalized_local_median_test(
+        
+    ind = _normalized_local_median_test(
         buffer_u,
         buffer_v,
-        ind,
         threshold,
         int(size),
         float(eps),
@@ -501,10 +492,3 @@ def normalized_local_median(
             mask[ind != 0] = 1
         
         return mask
-
-
-###############################################################################
-#                   Aliases for compatability with OpenPIV-Python             #
-###############################################################################
-
-local_median_val = local_median

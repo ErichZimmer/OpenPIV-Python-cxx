@@ -45,13 +45,13 @@ def build_openpivcore(
     elif system().lower() == "darwin":
         files = list(glob(
             normpath(
-                join(openpiv_cxx_dir, "build/out/*.dylib"))
+                join(openpiv_cxx_dir, "build/openpiv/*.dylib"))
         ))
         
     elif system().lower() == "linux":
         files = list(glob(
             normpath(
-                join(openpiv_cxx_dir, "build/out/*.so"))
+                join(openpiv_cxx_dir, "build/openpiv/*.so"))
         ))
     
     else:

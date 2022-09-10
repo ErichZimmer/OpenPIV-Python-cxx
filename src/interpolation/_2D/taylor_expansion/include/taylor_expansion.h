@@ -1,8 +1,9 @@
 #ifndef INTERP_TAYLOR_EXPANSION_GRIDDED
 #define INTERP_TAYLOR_EXPANSION_GRIDDED
 
-//std
+// std
 #include <cstdint>
+
 
 void taylor_expansion_k1_2D(
     const double*,
@@ -42,5 +43,6 @@ void taylor_expansion_k7_2D(
     std::uint32_t,
     std::uint32_t
 );
+
 
 #endif
