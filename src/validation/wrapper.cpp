@@ -1,11 +1,14 @@
+// std
 #include <cmath>
 #include <vector>
 #include <iomanip>
 
+// pybind
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 
+// validation
 #include "vector_based.h"
 
 using imgDtype = double;
@@ -19,18 +22,19 @@ namespace py = pybind11;
 py::object difference_test2D_wrapper(
     py::array_t<imgDtype> u,
     py::array_t<imgDtype> v,
-    py::array_t<int> mask,
     imgDtype threshold
 ){
     // check input dimensions
     if ( u.ndim() != 2 )
         throw std::runtime_error("Input should be 2-D NumPy array");
-    
+
+    int N = u.shape(0), M = u.shape(1);
+
+    py::array_t<int> mask( N*M );
+
     auto buf_u = u.request();
     auto buf_v = v.request();
     auto buf_m = mask.request();
-
-    int N = u.shape()[0], M = u.shape()[1];
 
     imgDtype* ptr_u  = (imgDtype*) buf_u.ptr;
     imgDtype* ptr_v  = (imgDtype*) buf_v.ptr;
@@ -44,14 +48,16 @@ py::object difference_test2D_wrapper(
         threshold,
         N, M
     );
-    return py::cast<py::none>(Py_None);
+
+    mask.resize( {N,M} );
+
+    return mask;
 }
 
 
 py::object local_median_wrapper(
     py::array_t<imgDtype> u,
     py::array_t<imgDtype> v,
-    py::array_t<int> mask,
     imgDtype threshold,
     int kernel_radius,
     int kernel_min_size
@@ -59,18 +65,20 @@ py::object local_median_wrapper(
     // check input dimensions
     if ( u.ndim() != 2 )
         throw std::runtime_error("Input should be 2-D NumPy array");
-    
+
     if ( kernel_radius < 1 )
         throw std::runtime_error("Kernel radius must be larger than 0");
-        
+
     if ( kernel_min_size < 1 )
         throw std::runtime_error("Kernel size flag must be larger than 0");
-        
+
+    int N = u.shape(0), M = u.shape(1);
+
+    py::array_t<int> mask( N*M );
+
     auto buf_u = u.request();
     auto buf_v = v.request();
     auto buf_m = mask.request();
-
-    int N = u.shape()[0], M = u.shape()[1];
 
     imgDtype* ptr_u      = (imgDtype*) buf_u.ptr;
     imgDtype* ptr_v      = (imgDtype*) buf_v.ptr;
@@ -87,14 +95,15 @@ py::object local_median_wrapper(
         kernel_min_size
     );
 
-    return py::cast<py::none>(Py_None);
+    mask.resize( {N,M} );
+
+    return mask;
 }
 
 
 py::object normalized_local_median_wrapper(
     py::array_t<imgDtype> u,
     py::array_t<imgDtype> v,
-    py::array_t<int> mask,
     imgDtype threshold,
     int kernel_radius,
     double eps,
@@ -103,18 +112,20 @@ py::object normalized_local_median_wrapper(
     // check input dimensions
     if ( u.ndim() != 2 )
         throw std::runtime_error("Input should be 2-D NumPy array");
-    
+
     if ( kernel_radius < 1 )
         throw std::runtime_error("Kernel radius must be larger than 0");
-        
+
     if ( kernel_min_size < 0 )
         throw std::runtime_error("Kernel size flag must be >= 0");
-        
+
+    int N = u.shape(0), M = u.shape(1);
+
+    py::array_t<int> mask( N*M );
+
     auto buf_u = u.request();
     auto buf_v = v.request();
     auto buf_m = mask.request();
-
-    int N = u.shape()[0], M = u.shape()[1];
 
     imgDtype* ptr_u      = (imgDtype*) buf_u.ptr;
     imgDtype* ptr_v      = (imgDtype*) buf_v.ptr;
@@ -132,7 +143,9 @@ py::object normalized_local_median_wrapper(
         kernel_min_size
     );
 
-    return py::cast<py::none>(Py_None);
+    mask.resize( {N,M} );
+
+    return mask;
 }
 
 
@@ -167,7 +180,6 @@ PYBIND11_MODULE(_validation, m) {
        "Test 8 points around a vector to see if it's invalid",
        py::arg("u"),
        py::arg("v"),
-       py::arg("mask"),
        py::arg("threshold") = 2.0
     );
 
@@ -176,7 +188,6 @@ PYBIND11_MODULE(_validation, m) {
        "Test 8 points around a vector to see if it's invalid",
        py::arg("u"),
        py::arg("v"),
-       py::arg("mask"),
        py::arg("threshold") = 2.0,
        py::arg("kernel_radius") = 1,
        py::arg("kernel_min_size") = 0
@@ -187,7 +198,6 @@ PYBIND11_MODULE(_validation, m) {
        "Test 8 points around a vector to see if it's invalid",
        py::arg("u"),
        py::arg("v"),
-       py::arg("mask"),
        py::arg("threshold") = 2.0,
        py::arg("kernel_radius") = 1,
        py::arg("eps") = 0.1,

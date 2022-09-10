@@ -105,14 +105,14 @@ void process_cmatrix_2x3(
         thread_count = static_cast<std::uint32_t>(threads);
 
     // allocate sections for results (couldn't pass list of arrays)
-    std::uint32_t U   = maxStep * 0;
-    std::uint32_t V   = maxStep * 1;
-    std::uint32_t PH  = maxStep * 2;
-    std::uint32_t P2P = maxStep * 3;
-    std::uint32_t U2  = maxStep * 4;
-    std::uint32_t V2  = maxStep * 5;
-    std::uint32_t U3  = maxStep * 6;
-    std::uint32_t V3  = maxStep * 7;
+    std::size_t U   = maxStep * 0;
+    std::size_t V   = maxStep * 1;
+    std::size_t PH  = maxStep * 2;
+    std::size_t P2P = maxStep * 3;
+    std::size_t U2  = maxStep * 4;
+    std::size_t V2  = maxStep * 5;
+    std::size_t U3  = maxStep * 6;
+    std::size_t V3  = maxStep * 7;
 
     auto processor = [
         cmatrix,
@@ -124,7 +124,7 @@ void process_cmatrix_2x3(
         &U2, &V2,
         &U3, &V3,
         return_type
-     ]( std::uint32_t step )
+     ]( std::size_t step )
     {
         uint16_t num_peaks = 3;
         constexpr uint16_t radius = 1;
@@ -186,17 +186,17 @@ void process_cmatrix_2x3(
     // - wrap each chunk into a processing for loop and push to thread
 
     // ensure we don't miss grid locations due to rounding
-    size_t chunk_size = maxStep/thread_count;
-    std::vector<size_t> chunk_sizes( thread_count, chunk_size );
+    std::size_t chunk_size = maxStep/thread_count;
+    std::vector<std::size_t> chunk_sizes( thread_count, chunk_size );
     chunk_sizes.back() = maxStep - (thread_count-1)*chunk_size;
 
 
-    std::uint32_t i = 0;
+    std::size_t i = 0;
     for ( const auto& chunk_size_ : chunk_sizes )
     {
         pool.enqueue(
             [i, chunk_size_, &processor]() {
-                for ( std::uint32_t j = i; j < i + chunk_size_; ++j )
+                for ( std::size_t j = i; j < i + chunk_size_; ++j )
                     processor(j);
             } );
         i += chunk_size_;

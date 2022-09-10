@@ -1,9 +1,12 @@
 #ifndef FILTER_H
 #define FILTER_H
 
+// std
 #include <vector>
 
+// utils
 #include "constants.h"
+
 
 using imgDtype = constants::imgDtype;
 
@@ -47,5 +50,6 @@ void local_variance_norm(
     imgDtype,
     bool
 );
+
 
 #endif

@@ -1,8 +1,9 @@
 #ifndef INTERP_WHITTAKER_GRIDDED
 #define INTERP_WHITTAKER_GRIDDED
 
-//std
+// std
 #include <cstdint>
+
 
 double sinc(
     double
@@ -18,5 +19,6 @@ void whittaker2D(
     uint32_t,
     int
 );
+
 
 #endif

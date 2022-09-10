@@ -31,12 +31,12 @@ py::array_t<imgDtype> gaussian_kernel_wrapper(
 
     auto GKernel = kernels::gaussian(kernel_size, sigma);
 
-    std::uint32_t kernel_t = static_cast<std::size_t>(kernel_size);
+    std::size_t kernel_t = static_cast<std::size_t>(kernel_size);
 
     // return 2-D NumPy array  
     std::size_t                ndim   = 2;
-    std::vector<std::uint32_t> shape   = { kernel_t, kernel_t };
-    std::vector<std::uint32_t> strides = {
+    std::vector<std::size_t> shape   = { kernel_t, kernel_t };
+    std::vector<std::size_t> strides = {
         sizeof(imgDtype)*kernel_t * kernel_t, 
         sizeof(imgDtype)*kernel_t,
         sizeof(imgDtype) 
@@ -79,7 +79,7 @@ py::array_t<imgDtype> intensity_cap_wrapper(
         std_mult
     );
 
-    result.resize({N,M});
+    result.resize( {N,M} );
 
     return result;
 }
@@ -111,7 +111,7 @@ py::array_t<imgDtype> intensity_binarize_wrapper(
         threshold
     );
 
-    result.resize({N,M});
+    result.resize( {N,M} );
 
     return result;
 }
@@ -153,7 +153,7 @@ py::array_t<imgDtype> low_pass_filter_wrapper(
       kernel_size
     );
 
-    result.resize({N,M});
+    result.resize( {N,M} );
 
     return result;
 }
@@ -197,7 +197,7 @@ py::array_t<imgDtype> high_pass_filter_wrapper(
         clip_at_zero
     );
 
-    result.resize({N,M});
+    result.resize( {N,M} );
 
     return result;
 }
@@ -240,7 +240,7 @@ py::array_t<imgDtype> local_variance_norm_wrapper(
         clip_at_zero
     );
 
-    result.resize({N,M});
+    result.resize( {N,M} );
 
     return result;
 }

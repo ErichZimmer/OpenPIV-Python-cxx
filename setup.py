@@ -4,6 +4,7 @@ from platform import system
 from glob import glob
 from os.path import join, exists
 from os import listdir, mkdir
+from shutil import rmtree
 
 from openpiv_cxx._build_utilities.vcpkg_get_triplet import return_cxx_triplet
 from openpiv_cxx._build_utilities.build_libs import build_openpivcore
@@ -22,6 +23,10 @@ def main():
         
         mkdir(_libs_path)        
         build_openpivcore(openpiv_cxx_dir, _libs_path)
+    
+    if exists("_skbuild") == True:
+        print("Found previous _skbuild build. Removing folder")
+        rmtree("_skbuild")
     
     python_min_version = 3.6
     

@@ -1,9 +1,8 @@
-#ifndef VECTOR_BASED_H
-#define VECTOR_BASED_H
-
-#include <cmath>
-#include <vector>
+// std
 #include <algorithm>
+
+// validation
+#include "vector_based.h"
 
 
 // check 8 points to see if vector in question has less than 50% of points invalid
@@ -224,9 +223,12 @@ void normalized_local_median_test(
             for (std::size_t ind = 0; ind < kernel_v.size(); ++ind)
                 kernel_v[ind] = std::abs(kernel_v[ind] - v_med);
             
+            u_res = median(kernel_u);
+            v_res = median(kernel_v);
+            
             // calculate normalized median
-            u_rm = std::abs(u_of_q - u_med) / (median(kernel_u) + eps);
-            v_rm = std::abs(v_of_q - v_med) / (median(kernel_v) + eps);
+            u_rm = std::abs(u_of_q - u_med) / (u_res + eps);
+            v_rm = std::abs(v_of_q - v_med) / (v_res + eps);
 
             if ( (kernel_u.size() > kernel_min_size) && (kernel_v.size() > kernel_min_size) )
             {
@@ -259,4 +261,3 @@ double test_median(
     }
     return median(arr2sort);
 }
-#endif
