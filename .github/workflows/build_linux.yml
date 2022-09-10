@@ -30,7 +30,7 @@ jobs:
       - name: Configuring Test Environment
         run: |
           sudo apt-get update
-          sudo apt install pkg-config curl zip unzip tar
+          sudo apt install build-essential pkg-config curl zip unzip tar
           
       - name: update submodules
         run: |
