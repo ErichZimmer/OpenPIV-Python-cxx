@@ -1,8 +1,8 @@
-| Platforms |
-| --------- |
-| [![Windows](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_windows.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_windows.yml) |
-| [![macOS](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_macos.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_macos.yml) |
-| [![Linux](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_linux.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_linux.yml) |
+| Platforms | Statistics |
+| --------- | ---------- |
+| [![Windows](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_windows.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_windows.yml) | ![License](https://img.shields.io/github/license/ErichZimmer/OpenPIV-Python-cxx) |
+| [![macOS](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_macos.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_macos.yml) | ![Issues](https://img.shields.io/github/issues/ErichZimmer/OpenPIV-Python-cxx) |
+| [![Linux](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_linux.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_linux.yml) | ![Stars](https://img.shields.io/github/stars/ErichZimmer/OpenPIV-Python-cxx) |
 
 # OpenPIV
 
