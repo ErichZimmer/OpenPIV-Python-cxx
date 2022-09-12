@@ -1,0 +1,8 @@
+setuptools
+scikit-build
+numpy
+<<<<<<< HEAD:requires.txt
+imageio
+=======
+scikit-build
+>>>>>>> 7973cd38658c68d1f13e5f240aa271df9cc349f5:requirements.txt
