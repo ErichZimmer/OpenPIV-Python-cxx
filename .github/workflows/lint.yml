@@ -4,9 +4,16 @@ on: [push, pull_request]
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - uses: psf/black@stable
+      - uses: actions/setup-python@v3
         with:
-          src: "./openpiv_cxx"
+          python-version: 3.8
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install black
+          
+      - run: |
+          black --check --verbose .
