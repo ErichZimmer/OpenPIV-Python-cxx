@@ -1,0 +1,57 @@
+name: codecov
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  build_and_test:
+    name: Code Coverage
+    # Ensure (a) this doesn't run on forks by default, and
+    #        (b) it does run with Act locally (`github` doesn't exist there)
+    if: "github.repository == 'ErichZimmer/OpenPIV-Python-cxx' || github.repository == ''"
+    runs-on: windows-2019
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
+          architecture: 'x64'
+          
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      - name: show-python-version
+        run: |
+          python --version
+          
+      - name: install-rtools
+        run: |
+          choco install rtools --no-progress
+          echo "c:\rtools40\ucrt64\bin;" >> $env:GITHUB_PATH
+          
+      - name: pip-packages
+        run: |
+          pip install numpy scikit-build cmake ninja imageio scipy matplotlib pytest
+          
+      - name: update submodules
+        run: |
+          git submodule update --init --recursive
+          
+      - name: scikit-build
+        run: |
+          python setup.py build_ext --inplace
+          
+      - name: test
+        run: |
+          pytest --cov openpiv_cxx
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
