@@ -16,4 +16,4 @@ jobs:
           pip install black
           
       - run: |
-          black --check --verbose .
+          black .
