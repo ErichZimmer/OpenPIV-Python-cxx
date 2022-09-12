@@ -40,7 +40,7 @@ jobs:
           
       - name: pip-packages
         run: |
-          pip install numpy scikit-build cmake ninja imageio scipy matplotlib pytest
+          pip install numpy scikit-build cmake ninja imageio scipy matplotlib pytest pytest-cov coverage pluggy
           
       - name: update submodules
         run: |
@@ -52,6 +52,6 @@ jobs:
           
       - name: test
         run: |
-          pytest --cov openpiv_cxx
+          pytest --cov .
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
