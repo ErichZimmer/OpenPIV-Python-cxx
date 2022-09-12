@@ -145,7 +145,6 @@ py::array_t<double> find_subpixel_wrapper(
 
     auto np_buff = np_cmatrix.request();
 
-
     std::uint32_t window_size_y = np_buff.shape[1];
     std::uint32_t window_size_x = np_buff.shape[2];
 

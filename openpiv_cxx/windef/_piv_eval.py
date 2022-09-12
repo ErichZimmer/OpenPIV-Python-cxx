@@ -6,26 +6,24 @@ from ._window_deformation import deform_windows, create_deformation_field
 from openpiv_cxx.input_checker import check_nd as _check
 
 
-__all__ = [
-    "first_pass",
-    "multipass_img_deform"
-]
+__all__ = ["first_pass", "multipass_img_deform"]
+
 
 def first_pass(
-    frame_a: ndarray, 
+    frame_a: ndarray,
     frame_b: ndarray,
     window_size: int = 32,
     overlap: int = 16,
-    correlation_method: str = "circular"
-) -> tuple( [[ndarray] * 5] ):
+    correlation_method: str = "circular",
+) -> tuple([[ndarray] * 5]):
     """Zero order PIV
-    
+
     First pass of the PIV evaluation.
     This function does the PIV evaluation of the first pass. It returns
     the coordinates of the interrogation window centres, the displacment
     u and v for each interrogation window as well as the mask which indicates
     wether the displacement vector was interpolated or not.
-    
+
     Parameters
     ----------
     frame_a : ndarray
@@ -38,7 +36,7 @@ def first_pass(
          The size of the interrogation window.
     overlap : int
         The overlap of the interrogation window, typically it is window_size/2.
-    
+
     Returns
     -------
     x, y : ndarray
@@ -47,41 +45,21 @@ def first_pass(
         Array containing the u/v displacement for every interrogation window.
     s2n : ndarray
         Array consisting of signal to noise ratio values.
-    
+
     """
-    _check(ndim = 2,
-        frame_a = frame_a,
-        frame_b = frame_b
-    )
-    
+    _check(ndim=2, frame_a=frame_a, frame_b=frame_b)
+
     cmatrix = piv_proc.fft_correlate_images(
-        frame_a,
-        frame_b,
-        window_size,
-        overlap,
-        correlation_method,
-        thread_count = 1
-    )
-    
-    field_shape = piv_proc.get_field_shape(
-            frame_a.shape,
-            window_size,
-            overlap
-        )
-    
-    u, v, peakHeight, s2n = piv_proc.correlation_to_displacement(
-        cmatrix,
-        field_shape[0],
-        field_shape[1],
-        limit_peak_search = False,
-        thread_count = 1
+        frame_a, frame_b, window_size, overlap, correlation_method, thread_count=1
     )
 
-    x, y = piv_proc.get_rect_coordinates(
-        frame_a.shape,
-        window_size,
-        overlap
+    field_shape = piv_proc.get_field_shape(frame_a.shape, window_size, overlap)
+
+    u, v, peakHeight, s2n = piv_proc.correlation_to_displacement(
+        cmatrix, field_shape[0], field_shape[1], limit_peak_search=False, thread_count=1
     )
+
+    x, y = piv_proc.get_rect_coordinates(frame_a.shape, window_size, overlap)
 
     return x, y, u, v, s2n
 
@@ -99,16 +77,16 @@ def multipass_img_deform(
     deformation_method: str = "symmetric",
     deformation_algorithm: str = "taylor expansions",
     order: int = 1,
-    radius: int = 2
-)-> tuple( [[ndarray] * 5] ):
+    radius: int = 2,
+) -> tuple([[ndarray] * 5]):
     """PIV with image deformation
-    
+
     Multi pass of the PIV evaluation.
     This function does the PIV evaluation of the second and other passes.
     It returns the coordinates of the interrogation window centres,
     the displacement u, v for each interrogation window as well as
     the signal to noise ratio array.
-    
+
     Parameters
     ----------
     frame_a : ndarray
@@ -140,7 +118,7 @@ def multipass_img_deform(
     order : scalar
         The order of the Taylor expansions interpolation kernel.
     radius : scalar
-        The radius of the Whittaker-Shannon interpolation kernel.   
+        The radius of the Whittaker-Shannon interpolation kernel.
 
     Returns
     -------
@@ -150,23 +128,20 @@ def multipass_img_deform(
         Array containing the u/v displacement for every interrogation window.
     s2n : ndarray
         Array consisting of signal to noise ratio values.
-    
+
     """
-    _check(ndim = 2,
-        frame_a = frame_a,
-        frame_b = frame_b,
-        x_old = x_old,
-        y_old = y_old,
-        u_old = u_old,
-        v_old = v_old
+    _check(
+        ndim=2,
+        frame_a=frame_a,
+        frame_b=frame_b,
+        x_old=x_old,
+        y_old=y_old,
+        u_old=u_old,
+        v_old=v_old,
     )
-    
-    x, y = piv_proc.get_rect_coordinates(
-        frame_a.shape,
-        window_size,
-        overlap
-    )
-    
+
+    x, y = piv_proc.get_rect_coordinates(frame_a.shape, window_size, overlap)
+
     # The interpolation function dont like meshgrids as input.
     # plus the coordinate system for y is now from top to bottom
     # and RectBivariateSpline wants an increasing set
@@ -180,41 +155,37 @@ def multipass_img_deform(
     # interpolating the displacements from the old grid onto the new grid
     # y befor x because of numpy works row major
     if isinstance(u_old, MaskedArray):
-        u_old = u_old.filled(0.)
-        v_old = v_old.filled(0.)
-        
+        u_old = u_old.filled(0.0)
+        v_old = v_old.filled(0.0)
+
     u_pre = bilinear2D(y_old, x_old, u_old, y_int, x_int)
     v_pre = bilinear2D(y_old, x_old, v_old, y_int, x_int)
-    
+
     if deformation_method == "symmetric":
         deform_order = 2
     elif deformation_method == "second image":
         deform_order = 1
     else:
-        raise ValueError(
-            f"Deformation method {deformation_method} not supported"
-        )
-    
+        raise ValueError(f"Deformation method {deformation_method} not supported")
+
     frame_a, frame_b = deform_windows(
-        frame_a.astype("float64"), # force the result to be float64
+        frame_a.astype("float64"),  # force the result to be float64
         frame_b.astype("float64"),
-        x, y, 
-        u_pre, v_pre,
-        order = order,
-        radius = radius,
-        deformation_method = deformation_algorithm,
-        deformation_order = deform_order
+        x,
+        y,
+        u_pre,
+        v_pre,
+        order=order,
+        radius=radius,
+        deformation_method=deformation_algorithm,
+        deformation_order=deform_order,
     )
-        
+
     x, y, u, v, s2n = first_pass(
-        frame_a,
-        frame_b,
-        window_size,
-        overlap,
-        correlation_method
+        frame_a, frame_b, window_size, overlap, correlation_method
     )
 
     u += u_pre
     v += v_pre
-    
+
     return x, y, u, v, s2n

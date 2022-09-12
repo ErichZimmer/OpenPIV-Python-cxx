@@ -45,6 +45,8 @@ void taylor_expansion_k1_2D(
             asy[0] = 0.5 - raty;
             asy[1] = 0.5 + raty;
 
+            out[i * M + j] = 0.0;
+
             for (int k = 0; k < 2; ++k)
             {
                 ixi = std::max(xn + k, 0);
@@ -102,6 +104,8 @@ void taylor_expansion_k3_2D(
 
             xn -= 1;
             yn -= 1;
+
+            out[i * M + j] = 0.0;
 
             for (int k = 0; k < 4; ++k)
             {
@@ -164,6 +168,8 @@ void taylor_expansion_k5_2D(
 
             xn -= 2;
             yn -= 2;
+
+            out[i * M + j] = 0.0;
 
             for (int k = 0; k < 6; ++k)
             {
@@ -230,6 +236,8 @@ void taylor_expansion_k7_2D(
 
             xn -= 3;
             yn -= 3;
+
+            out[i * M + j] = 0.0;
 
             for (int k = 0; k < 8; ++k)
             {

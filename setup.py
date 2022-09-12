@@ -40,7 +40,7 @@ def main():
     setup(
         name="OpenPIV-cxx",
         description="OpenPIV-Python with c++ backend",
-        version="0.2.0",
+        version="0.2.3",
         license="GPLv3",
         install_requires=req_dps, 
         python_requires=req_py,

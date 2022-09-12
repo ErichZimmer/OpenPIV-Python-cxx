@@ -27,6 +27,9 @@ py::object difference_test2D_wrapper(
     // check input dimensions
     if ( u.ndim() != 2 )
         throw std::runtime_error("Input should be 2-D NumPy array");
+        
+    if ( u.size() != v.size() )
+        throw std::runtime_error("Input sizes should be the same");
 
     int N = u.shape(0), M = u.shape(1);
 
@@ -65,6 +68,9 @@ py::object local_median_wrapper(
     // check input dimensions
     if ( u.ndim() != 2 )
         throw std::runtime_error("Input should be 2-D NumPy array");
+        
+    if ( u.size() != v.size() )
+        throw std::runtime_error("Input sizes should be the same");
 
     if ( kernel_radius < 1 )
         throw std::runtime_error("Kernel radius must be larger than 0");
@@ -112,6 +118,9 @@ py::object normalized_local_median_wrapper(
     // check input dimensions
     if ( u.ndim() != 2 )
         throw std::runtime_error("Input should be 2-D NumPy array");
+        
+    if ( u.size() != v.size() )
+        throw std::runtime_error("Input sizes should be the same");
 
     if ( kernel_radius < 1 )
         throw std::runtime_error("Kernel radius must be larger than 0");

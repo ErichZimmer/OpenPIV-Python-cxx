@@ -3,24 +3,18 @@ from openpiv_cxx.interpolate import bilinear2D, whittaker2D, taylor_expansion2D
 from openpiv_cxx.input_checker import check_nd as _check
 
 
-__all__ = [
-    "create_deformation_field",
-    "deform_windows"
-]
+__all__ = ["create_deformation_field", "deform_windows"]
+
 
 def create_deformation_field(
-    frame: ndarray, 
-    x: ndarray,
-    y: ndarray, 
-    u: ndarray, 
-    v: ndarray
-) -> tuple( [[ndarray] * 4] ):
-    """ Create a deformation field
-    
+    frame: ndarray, x: ndarray, y: ndarray, u: ndarray, v: ndarray
+) -> tuple([[ndarray] * 4]):
+    """Create a deformation field
+
     Deform an image by window deformation where a new grid is defined based
     on the grid and displacements of the previous pass and pixel values are
     interpolated onto the new grid.
-    
+
     Parameters
     ----------
     frame : ndarray
@@ -38,22 +32,18 @@ def create_deformation_field(
     v : ndarray
         A two dimensional array containing the v velocity component,
         in pixels/seconds.
-    
+
     Returns
     -------
         x, y : ndarray
             A new grid with same dimensions as frame
         u, v : ndarray
             Deformation field u/v components
-        
-        
+
+
     """
-    _check(ndim = 2,
-        frame = frame,
-        x = x, y = y,
-        u = u, v = v
-    )
-    
+    _check(ndim=2, frame=frame, x=x, y=y, u=u, v=v)
+
     y1 = y[:, 0]  # extract first coloumn from meshgrid
     x1 = x[0, :]  # extract first row from meshgrid
     side_x = arange(frame.shape[1])  # extract the image grid
@@ -71,24 +61,24 @@ def create_deformation_field(
 def deform_windows(
     frame_a: ndarray,
     frame_b: ndarray,
-    x: ndarray, 
-    y: ndarray, 
-    u: ndarray, 
-    v: ndarray, 
+    x: ndarray,
+    y: ndarray,
+    u: ndarray,
+    v: ndarray,
     deformation_method: str = "whittaker-shanon",
-    order: int  = 1,
+    order: int = 1,
     radius: int = 1,
-    deformation_order: int = 1
-) -> tuple( [ndarray, ndarray] ):
+    deformation_order: int = 1,
+) -> tuple([ndarray, ndarray]):
     """Deform images by interpolation
-    
+
     Deform an image pair by window deformation where a new grid is defined based
     on the grid and displacements of the previous pass and pixel values are
     interpolated onto the new grid. Currently, two deformation algorithms are
     implemented, Whittaker-Shanon (sinc) and Taylor expansions with finite
-    differences. Taylor expansions interpolation is usually much faster and 
+    differences. Taylor expansions interpolation is usually much faster and
     provides good results.
-    
+
     Parameters
     ----------
     frame_a : ndarray
@@ -118,72 +108,45 @@ def deform_windows(
     deformation_order : scalar
         Order of deformation to use where '1' deforms the second image
         and '2' deforms both image symetrically.
-    
+
     Returns
     -------
     frame_def_a, frame_def_b : ndarray
         Deformed images based on the meshgrid and displacements of the
         previous pass
-    
+
 
     """
-    _check(ndim = 2,
-        frame_a = frame_a,
-        frame_b = frame_b,
-        x = x, y = y,
-        u = u, v = v
-    )
-    
-    
+    _check(ndim=2, frame_a=frame_a, frame_b=frame_b, x=x, y=y, u=u, v=v)
+
     if deformation_order not in [1, 2]:
         raise ValueError(
-            f"Deformation order {deformation_order} not supported.\n" +
-             "Supported orders are 1 or 2"
+            f"Deformation order {deformation_order} not supported.\n"
+            + "Supported orders are 1 or 2"
         )
-    
-    
-    x_new, y_new, ut, vt = create_deformation_field(
-        frame_a,
-        x, y,
-        u, v
-    )
-    
+
+    x_new, y_new, ut, vt = create_deformation_field(frame_a, x, y, u, v)
+
     if deformation_method.lower() == "whittaker-shanon":
         deform_algo = whittaker2D
-        
+
     elif deformation_method.lower() == "taylor expansions":
         deform_algo = taylor_expansion2D
-        
+
     else:
         raise ValueError(
             f"Deformation method {deformation_method} not supported. \n\
              Supported algorithms are 'whittaker-shanon' and 'taylor expansions'"
         )
-    
-    
+
     if deformation_order == 1:
         frame_def_a = frame_a.copy()
 
-        frame_def_b = deform_algo(
-            frame_b, 
-            y_new - vt, 
-            x_new + ut, 
-            order
-        )
-    
+        frame_def_b = deform_algo(frame_b, y_new + vt, x_new + ut, order)
+
     else:
-        frame_def_a = deform_algo(
-            frame_a, 
-            y_new - vt / 2, 
-            x_new - ut / 2, 
-            order
-        )
-        
-        frame_def_b = deform_algo(
-            frame_b, 
-            y_new + vt / 2, 
-            x_new + ut / 2, 
-            order
-        )
+        frame_def_a = deform_algo(frame_a, y_new - vt / 2, x_new - ut / 2, order)
+
+        frame_def_b = deform_algo(frame_b, y_new + vt / 2, x_new + ut / 2, order)
 
     return frame_def_a, frame_def_b

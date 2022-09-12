@@ -2,8 +2,11 @@
 from typing import Optional
 from numpy import ndarray
 from openpiv_cxx.input_checker import check_nd as _check
-from ._validation import _difference_test, _local_median_test, \
-    _normalized_local_median_test
+from ._validation import (
+    _difference_test,
+    _local_median_test,
+    _normalized_local_median_test,
+)
 
 import numpy as np
 
@@ -24,11 +27,11 @@ __all__ = [
 
 def global_val(
     u: ndarray,
-    v: ndarray, 
-    u_thresholds: tuple( [float, float] ), 
-    v_thresholds: tuple( [float, float] ), 
+    v: ndarray,
+    u_thresholds: tuple([float, float]),
+    v_thresholds: tuple([float, float]),
     mask: Optional[ndarray] = None,
-    convention: str = "openpiv"
+    convention: str = "openpiv",
 ) -> ndarray:
     """Eliminate spurious vectors with a global threshold.
 
@@ -66,17 +69,19 @@ def global_val(
         is set to 'openpiv'.
     mask : ndarray
         A boolean or integer array where elemtents that = 0 are valid
-        and 1 = invalid. 
+        and 1 = invalid.
 
     """
-        
+
     np.warnings.filterwarnings("ignore")
 
+    _check(ndim=2, u=u, v=v)
+    
     ind = np.logical_or(
         np.logical_or(u < u_thresholds[0], u > u_thresholds[1]),
         np.logical_or(v < v_thresholds[0], v > v_thresholds[1]),
     )
-    
+
     if convention == "openpiv":
         u[ind] = np.nan
         v[ind] = np.nan
@@ -85,14 +90,14 @@ def global_val(
         mask[ind] = True
 
         return u, v, mask
-    
+
     else:
         if isinstance(mask, ndarray):
             mask[ind] = 1
         else:
             mask = np.zeros_like(u, dtype=int)
             mask[ind] = 1
-            
+
         return mask
 
 
@@ -100,8 +105,8 @@ def global_std(
     u: ndarray,
     v: ndarray,
     mask: Optional[ndarray] = None,
-    std_threshold: float = 3.0, 
-    convention: str = "openpiv"
+    std_threshold: float = 3.0,
+    convention: str = "openpiv",
 ) -> ndarray:
     """Eliminate spurious vectors with a global threshold defined by the
     standard deviation
@@ -137,15 +142,17 @@ def global_std(
         is set to 'openpiv'.
     mask : ndarray
         A boolean or integer array where elemtents that = 0 are valid
-        and 1 = invalid. 
+        and 1 = invalid.
 
     """
-        
-    # both previous nans and masked regions are not 
+
+    # both previous nans and masked regions are not
     # participating in the magnitude comparison
 
     # create nan filled arrays where masks
     # if u,v, are non-masked, ma.copy() adds false masks
+    
+    _check(ndim=2, u=u, v=v)
     
     if isinstance(u, np.ma.MaskedArray):
         tmpu = np.ma.copy(u).filled(np.nan)
@@ -154,11 +161,13 @@ def global_std(
         tmpu = np.copy(u)
         tmpv = np.copy(v)
 
-    ind = np.logical_or(np.abs(tmpu - np.nanmean(tmpu)) > std_threshold * np.nanstd(tmpu), 
-                        np.abs(tmpv - np.nanmean(tmpv)) > std_threshold * np.nanstd(tmpv))
+    ind = np.logical_or(
+        np.abs(tmpu - np.nanmean(tmpu)) > std_threshold * np.nanstd(tmpu),
+        np.abs(tmpv - np.nanmean(tmpv)) > std_threshold * np.nanstd(tmpv),
+    )
 
-    if np.all(ind): # if all is True, something is really wrong
-        print('Warning! probably a uniform shift data, do not use this filter')
+    if np.all(ind):  # if all is True, something is really wrong
+        print("Warning! probably a uniform shift data, do not use this filter")
         ind = ~ind
 
     if convention == "openpiv":
@@ -167,18 +176,18 @@ def global_std(
 
         mask = np.zeros_like(u, dtype=bool)
         mask[ind] = True
-        
+
         return u, v, mask
-    
+
     else:
         if isinstance(mask, ndarray):
             mask[ind] = 1
         else:
             mask = np.zeros_like(u, dtype=int)
             mask[ind] = 1
-        
+
         return mask
-    
+
 
 ##############################################################################
 #      These functions are implemented in c++ and wrapped with pybind11      #
@@ -189,8 +198,8 @@ def local_difference(
     u: ndarray,
     v: ndarray,
     mask: Optional[ndarray] = None,
-    threshold: float = 3.0, 
-    convention: str = "openpiv"
+    threshold: float = 3.0,
+    convention: str = "openpiv",
 ) -> ndarray:
     """Eliminate spurious vectors with a local threshold.
 
@@ -224,41 +233,29 @@ def local_difference(
         is set to 'openpiv'.
     mask : ndarray
         A boolean or integer array where elemtents that = 0 are valid
-        and 1 = invalid. 
+        and 1 = invalid.
 
     """
-    _check(ndim = 2,
-        u = u,
-        v = v
-    )
-    
+    _check(ndim=2, u=u, v=v)
+
     if isinstance(mask, ndarray):
-        _check(ndim = 2,
-            mask = mask
-        )
-    
+        _check(ndim=2, mask=mask)
+
     # pad array by kernel half size
-    buffer_u = np.pad(u, 1, mode = "constant", constant_values = np.nan)
-    buffer_v = np.pad(v, 1, mode = "constant", constant_values = np.nan)
-    
+    buffer_u = np.pad(u, 1, mode="constant", constant_values=np.nan)
+    buffer_v = np.pad(v, 1, mode="constant", constant_values=np.nan)
+
     # make sure array is float64
     if buffer_u.dtype != "float64":
         buffer_u = buffer_u.astype("float64")
-        
+
     if buffer_v.dtype != "float64":
         buffer_v = buffer_v.astype("float64")
-        
-    ind = _difference_test(
-        buffer_u,
-        buffer_v,
-        threshold
-    )
-    
-    slices = (
-        slice(1, ind.shape[0]-1),
-        slice(1, ind.shape[1]-1)
-    )
-    
+
+    ind = _difference_test(buffer_u, buffer_v, threshold)
+
+    slices = (slice(1, ind.shape[0] - 1), slice(1, ind.shape[1] - 1))
+
     ind = ind[slices]
 
     if convention == "openpiv":
@@ -269,26 +266,26 @@ def local_difference(
         mask[ind != 0] = True
 
         return u, v, mask
-    
+
     else:
         if isinstance(mask, ndarray):
             mask[ind != 0] = 1
         else:
             mask = np.zeros_like(u, dtype=int)
             mask[ind != 0] = 1
-        
+
         return mask
-    
+
 
 def local_median(
     u: ndarray,
     v: ndarray,
     mask: Optional[ndarray] = None,
-    threshold: float = 3.0, 
-    threshold_dummy: Optional[float] = None, # used only for compatability
+    threshold: float = 3.0,
+    threshold_dummy: Optional[float] = None,  # used only for compatability
     size: int = 2,
     kernel_min_size: int = 1,
-    convention: str = "openpiv"
+    convention: str = "openpiv",
 ) -> ndarray:
     """Eliminate spurious vectors with a local median threshold.
 
@@ -327,45 +324,33 @@ def local_median(
         is set to 'openpiv'.
     mask : ndarray
         A boolean or integer array where elemtents that = 0 are valid
-        and 1 = invalid. 
+        and 1 = invalid.
 
     """
-    _check(ndim = 2,
-        u = u,
-        v = v
-    )
-    
+    _check(ndim=2, u=u, v=v)
+
     if isinstance(mask, ndarray):
-        _check(ndim = 2,
-            mask = mask
-        )
-        
+        _check(ndim=2, mask=mask)
+
     # pad array by kernel half size
-    buffer_u = np.pad(u, size, mode = "constant", constant_values = np.nan)
-    buffer_v = np.pad(v, size, mode = "constant", constant_values = np.nan)
-    
+    buffer_u = np.pad(u, size, mode="constant", constant_values=np.nan)
+    buffer_v = np.pad(v, size, mode="constant", constant_values=np.nan)
+
     # make sure array is float64
     if buffer_u.dtype != "float64":
         buffer_u = buffer_u.astype("float64")
-        
+
     if buffer_v.dtype != "float64":
         buffer_v = buffer_v.astype("float64")
-        
+
     ind = _local_median_test(
-        buffer_u,
-        buffer_v,
-        threshold,
-        int(size),
-        int(kernel_min_size)
+        buffer_u, buffer_v, threshold, int(size), int(kernel_min_size)
     )
-    
-    slices = (
-        slice(size, ind.shape[0]-size),
-        slice(size, ind.shape[1]-size)
-    )
-    
+
+    slices = (slice(size, ind.shape[0] - size), slice(size, ind.shape[1] - size))
+
     ind = ind[slices]
-    
+
     if convention == "openpiv":
         u[ind != 0] = np.nan
         v[ind != 0] = np.nan
@@ -374,27 +359,27 @@ def local_median(
         mask[ind != 0] = True
 
         return u, v, mask
-    
+
     else:
         if isinstance(mask, ndarray):
             mask[ind != 0] = 1
         else:
             mask = np.zeros_like(u, dtype=int)
             mask[ind != 0] = 1
-        
+
         return mask
-    
+
 
 def normalized_local_median(
     u: ndarray,
     v: ndarray,
     mask: Optional[ndarray] = None,
-    threshold: float = 3.0, 
-    threshold_dummy: Optional[float] = None, # used only for compatability
+    threshold: float = 3.0,
+    threshold_dummy: Optional[float] = None,  # used only for compatability
     size: int = 2,
     kernel_min_size: int = 1,
     eps: float = 0.1,
-    convention: str = "openpiv"
+    convention: str = "openpiv",
 ) -> ndarray:
     """Eliminate spurious vectors with a local normalized median threshold.
 
@@ -435,46 +420,33 @@ def normalized_local_median(
         is set to 'openpiv'.
     mask : ndarray
         A boolean or integer array where elemtents that = 0 are valid
-        and 1 = invalid. 
+        and 1 = invalid.
 
     """
-    _check(ndim = 2,
-        u = u,
-        v = v
-    )
-    
+    _check(ndim=2, u=u, v=v)
+
     if isinstance(mask, ndarray):
-        _check(ndim = 2,
-            mask = mask
-        )
-        
+        _check(ndim=2, mask=mask)
+
     # pad array by kernel half size
-    buffer_u = np.pad(u, size, mode = "constant", constant_values = np.nan)
-    buffer_v = np.pad(v, size, mode = "constant", constant_values = np.nan)
-    
+    buffer_u = np.pad(u, size, mode="constant", constant_values=np.nan)
+    buffer_v = np.pad(v, size, mode="constant", constant_values=np.nan)
+
     # make sure array is float64
     if buffer_u.dtype != "float64":
         buffer_u = buffer_u.astype("float64")
-        
+
     if buffer_v.dtype != "float64":
         buffer_v = buffer_v.astype("float64")
-        
+
     ind = _normalized_local_median_test(
-        buffer_u,
-        buffer_v,
-        threshold,
-        int(size),
-        float(eps),
-        int(kernel_min_size)
+        buffer_u, buffer_v, threshold, int(size), float(eps), int(kernel_min_size)
     )
-    
-    slices = (
-        slice(size, ind.shape[0]-size),
-        slice(size, ind.shape[1]-size)
-    )
-    
+
+    slices = (slice(size, ind.shape[0] - size), slice(size, ind.shape[1] - size))
+
     ind = ind[slices]
-    
+
     if convention == "openpiv":
         u[ind != 0] = np.nan
         v[ind != 0] = np.nan
@@ -483,12 +455,12 @@ def normalized_local_median(
         mask[ind != 0] = True
 
         return u, v, mask
-    
+
     else:
         if isinstance(mask, ndarray):
             mask[ind != 0] = 1
         else:
             mask = np.zeros_like(u, dtype=int)
             mask[ind != 0] = 1
-        
+
         return mask

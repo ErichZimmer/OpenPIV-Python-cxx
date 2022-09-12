@@ -24,5 +24,5 @@ __all__ = [
     "create_deformation_field",
     "deform_windows",
     "first_pass",
-    "multipass_img_deform"
+    "multipass_img_deform",
 ]

@@ -11,15 +11,12 @@ Smoothing Filters
 
 try:
     import scipy
+
     del scipy
-    
+
     # scipy was found
     from ._smoothn import smoothn
 except ImportError:
-    raise ImportError(
-        "Could not import scipy as package is not found"
-    )
+    raise ImportError("Could not import scipy as package is not found")
 
-__all__ = [
-    "smoothn"
-]
+__all__ = ["smoothn"]

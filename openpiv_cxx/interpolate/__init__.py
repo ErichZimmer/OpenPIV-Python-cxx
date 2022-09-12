@@ -16,4 +16,4 @@ Gridded 2D Mapping
 from ._interpolate import *
 from ._mapping import *
 
-__all__ = [s for s in dir() if not s.startswith('_')]
+__all__ = [s for s in dir() if not s.startswith("_")]

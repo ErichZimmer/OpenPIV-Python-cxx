@@ -3,60 +3,50 @@ from imageio import imread as _imread, imsave as _imsave
 
 import numpy as np
 
-__all__ = [
-    "imread",
-    "imsave",
-    "negative",
-    "rgb2gray"
-]
+__all__ = ["imread", "imsave", "negative", "rgb2gray"]
 
-    
-def rgb2gray(
-    rgb: ndarray
-) -> ndarray:
+
+def rgb2gray(rgb: ndarray) -> ndarray:
     """Convert RGB to grayscale
-    
+
     Parameters
     ----------
     rgb : ndarray
         2D RGB image
-    
+
     Returns
     -------
-    
+
     img : ndarray
         2D grayscale image
-    
+
     """
     return np.dot(rgb[..., :3], [0.299, 0.587, 0.144])
 
 
-def imread(
-    filename: str, 
-    flatten: bool = False
-) -> ndarray:
+def imread(filename: str, flatten: bool = False) -> ndarray:
     """Read an image
-    
+
     Read an image file into a numpy array using imageio.imread.
-    
+
     Parameters
     ----------
     filename : str
         The absolute path of the image file.
     flatten :  bool
         True if the image is RGB color or False (default) if greyscale.
-        
+
     Returns
     -------
     frame : ndarray
         A 2-dimensional numpy array with grey levels.
-        
+
     Examples
     --------
     >>> image = openpiv_cxx.tools.imread( 'image.bmp' )
-    >>> print image.shape 
+    >>> print image.shape
         (1280, 1024)
-    
+
     """
     im = _imread(filename)
     if np.ndim(im) > 2:
@@ -65,22 +55,19 @@ def imread(
     return im
 
 
-def imsave(
-    filename: str,
-    arr: ndarray
-) -> None:
-    """ Write an image.
-    
+def imsave(filename: str, arr: ndarray) -> None:
+    """Write an image.
+
     Write an 8-bit image file from a numpy array using imageio.imread
-    
+
     Parameters
     ----------
     filename :  string
         The absolute path of the image file that will be created.
-        
+
     arr : ndarray
         A 2D numpy array with grey levels.
-    
+
     """
 
     if np.ndim(arr) > 2:
@@ -97,18 +84,16 @@ def imsave(
         _imsave(filename, arr, format="TIFF")
     else:
         _imsave(filename, arr)
-    
-    
-def negative(
-    image: ndarray
-) -> ndarray:
+
+
+def negative(image: ndarray) -> ndarray:
     """Return the negative of an 8-bit image
-    
+
     Parameter
     ----------
     image : ndarray
         2D array of grey levels.
-        
+
     Returns
     -------
     (255-image) : 2D array of grey levels.

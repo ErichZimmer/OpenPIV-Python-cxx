@@ -19,7 +19,7 @@ Vector-Based
 from ._correlation_based import *
 from ._vector_based import *
 
-__all__ = [s for s in dir() if not s.startswith('_')]
+__all__ = [s for s in dir() if not s.startswith("_")]
 
 
 ###############################################################################

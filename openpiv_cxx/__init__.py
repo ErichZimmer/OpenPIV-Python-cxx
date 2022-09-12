@@ -22,16 +22,15 @@ except ImportError as e:
     msg = """Error importing openpiv_cxx: you cannot import openpiv_cxx while
     being in openpiv_cxx source directory. Please exit out of openpiv_cxx resources
     and relaunch your Python interpreter."""
-    raise ImportError(msg) from e;
-    
+    raise ImportError(msg) from e
+
 submodules = [
     "interpolate",
-    "preprocess"
-    "process",
+    "preprocess" "process",
     "smooth",
     "tools",
     "validation",
-    "windef"
+    "windef",
 ]
 
 __all__ = submodules
@@ -40,7 +39,9 @@ __all__ = submodules
 def __dir__():
     return __all__
 
+
 import importlib as _importlib
+
 
 def __gatattr__(name):
     if name in submodules:
@@ -49,6 +50,4 @@ def __gatattr__(name):
         try:
             return globals()[name]
         except KeyError:
-            raise AttributeError(
-                f"Module 'openpic_cxx' has no attribue '{name}'"
-            )
+            raise AttributeError(f"Module 'openpic_cxx' has no attribue '{name}'")

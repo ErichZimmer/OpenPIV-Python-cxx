@@ -59,6 +59,8 @@ void whittaker2D(
 
 //            std::cout << i0 << ' ' << i1 << ' ' << j0 << ' ' << j1 << '\n';
 
+            out[i * M + j] = 0.0;
+
             for (int k = i0; k <= i1; ++k)
             {
                 dx = double(k) - bx;
@@ -71,7 +73,7 @@ void whittaker2D(
                     dy = double(h) - by;
                     sy = sinc(dy);
 
-                    out[ i * M + j] += Z[k * M + h] * sx * sy;
+                    out[i * M + j] += Z[k * M + h] * sx * sy;
                 }
             }
         }

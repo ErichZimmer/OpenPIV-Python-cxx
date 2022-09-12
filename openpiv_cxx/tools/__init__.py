@@ -23,4 +23,4 @@ Vector Tools
 from ._image_tools import *
 from ._vector_tools import *
 
-__all__ = [s for s in dir() if not s.startswith('_')]
+__all__ = [s for s in dir() if not s.startswith("_")]
