@@ -1,3 +1,4 @@
 setuptools
-numpy
 scikit-build
+numpy
+imageio
