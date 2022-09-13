@@ -18,8 +18,7 @@ def build_openpivcore(openpiv_cxx_dir: str, _libs_dir: str) -> None:
 
         build_args = ["cmake", "--build", "build"]
 
-        if system().lower() == "windows":
-            build_args += ["--config", "Release"]
+        build_args += ["--clean-first", "--config", "Release"]
 
         # build openpivcore
         subprocess.check_call(cmake_args, cwd=openpiv_cxx_dir)
