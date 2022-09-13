@@ -12,7 +12,7 @@ from openpiv_cxx._build_utilities.build_libs import build_openpivcore
 import pathlib
 
 def main():
-    current_full_path = ""
+    current_full_path = pathlib.Path().absolute()
     external_dir = join(current_full_path, "extern")
     openpiv_cxx_dir = join(external_dir, "openpiv-c--qt")
     
@@ -40,7 +40,7 @@ def main():
     setup(
         name="OpenPIV-cxx",
         description="OpenPIV-Python with c++ backend",
-        version="0.2.3",
+        version="0.2.0",
         license="GPLv3",
         install_requires=req_dps, 
         python_requires=req_py,
