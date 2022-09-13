@@ -17,14 +17,15 @@ def build_openpivcore(
         if system().lower() == "windows":
             openpiv_cxx_dir = openpiv_cxx_dir.replace('\\', '/')
             
-        cmake_args = ["cmake", "-S .", "-B build",
-                      "-DCMAKE_BUILD_TYPE=Release"]
+        cmake_args = ["cmake", "-B build", "-S .",
+                      "-DCMAKE_BUILD_TYPE=Release",
+                     "--trace-expand"]
         
         build_args = ["cmake",
-                      "--build", "build"]
-        
-        if system().lower() == "windows":
-            build_args += ["--config", "Release"]
+                      "--build", "build",
+                     "--clean-first",
+                     "--config" "Release"]
+     
         
         # build openpivcore
         subprocess.check_call(cmake_args, cwd = openpiv_cxx_dir)
