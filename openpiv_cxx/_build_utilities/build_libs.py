@@ -14,7 +14,7 @@ def build_openpivcore(openpiv_cxx_dir: str, _libs_dir: str) -> None:
         if system().lower() == "windows":
             openpiv_cxx_dir = openpiv_cxx_dir.replace("\\", "/")
 
-        cmake_args = ["cmake", "-S .", "-B build", "-DCMAKE_BUILD_TYPE=Release"]
+        cmake_args = ["cmake","-B build", "-S .", "-DCMAKE_BUILD_TYPE=Release"]
 
         build_args = ["cmake", "--build", "build"]
 
