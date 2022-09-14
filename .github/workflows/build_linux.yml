@@ -42,4 +42,5 @@ jobs:
           pip install numpy scikit-build cmake ninja imageio pytest
           
       - name: scikit-build
+        working-directory: ${{github.workspace}}
         run: python setup.py install
