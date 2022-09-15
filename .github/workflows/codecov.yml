@@ -51,8 +51,9 @@ jobs:
           python setup.py build_ext --inplace
           
       - name: test
+        working-directory: ${{github.workspace}}/tests
         run: |
-          pytest --cov=${{github.workspace}}/tests
+          pytest
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
