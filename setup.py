@@ -1,7 +1,4 @@
 from skbuild import setup
-from setuptools import find_packages
-from platform import system
-from glob import glob
 from os.path import join, exists, normpath
 from os import listdir, mkdir
 from shutil import rmtree
@@ -9,10 +6,8 @@ from shutil import rmtree
 from openpiv_cxx._build_utilities.vcpkg_get_triplet import return_cxx_triplet
 from openpiv_cxx._build_utilities.build_libs import build_openpivcore
 
-import pathlib
-
 def main():
-    current_full_path = pathlib.Path().absolute()
+    current_full_path = ""
     external_dir = join(current_full_path, "extern")
     openpiv_cxx_dir = join(external_dir, "openpiv-c--qt")
     
@@ -36,6 +31,9 @@ def main():
         'pytest'
     ]
     req_py = ">={}".format(python_min_version)
+    
+    return_cxx_triplet(openpiv_cxx_dir)
+    raise Excpetion("Terminatingn process")
     
     setup(
         name="OpenPIV-cxx",
