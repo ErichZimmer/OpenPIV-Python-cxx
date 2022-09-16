@@ -158,8 +158,8 @@ def multipass_img_deform(
         u_old = u_old.filled(0.0)
         v_old = v_old.filled(0.0)
 
-    u_pre = bilinear2D(y_old, x_old, u_old, y_int, x_int)
-    v_pre = bilinear2D(y_old, x_old, v_old, y_int, x_int)
+    u_pre = bilinear2D(x_old, y_old, u_old, x_int, y_int)
+    v_pre = bilinear2D(x_old, y_old, v_old, x_int, y_int)
 
     if deformation_method == "symmetric":
         deform_order = 2

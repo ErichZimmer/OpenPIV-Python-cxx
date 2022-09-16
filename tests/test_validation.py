@@ -22,10 +22,15 @@ def sample_vec_field(
     # create velocity field
     u = np.ones(x.shape).astype(float) * 2
     v = np.ones(x.shape).astype(float) * 2
+    
+    noise = np.random.rand(u.shape[0], u.shape[1]).astype(float) / 2.0
 
+    u += noise
+    v += noise
+    
     # create outlier
-    u[int(field_size[0] / 3), int(field_size[1] / 3)] = -4.0
-    v[int(field_size[0] / 3), int(field_size[1] / 3)] = -4.0
+    u[int(field_size[0] / 3), int(field_size[1] / 3)] = -5.0
+    v[int(field_size[0] / 3), int(field_size[1] / 3)] = -5.0
     
     return u, v, s2n
 
@@ -105,7 +110,6 @@ def test_std_val() -> None:
         convention = "!openpiv"
     )
     
-    
     assert res[invalid_ind[0], invalid_ind[1]] == 1
     assert np.count_nonzero(res) == 1
     
@@ -130,6 +134,14 @@ def test_difference_val_wrong_inputs() -> None:
             np.random.rand(32, 38),
             convention = "!openpiv"
         )
+        
+        # threshold less than zero
+        res = validation.local_difference(
+            u,
+            v,
+            convention = "!openpiv",
+            theshold = 0
+        )
     
     
 # The validation works according to notebooks, but not here. Why?
@@ -141,7 +153,7 @@ def test_difference_val_wrong_inputs() -> None:
 #    res = validation.local_difference(
 #        u,
 #        v,
-#        1.2,
+#        2.0,
 #        convention = "!openpiv"
 #    )
 #    
@@ -186,6 +198,14 @@ def test_local_median_wrong_inputs() -> None:
             kernel_min_size = 0,
             convention = "!openpiv"
         )
+        
+        # threshold less than zero
+        res = validation.local_median(
+            u,
+            v,
+            convention = "!openpiv",
+            theshold = 0
+        )
     
 # The validation works according to notebooks, but not here. Why?
 #def test_local_median_vali() -> None:
@@ -196,7 +216,7 @@ def test_local_median_wrong_inputs() -> None:
 #    res = validation.local_median(
 #        u,
 #        v,
-#        1.2,
+#        2.0,
 #        convention = "!openpiv"
 #    )
 #    
@@ -241,6 +261,14 @@ def test_narmalized_local_median_wrong_inputs() -> None:
             kernel_min_size = 0,
             convention = "!openpiv"
         )
+        
+        # threshold less than zero
+        res = validation.normalized_local_median(
+            u,
+            v,
+            convention = "!openpiv",
+            theshold = 0
+        )
     
 
 # The validation works according to notebooks, but not here. Why?
@@ -252,7 +280,7 @@ def test_narmalized_local_median_wrong_inputs() -> None:
 #    res = validation.normalized_local_median(
 #        u,
 #        v,
-#        1.2,
+#        2.0,
 #        convention = "!openpiv"
 #    )
 #    

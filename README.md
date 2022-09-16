@@ -6,13 +6,13 @@
 
 # OpenPIV
 
-OpenPIV consists of Python and c++ modules for scripting and executing the analysis of 
+OpenPIV consists of Python modules for scripting and executing the analysis of 
 a set of PIV image pairs. 
 
 ## Warning
 
 The OpenPIV Python-c++ version is still in its *developmental* state. This means that there
-is a lot of bugs and the API may change. 
+are a few bugs and the API may change. 
 
 ## Building from source
 ### Setup environment
@@ -20,9 +20,9 @@ To build the package, first you need to satisfy the requirements for vcpkg. Here
  + a compiler (e.g. MSVC 2019 or on UNIX, apt install build-essentials)
  + cmake
  + git (could be installed with conda or pip)
- + (linux) pkg-config (apt install pkg-config)
+ + (UNIX) pkg-config (apt install pkg-config)
  + (UNIX) curl, zip, unzip, tar (apt install curl, zip, unzip, tar)
- + (non-Windows) ninja (apt install ninja-build)
+ + (UNIX) ninja (apt install ninja-build)
 
 Next, dowload and install a python environment manager, such as miniconda. Setup a virtual environment and activate it  (with conda, use `conda create --name <env name> python=3.8`). You can now install git through conda or pip (unless you want to install it differently). When using git to clone this repository, you must clone it recursively due to third-party packages used in this repository. So when cloning, use `git clone --recursive https://github.com/ErichZimmer/OpenPIV-Python-cxx.git`.
 
@@ -31,9 +31,9 @@ When building this package, set your current directory to this package in the te
 
 ### Optional dependencies
 To further increase accuracy and performance, some functions utilize extra third-party packages. For instance, the smoothing algorithm implented by references 1 and 2 use SciPy minimization functions. Here are some optional, but not needed dependencies:
- - scipy and pylab : all-in-one post processing algorithm (smoothn)
+ - scipy : all-in-one post processing algorithm (smoothn) and processing of data
  - scikit-image : addditional image pre-processing
- - matplotlib  : data visualization and publication ready plots
+ - matplotlib  : data visualization and creation of publication-ready plots
  - pandas : data visualization and analysis 
  - ffmpeg : loading and creating movies
  - openpiv_tk_gui : GUI for OpenPIV-Python (currently needs some modifications for this repository)
@@ -54,8 +54,9 @@ Find the [detailed documentation on readthedocs.io](https://openpiv-python-cxx.r
  - [ ] Image dewarping and transformations
  - [ ] spatial correlation (direct cross-correlation)
  - [ ] 5 point gaussian subpixel approximation
- - [ ] 2D 3x3 gaussian subpixel approximation 
+ - [ ] 2D 3x3 least squares gaussian subpixel approximation 
  - [ ] 3D PIV?
+ - [ ] PIV guided PTV?
  - [ ] transcribe repository to numba and pythran
 
 ## Contributors

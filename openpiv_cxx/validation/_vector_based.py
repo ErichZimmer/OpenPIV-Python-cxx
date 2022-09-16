@@ -198,7 +198,9 @@ def local_difference(
     u: ndarray,
     v: ndarray,
     mask: Optional[ndarray] = None,
-    threshold: float = 3.0,
+    threshold_u: float = 3.0,
+    threshold_v: float = 3.0,
+    threshold: Optional[float] = None,
     convention: str = "openpiv",
 ) -> ndarray:
     """Eliminate spurious vectors with a local threshold.
@@ -216,8 +218,12 @@ def local_difference(
         A two dimensional array containing the v velocity component.
     mask : ndarray, optional
         A two dimensional array containing the flags for invalid vectors.
-    threshold: float
-        Threshold for u and v component.
+    threshold_u: float
+        Threshold for u component.
+    threshold_v: float
+        Threshold for v component.
+    threshold: float, optional
+        Set thresholds for both u and v components.
     convention: str
         Which flag convention to use.
 
@@ -240,8 +246,11 @@ def local_difference(
 
     if isinstance(mask, ndarray):
         _check(ndim=2, mask=mask)
+    
+    if threshold != None:
+        threshold_u = threshold_v = threshold
 
-    # pad array by kernel half size
+    # pad array by kernel half size (kernel size is 3x3)
     buffer_u = np.pad(u, 1, mode="constant", constant_values=np.nan)
     buffer_v = np.pad(v, 1, mode="constant", constant_values=np.nan)
 
@@ -252,7 +261,7 @@ def local_difference(
     if buffer_v.dtype != "float64":
         buffer_v = buffer_v.astype("float64")
 
-    ind = _difference_test(buffer_u, buffer_v, threshold)
+    ind = _difference_test(buffer_u, buffer_v, float(threshold_u), float(threshold_v))
 
     slices = (slice(1, ind.shape[0] - 1), slice(1, ind.shape[1] - 1))
 
@@ -281,8 +290,9 @@ def local_median(
     u: ndarray,
     v: ndarray,
     mask: Optional[ndarray] = None,
-    threshold: float = 3.0,
-    threshold_dummy: Optional[float] = None,  # used only for compatability
+    threshold_u: float = 3.0,
+    threshold_v: float = 3.0,
+    threshold: Optional[float] = None,
     size: int = 2,
     kernel_min_size: int = 1,
     convention: str = "openpiv",
@@ -302,8 +312,12 @@ def local_median(
         A two dimensional array containing the v velocity component.
     mask : ndarray, optional
         A two dimensional array containing the flags for invalid vectors.
-    threshold: float
-        Threshold for u and v component.
+    threshold_u: float
+        Threshold for u component.
+    threshold_v: float
+        Threshold for v component.
+    threshold: float, optional
+        Set thresholds for both u and v components.
     size : int
         The radius of the median kernel.
     kernel_min_size : int
@@ -332,6 +346,9 @@ def local_median(
     if isinstance(mask, ndarray):
         _check(ndim=2, mask=mask)
 
+    if threshold != None:
+        threshold_u = threshold_v = threshold
+        
     # pad array by kernel half size
     buffer_u = np.pad(u, size, mode="constant", constant_values=np.nan)
     buffer_v = np.pad(v, size, mode="constant", constant_values=np.nan)
@@ -344,7 +361,7 @@ def local_median(
         buffer_v = buffer_v.astype("float64")
 
     ind = _local_median_test(
-        buffer_u, buffer_v, threshold, int(size), int(kernel_min_size)
+        buffer_u, buffer_v, threshold_u, threshold_v, int(size), int(kernel_min_size)
     )
 
     slices = (slice(size, ind.shape[0] - size), slice(size, ind.shape[1] - size))
@@ -374,8 +391,9 @@ def normalized_local_median(
     u: ndarray,
     v: ndarray,
     mask: Optional[ndarray] = None,
-    threshold: float = 3.0,
-    threshold_dummy: Optional[float] = None,  # used only for compatability
+    threshold_u: float = 3.0,
+    threshold_v: float = 3.0,
+    threshold: Optional[float] = None,
     size: int = 2,
     kernel_min_size: int = 1,
     eps: float = 0.1,
@@ -396,8 +414,12 @@ def normalized_local_median(
         A two dimensional array containing the v velocity component.
     mask : ndarray, optional
         A two dimensional array containing the flags for invalid vectors.
-    threshold: float
-        Threshold for u and v component.
+    threshold_u: float
+        Threshold for u component.
+    threshold_v: float
+        Threshold for v component.
+    threshold: float, optional
+        Set thresholds for both u and v components.
     size : int
         The radius of the median kernel.
     kernel_min_size : int
@@ -428,6 +450,9 @@ def normalized_local_median(
     if isinstance(mask, ndarray):
         _check(ndim=2, mask=mask)
 
+    if threshold != None:
+        threshold_u = threshold_v = threshold
+        
     # pad array by kernel half size
     buffer_u = np.pad(u, size, mode="constant", constant_values=np.nan)
     buffer_v = np.pad(v, size, mode="constant", constant_values=np.nan)
@@ -440,7 +465,7 @@ def normalized_local_median(
         buffer_v = buffer_v.astype("float64")
 
     ind = _normalized_local_median_test(
-        buffer_u, buffer_v, threshold, int(size), float(eps), int(kernel_min_size)
+        buffer_u, buffer_v, threshold_u, threshold_v, int(size), float(eps), int(kernel_min_size)
     )
 
     slices = (slice(size, ind.shape[0] - size), slice(size, ind.shape[1] - size))

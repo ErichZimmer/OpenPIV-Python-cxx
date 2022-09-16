@@ -10,7 +10,8 @@ void difference_test2D(
     const double* u,
     const double* v,
     int* mask,
-    double threshold,
+    double threshold_u,
+    double threshold_v,
     std::uint32_t N,
     std::uint32_t M
 ){    
@@ -38,7 +39,7 @@ void difference_test2D(
                     ui = u[(i + ii - 1) * M + (j + jj - 1)];
                     vi = v[(i + ii - 1) * M + (j + jj - 1)];
                     if (std::isfinite(ui) || std::isfinite(vi)) // should nans be treated as invalid points?
-                        if ((std::abs( ui - u_of_q ) > threshold) || (std::abs( vi - v_of_q ) > threshold))
+                        if ((std::abs( ui - u_of_q ) > threshold_u) || (std::abs( vi - v_of_q ) > threshold_v))
                             invalid_flag += 1;
                 }
             }
@@ -91,7 +92,8 @@ void local_median_test(
     const double* u,
     const double* v,
     int* mask,
-    double threshold,
+    double threshold_u,
+    double threshold_v,
     std::uint32_t N,
     std::uint32_t M,
     std::uint32_t kernel_radius,
@@ -144,8 +146,8 @@ void local_median_test(
 
             if ( (kernel_u.size() > kernel_min_size) && (kernel_v.size() > kernel_min_size) )
             {
-                if ( (std::abs(u_of_q - u_med) > threshold) || 
-                     (std::abs(v_of_q - v_med) > threshold) )
+                if ( (std::abs(u_of_q - u_med) > threshold_u) || 
+                     (std::abs(v_of_q - v_med) > threshold_v) )
                 {
                     mask[i * M + j] = 1;
                 }
@@ -164,7 +166,8 @@ void normalized_local_median_test(
     const double* u,
     const double* v,
     int* mask,
-    double threshold,
+    double threshold_u,
+    double threshold_v,
     std::uint32_t N,
     std::uint32_t M,
     std::uint32_t kernel_radius,
@@ -232,7 +235,7 @@ void normalized_local_median_test(
 
             if ( (kernel_u.size() > kernel_min_size) && (kernel_v.size() > kernel_min_size) )
             {
-                if ( (u_rm > threshold) || (v_rm > threshold) )
+                if ( (u_rm > threshold_u) || (v_rm > threshold_v) )
                 {
                     mask[i * M + j] = 1;
                 }

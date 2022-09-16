@@ -22,7 +22,8 @@ namespace py = pybind11;
 py::object difference_test2D_wrapper(
     py::array_t<imgDtype> u,
     py::array_t<imgDtype> v,
-    imgDtype threshold
+    imgDtype threshold_u,
+    imgDtype threshold_v
 ){
     // check input dimensions
     if ( u.ndim() != 2 )
@@ -30,6 +31,9 @@ py::object difference_test2D_wrapper(
         
     if ( u.size() != v.size() )
         throw std::runtime_error("Input sizes should be the same");
+    
+    if ( (threshold_u < 0) || (threshold_v < 0) )
+        throw std::runtime_error("Thresholds can not be less thaan zero");
 
     int N = u.shape(0), M = u.shape(1);
 
@@ -48,7 +52,8 @@ py::object difference_test2D_wrapper(
         ptr_u,
         ptr_v,
         ptr_m,
-        threshold,
+        threshold_u,
+        threshold_v,
         N, M
     );
 
@@ -61,7 +66,8 @@ py::object difference_test2D_wrapper(
 py::object local_median_wrapper(
     py::array_t<imgDtype> u,
     py::array_t<imgDtype> v,
-    imgDtype threshold,
+    imgDtype threshold_u,
+    imgDtype threshold_v,
     int kernel_radius,
     int kernel_min_size
 ){
@@ -77,6 +83,9 @@ py::object local_median_wrapper(
 
     if ( kernel_min_size < 1 )
         throw std::runtime_error("Kernel size flag must be larger than 0");
+
+    if ( (threshold_u < 0) || (threshold_v < 0) )
+        throw std::runtime_error("Thresholds can not be less thaan zero");
 
     int N = u.shape(0), M = u.shape(1);
 
@@ -95,7 +104,8 @@ py::object local_median_wrapper(
         ptr_u,
         ptr_v,
         ptr_mask,
-        threshold,
+        threshold_u,
+        threshold_v,
         N, M, 
         kernel_radius,
         kernel_min_size
@@ -110,7 +120,8 @@ py::object local_median_wrapper(
 py::object normalized_local_median_wrapper(
     py::array_t<imgDtype> u,
     py::array_t<imgDtype> v,
-    imgDtype threshold,
+    imgDtype threshold_u,
+    imgDtype threshold_v,
     int kernel_radius,
     double eps,
     int kernel_min_size
@@ -128,6 +139,9 @@ py::object normalized_local_median_wrapper(
     if ( kernel_min_size < 0 )
         throw std::runtime_error("Kernel size flag must be >= 0");
 
+    if ( (threshold_u < 0) || (threshold_v < 0) )
+        throw std::runtime_error("Thresholds can not be less thaan zero");
+        
     int N = u.shape(0), M = u.shape(1);
 
     py::array_t<int> mask( N*M );
@@ -145,7 +159,8 @@ py::object normalized_local_median_wrapper(
         ptr_u,
         ptr_v,
         ptr_mask,
-        threshold,
+        threshold_u,
+        threshold_v,
         N, M, 
         kernel_radius,
         eps,
@@ -189,7 +204,8 @@ PYBIND11_MODULE(_validation, m) {
        "Test 8 points around a vector to see if it's invalid",
        py::arg("u"),
        py::arg("v"),
-       py::arg("threshold") = 2.0
+       py::arg("threshold_u") = 2.0,
+       py::arg("threshold_v") = 2.0
     );
 
     m.def("_local_median_test", 
@@ -197,7 +213,8 @@ PYBIND11_MODULE(_validation, m) {
        "Test 8 points around a vector to see if it's invalid",
        py::arg("u"),
        py::arg("v"),
-       py::arg("threshold") = 2.0,
+       py::arg("threshold_u") = 2.0,
+       py::arg("threshold_v") = 2.0,
        py::arg("kernel_radius") = 1,
        py::arg("kernel_min_size") = 0
     );
@@ -207,7 +224,8 @@ PYBIND11_MODULE(_validation, m) {
        "Test 8 points around a vector to see if it's invalid",
        py::arg("u"),
        py::arg("v"),
-       py::arg("threshold") = 2.0,
+       py::arg("threshold_u") = 2.0,
+       py::arg("threshold_v") = 2.0,
        py::arg("kernel_radius") = 1,
        py::arg("eps") = 0.1,
        py::arg("kernel_min_size") = 0

@@ -10,6 +10,7 @@ void difference_test2D(
     const double*,
     int*,
     double,
+    double,
     std::uint32_t,
     std::uint32_t
 );
@@ -25,6 +26,7 @@ void local_median_test(
     const double*,
     int*,
     double,
+    double,
     std::uint32_t,
     std::uint32_t,
     std::uint32_t,
@@ -36,6 +38,7 @@ void normalized_local_median_test(
     const double*,
     const double*,
     int*,
+    double,
     double,
     std::uint32_t,
     std::uint32_t,

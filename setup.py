@@ -2,7 +2,7 @@ from skbuild import setup
 from setuptools import find_packages
 from platform import system
 from glob import glob
-from os.path import join, exists
+from os.path import join, exists, normpath
 from os import listdir, mkdir
 from shutil import rmtree
 
@@ -12,7 +12,7 @@ from openpiv_cxx._build_utilities.build_libs import build_openpivcore
 import pathlib
 
 def main():
-    current_full_path = ""
+    current_full_path = pathlib.Path().absolute()
     external_dir = join(current_full_path, "extern")
     openpiv_cxx_dir = join(external_dir, "openpiv-c--qt")
     
@@ -32,14 +32,15 @@ def main():
     
     req_dps = [
         'numpy',
-        'imageio'
+        'imageio', 
+        'pytest'
     ]
     req_py = ">={}".format(python_min_version)
-
+    
     setup(
         name="OpenPIV-cxx",
         description="OpenPIV-Python with c++ backend",
-        version="0.2.3",
+        version="0.2.4",
         license="GPLv3",
         install_requires=req_dps, 
         python_requires=req_py,

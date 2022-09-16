@@ -6,7 +6,7 @@ Post-Processing (Smoothing)
 Smoothing Filters
 ===============
 
-   smoothn - Spline filter and interpolator (needs scipy and pylab)
+   smoothn - Spline filter and interpolator (needs scipy and matplotlib)
 """
 
 try:
