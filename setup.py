@@ -2,12 +2,14 @@ from skbuild import setup
 from os.path import join, exists, normpath
 from os import listdir, mkdir
 from shutil import rmtree
+from pathlib import Path
 
 from openpiv_cxx._build_utilities.vcpkg_get_triplet import return_cxx_triplet
 from openpiv_cxx._build_utilities.build_libs import build_openpivcore
 
+
 def main():
-    current_full_path = ""
+    current_full_path = Path().absolute()
     external_dir = join(current_full_path, "extern")
     openpiv_cxx_dir = join(external_dir, "openpiv-c--qt")
     

@@ -9,20 +9,17 @@ def build_openpivcore(openpiv_cxx_dir: str, _libs_dir: str) -> None:
 
     if exists(join(openpiv_cxx_dir, "build")) != True:
         print("Could not locate cmake build folder. Building openpivcore")
-        
-        build_dir = join(openpiv_cxx_dir, "build")
-        
+                
         # cmake doesn't like the Windows \\ convention?
         if system().lower() == "windows":
             openpiv_cxx_dir = openpiv_cxx_dir.replace("\\", "/")
-            build_dir = build_dir.replace("\\", "/")
 
         cmake_args = ["cmake", 
-                      f"-B {build_dir}", 
-                      f"-S {openpiv_cxx_dir}", 
+                      f"-B build", 
+                      f"-S .", 
                       "-DCMAKE_BUILD_TYPE=Release"]
 
-        build_args = ["cmake", "--build", build_dir, "--clean-first"]
+        build_args = ["cmake", "--build", "build", "--clean-first"]
 
         if system().lower() == "windows":
             build_args += ["--config", "Release"]
