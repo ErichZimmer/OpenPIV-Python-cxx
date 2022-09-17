@@ -10,3 +10,11 @@ python:
 submodules:
     include: all
     recursive: true
+
+build:
+  apt_packages:
+    - pkg-config
+    - curl
+    - zip
+    - unzip
+    - tar
