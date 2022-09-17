@@ -1,0 +1,13 @@
+{
+    "name": "openpiv-cplusplus",
+    "version-string": "latest",
+    "dependencies": [
+        "fmt",
+        "catch2",
+        "cxxopts",
+        "tiff",
+        "benchmark",
+        "asyncplusplus",
+        { "name": "mimalloc", "platform": "!(arm | uwp)" }
+    ]
+}

@@ -4,23 +4,28 @@ from os import listdir, mkdir
 from shutil import rmtree
 from pathlib import Path
 
-from openpiv_cxx._build_utilities.vcpkg_get_triplet import return_cxx_triplet
-from openpiv_cxx._build_utilities.build_libs import build_openpivcore
-
+from openpiv_cxx._build_utilities.build_libs import (
+    check_cmake_txt,
+    modify_cmake_txt
+)
 
 def main():
     current_full_path = Path().absolute()
     external_dir = join(current_full_path, "extern")
     openpiv_cxx_dir = join(external_dir, "openpiv-c--qt")
     
-    _libs_path = "_libs"
-    if exists(_libs_path) != True:
-        print("Warning: could not locate _libs folder\n" + 
-              "Creating _libs folder and libraries")
-        
-        mkdir(_libs_path)        
-        build_openpivcore(openpiv_cxx_dir, _libs_path)
+    # modify cmake script based on our needs
+    txt_to_mod = '  set(TIFF_EXTERNAL_LIBRARY_CXX ${OPENPIV_CXX_DIR}/external/libtiff/4.0.10)\n'
     
+    dir_to_modify = normpath(join(openpiv_cxx_dir, "openpiv/CMakeLists.txt"))
+    
+    line_to_modify = 24
+    
+    if check_cmake_txt(dir_to_modify, line_to_modify, txt_to_mod) == False:
+        print("Modifying openpiv-c--qt CMakeLists.txt to suite current build")
+        modify_cmake_txt(dir_to_modify, line_to_modify, txt_to_mod)
+    
+    # remove existing builds
     if exists("_skbuild") == True:
         print("Found previous _skbuild build. Removing folder")
         rmtree("_skbuild")
@@ -33,9 +38,6 @@ def main():
         'pytest'
     ]
     req_py = ">={}".format(python_min_version)
-    
-    return_cxx_triplet(openpiv_cxx_dir)
-    raise Excpetion("Terminatingn process")
     
     setup(
         name="OpenPIV-cxx",
@@ -56,7 +58,6 @@ def main():
             'openpiv_cxx.windef'
         ],
         cmake_args=[
-            f"-DTRIPLET_TO_USE={ return_cxx_triplet(openpiv_cxx_dir) }"
         ],
         zip_safe=False
     )
