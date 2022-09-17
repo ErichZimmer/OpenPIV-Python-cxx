@@ -16,7 +16,7 @@ jobs:
   test_linux:
     name: Linux Build tests
     if: "github.repository == 'ErichZimmer/OpenPIV-Python-cxx' || github.repository == ''"
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - name: Set up Python
         uses: actions/setup-python@v3
