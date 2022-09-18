@@ -1,0 +1,13 @@
+setuptools
+cmake
+ninja
+scikit-build
+numpy
+imageio
+scipy
+matplotlib
+sphinx
+sphinx_rtd_theme
+nbsphinx
+jupyter_sphinx
+sphinxcontrib-bibtex
