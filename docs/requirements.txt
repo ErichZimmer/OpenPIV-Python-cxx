@@ -1,9 +1,3 @@
-setuptools
-cmake
-ninja
-scikit-build
-numpy
-imageio
 scipy
 matplotlib
 sphinx
