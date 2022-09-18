@@ -1,20 +1,31 @@
 # Required
 version: 2
 
-conda:
-    environment: docs/readthedocs-env.yml
-python:
-    install:
-        - method: setuptools
-          path: .
 submodules:
     include: all
     recursive: true
 
+# Build documentation in the docs/ directory with Sphinx
+# reference: https://docs.readthedocs.io/en/stable/config-file/v2.html#sphinx
+sphinx:
+  configuration: docs/source/conf.py
+  fail_on_warning: true
+
 build:
+  os: ubuntu-20.04
+  tools:
+    python: "3.8"
   apt_packages:
+    - build-essential
     - pkg-config
     - curl
     - zip
     - unzip
     - tar
+    
+# Optionally set the version of Python and requirements required to build your docs
+python:
+  install:
+    - requirements: docs/requirements.txt
+    - method: pip
+      path: .
