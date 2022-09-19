@@ -1,7 +1,5 @@
 import sys, os
 
-import openpiv_cxx
-
 sys.path.insert(0, os.path.abspath("../../.."))
 
 # -- Project information -----------------------------------------------------
