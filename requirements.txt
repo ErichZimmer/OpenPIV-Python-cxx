@@ -1,5 +1,0 @@
-setuptools
-scikit-build
-cmake
-numpy
-imageio
