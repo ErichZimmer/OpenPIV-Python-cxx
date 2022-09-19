@@ -1,3 +1,7 @@
+import sys, os
+
+sys.path.insert(0, os.path.abspath('../../openpiv-python-cxx'))
+sys.path.append(os.path.abspath("sphinxext"))
 
 # -- Project information -----------------------------------------------------
 project = 'OpenPIV-Python-cxx'
