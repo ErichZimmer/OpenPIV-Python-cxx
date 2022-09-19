@@ -1,7 +1,9 @@
 #ifndef VECTOR_BASED_H
 #define VECTOR_BASED_H
 
+// std
 #include <cmath>
+#include <cstdint>
 #include <vector>
 
 // check 8 points to see if vector in question has less than 50% of points invalid

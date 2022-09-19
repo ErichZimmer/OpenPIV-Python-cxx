@@ -5,8 +5,9 @@ channels:
 dependencies:
   - python
   - pip
-  - scikit-build
+  - ninja
   - cmake
+  - scikit-build
   - numpy
   - scipy
   - sphinx
