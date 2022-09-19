@@ -1,7 +1,8 @@
 import sys, os
 
-sys.path.insert(0, os.path.abspath('../../openpiv-python-cxx'))
-sys.path.append(os.path.abspath("."))
+import openpiv_cxx
+
+sys.path.append(os.path.abspath("../../openpiv_cxx"))
 
 # -- Project information -----------------------------------------------------
 project = 'OpenPIV-Python-cxx'
