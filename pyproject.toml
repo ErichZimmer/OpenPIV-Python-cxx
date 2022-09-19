@@ -7,3 +7,113 @@ requires = [
     "ninja; platform_system!=Windows"
 ]
 build-backed = "setuptools.build_meta"
+
+[project]
+name = "OpenPIV-Python-cxx"
+license = {file = "LICENSE.txt"}
+description = "DPIV software for pre/post processing and analysis of image pairs."
+maintainers = [
+    {name = "OpenPIV Contributors"},
+]
+requires-python = ">=3.6"
+dependencies = [
+    "numpy",
+    "imageio"
+]
+readme = "README.rst"
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    # Programming languages used
+    "Programming Language :: C++",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    # Sublist of all supported platforms and environments.
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Operating System :: MacOS",
+    # Miscellaneous metadata.
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Scientific/Engineering",
+    "Natural Language :: English",
+]
+dynamic = ['version']
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-cov",
+    "pytest-timeout",
+    "pytest-xdist",
+]
+doc = [
+    "sphinx!=4.1.0",
+    "pydata-sphinx-theme==0.9.0",
+    "sphinx-design>=0.2.0",
+    "matplotlib>2",
+    "numpydoc",
+]
+
+full = [
+    "attrs",
+    "backcall",
+    "certifi",
+    "cycler",
+    "decorator",
+    "gitdb",
+    "GitPython",
+    "importlib-metadata",
+    "iniconfig",
+    "ipython",
+    "ipython-genutils",
+    "jedi",
+    "kiwisolver",
+    "matplotlib",
+    "natsort",
+    "networkx",
+    "packaging",
+    "parso",
+    "pexpect",
+    "pickleshare",
+    "Pillow",
+    "pluggy",
+    "prompt-toolkit",
+    "ptyprocess",
+    "py",
+    "Pygments",
+    "pyparsing",
+    "pytest",
+    "python-dateutil",
+    "PyWavelets",
+    "scikit-image",
+    "scipy",
+    "six",
+    "smmap",
+    "tifffile",
+    "toml",
+    "tqdm",
+    "traitlets",
+    "typing-extensions",
+    "watermark",
+    "wcwidth",
+    "zipp",
+]
+
+[project.urls]
+homepage = "https://github.com/ErichZimmer/OpenPIV-Python-cxx"
+# documentation = ""
+source = "https://github.com/ErichZimmer/OpenPIV-Python-cxx"
+download = "https://github.com/ErichZimmer/OpenPIV-Python-cxx/releases"
+tracker = "https://github.com/ErichZimmer/OpenPIV-Python-cxx/issues"
+
+[tool.cibuildwheel]
+skip = "pp* *_ppc64le *_i686 *_s390x *-musllinux*"
+build-verbosity = "3"
+test-requires = ["pytest", "pytest-cov", "pytest-xdist", "scipy", "matplotlib"]
+

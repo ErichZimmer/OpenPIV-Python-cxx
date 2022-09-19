@@ -30,22 +30,11 @@ def main():
         print("Found previous _skbuild build. Removing folder")
         rmtree("_skbuild")
     
-    python_min_version = 3.6
-    
-    req_dps = [
-        'numpy',
-        'imageio', 
-        'pytest'
-    ]
-    req_py = ">={}".format(python_min_version)
-    
     setup(
         name="OpenPIV-cxx",
         description="OpenPIV-Python with c++ backend",
         version="0.2.4",
         license="GPLv3",
-        install_requires=req_dps, 
-        python_requires=req_py,
         packages=[
             'openpiv_cxx',
             'openpiv_cxx.input_checker',
@@ -56,8 +45,6 @@ def main():
             'openpiv_cxx.smooth',
             'openpiv_cxx.tools',
             'openpiv_cxx.windef'
-        ],
-        cmake_args=[
         ],
         zip_safe=False
     )
