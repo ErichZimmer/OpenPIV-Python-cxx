@@ -12,8 +12,11 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../'))
-sys.path.insert(0, os.path.abspath('src'))
+
+import openpiv_cxx
+
+sys.path.insert(0, os.path.abspath(openpiv_cxx.__file__))
+sys.path.insert(0, os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
 
@@ -22,7 +25,7 @@ copyright = 'CC-BY, 2022, OpenPIV Community'
 author = 'OpenPIV Community'
 
 # The full version, including alpha/beta/rc tags
-release = '0.2.0'
+release = '0.2.4'
 
 
 # -- General configuration ---------------------------------------------------
