@@ -43,6 +43,7 @@ classifiers = [
     "Topic :: Scientific/Engineering",
     "Natural Language :: English",
 ]
+dynamic = ['version']
 
 [project.optional-dependencies]
 test = [
