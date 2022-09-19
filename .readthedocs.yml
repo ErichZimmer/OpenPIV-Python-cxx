@@ -1,16 +1,6 @@
 # Required
 version: 2
 
-conda:
-    environment: docs/readthedocs-env.yml
-python:
-    install:
-        - method: setuptools
-          path: .
-submodules:
-    include: all
-    recursive: true
-
 build:
   apt_packages:
     - pkg-config
@@ -18,3 +8,19 @@ build:
     - zip
     - unzip
     - tar
+
+submodules:
+    include: all
+    recursive: true
+
+# Optionally build your docs in additional formats such as PDF
+formats:
+   - pdf
+
+# Optionally set the version of Python and requirements required to build your docs
+python:
+   install:
+    - method: pip
+      path: .
+      extra_requirements:
+        - docs
