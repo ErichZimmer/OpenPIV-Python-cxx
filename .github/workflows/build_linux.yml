@@ -42,4 +42,4 @@ jobs:
           pip install numpy scikit-build cmake ninja imageio pytest
           
       - name: scikit-build
-        run: python setup.py install
+        run: pip install .
