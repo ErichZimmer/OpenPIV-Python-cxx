@@ -22,7 +22,8 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: '3.8'
-          
+
+      - name: Clone Package and Submodules 
       - uses: actions/checkout@v3
         with:
           submodules: recursive
@@ -32,14 +33,9 @@ jobs:
           sudo apt-get update
           sudo apt install pkg-config curl zip unzip tar
           
-      - name: update submodules
+      - name: Update Submodules
         run: |
           git submodule update --init --recursive
           
-      - name: pip-packages
-        run: |
-          pip install --upgrade pip
-          pip install numpy scikit-build cmake ninja imageio pytest
-          
-      - name: scikit-build
-        run: pip install .
+      - name: Install Dependencies and Build Package 
+        run: pip install .[test]
