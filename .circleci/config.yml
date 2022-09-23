@@ -37,7 +37,6 @@ jobs:
     <<: *defaults
     steps:
       - checkout
-      - check-skip
       - merge
       - apt-install
 
@@ -46,6 +45,7 @@ jobs:
           command: |
             git submodule init
             git submodule update --recursive
+      
       - restore_cache:
           keys:
               - deps_ccache-{{ .Branch }}
@@ -62,11 +62,13 @@ jobs:
             pip install imageio
             pip install scipy
             pip install matplotlib    
-      - run:
+     
+     - run:
           name: build OpenPIV-cxx
           command: |
             python setup.py build --inplace
-      - save_cache:
+    
+    - save_cache:
           key: deps_ccache-{{ .Branch }}
           paths:
             - ~/.ccache
@@ -76,6 +78,7 @@ jobs:
           name: ccache performance
           command: |
             ccache -s
+      
       - persist_to_workspace:
           root: ~/
           paths:
@@ -86,12 +89,16 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - apt-install
+      
       - run:
           name: Install dependencies
           command: pip install --upgrade --no-cache-dir pillow mock==1.0.1 alabaster>=0.7,<0.8,!=0.7.5 commonmark==0.9.1 recommonmark==0.5.0 sphinx sphinx-rtd-theme readthedocs-sphinx-ext<2.2
+      
       - run:
           name: Build docs
           command: cd docs/ && make html
+      
       - persist_to_workspace:
           root: docs/_build
           paths: html
