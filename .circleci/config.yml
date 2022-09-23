@@ -2,14 +2,6 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-# Aliases to reuse
-_defaults: &defaults
-  docker:
-    # CircleCI maintains a library of pre-built images
-    # documented at https://circleci.com/docs/2.0/circleci-images/
-    - image: cimg/python:3.8
-  working_directory: ~/repo
-
 commands:
   apt-install:
     steps:
@@ -34,7 +26,8 @@ commands:
 jobs:
   # Build OpenPIV-Python-cxx from source
   build_openpiv_cxx:
-    <<: *defaults
+    docker:
+      - image: cimg/python:3.8
     steps:
       - checkout
       - merge
@@ -86,7 +79,8 @@ jobs:
             
   # build documentation
   docs-build:
-    <<: *defaults
+    docker:
+      - image: cimg/python:3.8
     steps:
       - checkout
       - apt-install
