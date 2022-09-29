@@ -85,14 +85,14 @@ def sig2noise_val(
         mask = np.zeros_like(u, dtype=bool)
         mask[ind] = True
 
-        if isinstance(w, ndarray):
+        if isinstance(w, np.ndarray):
             w[ind] = np.nan
             return u, v, w, mask
 
         return u, v, mask
 
     else:
-        if isinstance(mask, ndarray):
+        if isinstance(mask, np.ndarray):
             if mask.shape != ind.shape:
                 raise ValueError("mask shape must be same as u/v shape")
             mask[ind] = 1

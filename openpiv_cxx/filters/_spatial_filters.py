@@ -1,13 +1,13 @@
-from numpy import pad as pad_array, percentile, clip, ndarray
 from openpiv_cxx.input_checker import check_nd as _check
 from ._spatial_filters_cpp import (
     _intensity_cap,
     _threshold_binarization,
     _lowpass_filter,
-    _highpass_filter,
-    _local_variance_normalization,
+    _highpass_filter
 )
 from ._kernels import gaussian_kernel
+
+import numpy as np
 
 
 __all__ = [
@@ -16,9 +16,12 @@ __all__ = [
     "highpass_filter",
     "intensity_cap",
     "sobel_filter",
+    "sobel_h_filter",
+    "sobel_v_filter",
     "threshold_binarization",    
     "variance_normalization_filter"
 ]
+
 
 kernel_size_error = "kernel_size must be an odd number"
 
@@ -54,7 +57,7 @@ def intensity_cap(img, std_mult = 2.0, keep_dtype = True):
 
     new_img = _intensity_cap(img, float(std_mult))
 
-    if img_dtype != "float32" and cast_dtype == True:
+    if img_dtype != "float32" and keep_dtype == True:
         new_img = new_img.astype(img_dtype)
 
     return new_img
@@ -102,7 +105,7 @@ def threshold_binarization(img, threshold = 0.5, keep_dtype = True):
     if max_ > 1:
         new_img *= max_
 
-    if img_dtype != "float32" and cast_dtype == True:
+    if img_dtype != "float32" and keep_dtype == True:
         new_img = new_img.astype(img_dtype)
 
     return new_img
@@ -144,9 +147,9 @@ def _convolve_kernel(img, kernel, pad_type = "reflect", cval = 0.0):
     # pad array by kernel half size
     pad = int(kernel_size / 2)
     if pad_type == "constant":
-        buffer1 = pad_array(img, pad, mode=pad_type, constant_values = cval)
+        buffer1 = np.pad(img, pad, mode=pad_type, constant_values = cval)
     else:
-        buffer1 = pad_array(img, pad, mode=pad_type)
+        buffer1 = np.pad(img, pad, mode=pad_type)
 
     # make sure array is float32
     if buffer1.dtype != "float32":
@@ -207,7 +210,7 @@ def gaussian_filter(img, sigma = 1.0, truncate = 2.0, keep_dtype = False):
     if max_ > 1:
         new_img *= max_
     
-    if img_dtype != "float32" and cast_dtype == True:
+    if img_dtype != "float32" and keep_dtype == True:
         new_img = new_img.astype(img_dtype)
 
     return new_img
@@ -246,7 +249,7 @@ def highpass_filter(
 
     # pad array by kernel half size
     pad = int(kernel_size / 2)
-    buffer1 = pad_array(img, pad, mode="reflect")
+    buffer1 = np.pad(img, pad, mode="reflect")
 
     # make sure array is float32
     if buffer1.dtype != "float32":
@@ -267,7 +270,7 @@ def highpass_filter(
     if max_ > 1:
         new_img *= max_
 
-    if img_dtype != "float32" and cast_dtype == True:
+    if img_dtype != "float32" and keep_dtype == True:
         new_img = new_img.astype(img_dtype)
 
     return new_img
@@ -319,9 +322,9 @@ def variance_normalization_filter(
     
     den = gaussian_filter(high_pass * high_pass, sigma2, truncate)
     
-    den = sqrt(den)
+    den = np.sqrt(den)
     
-    new_img = divide( # stops image from being all black
+    new_img = np.divide( # stops image from being all black
         high_pass, den,
         where = (den != 0.0)
     )  
@@ -334,7 +337,7 @@ def variance_normalization_filter(
     if max_ > 1:
         new_img *= max_
     
-    if img_dtype != "float32" and cast_dtype == True:
+    if img_dtype != "float32" and keep_dtype == True:
         new_img = den.astype(img_dtype)
     
     return new_img
@@ -376,14 +379,14 @@ def sobel_filter(
     _check(ndim=2, img=img)
     
     # horizontal
-    kernel1 = asarray([
+    kernel1 = np.asarray([
         [ 1,  2,  1],
         [ 0,  0,  0],
         [-1, -2, -1]
     ], dtype = "float32")
     
     # vertical
-    kernel2 = asarray([
+    kernel2 = np.asarray([
         [ 1,  0, -1],
         [ 2,  0, -2],
         [ 1,  0, -1]
@@ -402,12 +405,126 @@ def sobel_filter(
     out1 = _convolve_kernel(img, kernel1)
     out2 = _convolve_kernel(img, kernel2)
     
-    new_img = sqrt(square(out1) + square(out2))
+    new_img = np.sqrt(np.square(out1) + np.square(out2))
     
     if max_ > 1:
         new_img *= max_
     
-    if img_dtype != "float32" and cast_dtype == True:
+    if img_dtype != "float32" and keep_dtype == True:
+        new_img = new_img.astype(img_dtype)
+    
+    return new_img
+
+
+def sobel_h_filter(
+    img,
+    keep_dtype = False
+):
+    """A simple horizontal sobel filter.
+
+    Parameters
+    ----------
+    img : ndarray
+        A two dimensional array containing pixel intenensities.
+    keep_dtype : bool
+        Cast output to original dtype.
+
+    Returns
+    -------
+    new_img : ndarray
+        A two dimensional array containing pixel intenensities.
+    
+    Notes
+    -----
+    
+    We use the following kernel::
+     
+      1   2   1
+      0   0   0
+     -1  -2  -1
+    
+    """
+    _check(ndim=2, img=img)
+    
+    kernel = np.asarray([
+        [ 1,  2,  1],
+        [ 0,  0,  0],
+        [-1, -2, -1]
+    ], dtype = "float32")
+    
+    # store original image data
+    img_dtype = img.dtype
+    max_ = img.max()
+    
+    if img_dtype != "float32":
+        img = img.astype("float32")
+    
+    if max_ > 1:
+        img /= max_
+    
+    new_img = _convolve_kernel(img, kernel)
+    
+    if max_ > 1:
+        new_img *= max_
+    
+    if img_dtype != "float32" and keep_dtype == True:
+        new_img = new_img.astype(img_dtype)
+    
+    return new_img
+
+
+def sobel_v_filter(
+    img,
+    keep_dtype = False
+):
+    """A simple vertical sobel filter.
+
+    Parameters
+    ----------
+    img : ndarray
+        A two dimensional array containing pixel intenensities.
+    keep_dtype : bool
+        Cast output to original dtype.
+
+    Returns
+    -------
+    new_img : ndarray
+        A two dimensional array containing pixel intenensities.
+    
+    Notes
+    -----
+    
+    We use the following kernel::
+     
+      1   0  -1
+      2   0  -2
+      1   0  -1
+    
+    """
+    _check(ndim=2, img=img)
+    
+    kernel = np.asarray([
+        [ 1,  0, -1],
+        [ 2,  0, -2],
+        [ 1,  0, -1]
+    ], dtype = "float32")
+    
+    # store original image data
+    img_dtype = img.dtype
+    max_ = img.max()
+    
+    if img_dtype != "float32":
+        img = img.astype("float32")
+    
+    if max_ > 1:
+        img /= max_
+    
+    new_img = _convolve_kernel(img, kernel)
+    
+    if max_ > 1:
+        new_img *= max_
+    
+    if img_dtype != "float32" and keep_dtype == True:
         new_img = new_img.astype(img_dtype)
     
     return new_img
@@ -449,13 +566,13 @@ def contrast_stretch(
     if img_max > 1:
         img /= img_max
 
-    lower = percentile(img, lower_limit)
-    upper = percentile(img, upper_limit)
+    lower = np.percentile(img, lower_limit)
+    upper = np.percentile(img, upper_limit)
 
     img_max = img.max()
     img_min = img.min()
 
-    img = clip(img, lower, upper)
+    img = np.clip(img, lower, upper)
     img = (img - lower) / (upper - lower)
 
     stretch_min = 0

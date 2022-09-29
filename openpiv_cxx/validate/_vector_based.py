@@ -89,7 +89,7 @@ def global_val(
         return u, v, mask
 
     else:
-        if isinstance(mask, ndarray):
+        if isinstance(mask, np.ndarray):
             if mask.shape != ind.shape:
                 raise ValueError("mask shape must be same as u/v shape")
             mask[ind] = 1
@@ -173,7 +173,7 @@ def global_std(u, v, mask=None, std_threshold=3.0, convention="openpiv"):
         return u, v, mask
 
     else:
-        if isinstance(mask, ndarray):
+        if isinstance(mask, np.ndarray):
             if mask.shape != ind.shape:
                 raise ValueError("mask shape must be same as u/v shape")
             mask[ind] = 1
@@ -239,7 +239,7 @@ def local_difference(
     """
     _check(ndim=2, u=u, v=v)
 
-    if isinstance(mask, ndarray):
+    if isinstance(mask, np.ndarray):
         _check(ndim=2, mask=mask)
 
     if threshold != None:
@@ -272,7 +272,7 @@ def local_difference(
         return u, v, mask
 
     else:
-        if isinstance(mask, ndarray):
+        if isinstance(mask, np.ndarray):
             if mask.shape != ind.shape:
                 raise ValueError("mask shape must be same as u/v shape")
             mask[ind != 0] = 1
@@ -340,7 +340,7 @@ def local_median(
     """
     _check(ndim=2, u=u, v=v)
 
-    if isinstance(mask, ndarray):
+    if isinstance(mask, np.ndarray):
         _check(ndim=2, mask=mask)
 
     if threshold != None:
@@ -375,7 +375,7 @@ def local_median(
         return u, v, mask
 
     else:
-        if isinstance(mask, ndarray):
+        if isinstance(mask, np.ndarray):
             if mask.shape != ind.shape:
                 raise ValueError("mask shape must be same as u/v shape")
             mask[ind != 0] = 1
@@ -446,7 +446,7 @@ def normalized_local_median(
     """
     _check(ndim=2, u=u, v=v)
 
-    if isinstance(mask, ndarray):
+    if isinstance(mask, np.ndarray):
         _check(ndim=2, mask=mask)
 
     if threshold != None:
@@ -487,7 +487,7 @@ def normalized_local_median(
         return u, v, mask
 
     else:
-        if isinstance(mask, ndarray):
+        if isinstance(mask, np.ndarray):
             if mask.shape != ind.shape:
                 raise ValueError("mask shape must be same as u/v shape")
             mask[ind != 0] = 1
