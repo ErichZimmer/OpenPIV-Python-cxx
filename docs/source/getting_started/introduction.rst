@@ -8,4 +8,5 @@ Digital Particle Image Velocimetry (DPIV) has become a well-established non-intr
 
 OpenPIV-Python-cxx
 ------------------
-Using OpenPIV and its associated packages, users can easily perform digital analysis of DPIV image pairs. The core of these packages are OpenPIV-Python, an open source general use DPIV package written in Python 3. Due to memory constraints caused by performing 3D ffts on a stack of 2D interrogation windows on low- to mid-end consumer-grade laptops, a branch of OpenPIV-Python was made with a c++ backend. This greatly lowers memory consuption during DPIV processing and is generally faster.
+OpenPIV-Python-cxx is a modified version of OpenPIV-Python that uses less memory while retaining a similar performance. Most computationally intensive functions that are considered "slow" and uses Numpy, SciPy, or Scikit-Image were implemented in c++ and wrapped with pybind11. This enables the processing of large images on hardware with limited RAM and disk space (e.g. some consumer-grade laptops). To keep compatability with OpenPIV-Python, the submodule openpiv was created with an identicle API to the original package (still a work in progress).
+

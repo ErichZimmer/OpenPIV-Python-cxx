@@ -4,10 +4,7 @@
     "dependencies": [
         "fmt",
         "catch2",
-        "cxxopts",
-        "tiff",
-        "benchmark",
-        "asyncplusplus",
+        "tiff",    
         { "name": "mimalloc", "platform": "!(arm | uwp)" }
     ]
 }

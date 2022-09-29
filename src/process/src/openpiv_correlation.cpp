@@ -1,7 +1,6 @@
 /*
 Due to Link Error 2005 on core::generate_cartesian_grid,
 all correlation functions are placed in one file for now.
-
 */
 
 /*
@@ -9,7 +8,7 @@ all correlation functions are placed in one file for now.
 Table of Contents
 ~~~~~~~~~~~~~~~~~
 1:   comments
-21:  includes
+17:  includes
 47:  standard cross-correlation of one interrogation window
 72:  standard cross-correlation
 178: auto-correlation

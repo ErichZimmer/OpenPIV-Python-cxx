@@ -1,26 +1,15 @@
 [build-system]
-requires = [
-    "setuptools",
-    "wheel",
-    "scikit-build",
-    "cmake",
-    "ninja"
-]
-build-backed = "setuptools.build_meta"
+build-backend = "setuptools.build_meta"
 
 [project]
-name = "OpenPIV-Python-cxx"
+name = "openpiv_cxx"
 license = {file = "LICENSE.txt"}
 description = "DPIV software for pre/post processing and analysis of image pairs."
 maintainers = [
     {name = "OpenPIV Contributors"},
 ]
-requires-python = ">=3.6"
-dependencies = [
-    "numpy",
-    "imageio"
-]
-readme = "README.rst"
+requires-python = ">=3.7"
+readme = "README.md"
 classifiers = [
     "Development Status :: 1 - Planning",
     "Intended Audience :: Science/Research",
@@ -43,67 +32,7 @@ classifiers = [
     "Topic :: Scientific/Engineering",
     "Natural Language :: English",
 ]
-dynamic = ['version']
-
-[project.optional-dependencies]
-test = [
-    "pytest",
-    "pytest-cov",
-    "pytest-timeout",
-    "pytest-xdist",
-]
-docs = [
-    "sphinx!=4.1.0",
-    "pydata-sphinx-theme==0.9.0",
-    "sphinx-design>=0.2.0",
-    "matplotlib>2",
-    "numpydoc",
-]
-
-full = [
-    "attrs",
-    "backcall",
-    "certifi",
-    "cycler",
-    "decorator",
-    "gitdb",
-    "GitPython",
-    "importlib-metadata",
-    "iniconfig",
-    "ipython",
-    "ipython-genutils",
-    "jedi",
-    "kiwisolver",
-    "matplotlib",
-    "natsort",
-    "networkx",
-    "packaging",
-    "parso",
-    "pexpect",
-    "pickleshare",
-    "Pillow",
-    "pluggy",
-    "prompt-toolkit",
-    "ptyprocess",
-    "py",
-    "Pygments",
-    "pyparsing",
-    "pytest",
-    "python-dateutil",
-    "PyWavelets",
-    "scikit-image",
-    "scipy",
-    "six",
-    "smmap",
-    "tifffile",
-    "toml",
-    "tqdm",
-    "traitlets",
-    "typing-extensions",
-    "watermark",
-    "wcwidth",
-    "zipp",
-]
+dynamic = ["version", "dependencies", "optional-dependencies"]
 
 [project.urls]
 homepage = "https://github.com/ErichZimmer/OpenPIV-Python-cxx"
@@ -116,4 +45,5 @@ tracker = "https://github.com/ErichZimmer/OpenPIV-Python-cxx/issues"
 skip = "pp* *_ppc64le *_i686 *_s390x *-musllinux*"
 build-verbosity = "3"
 test-requires = ["pytest", "pytest-cov", "pytest-xdist", "scipy", "matplotlib"]
+test-command = "pytest {project}/tests"
 

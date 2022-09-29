@@ -96,7 +96,7 @@ py::array_t<imgDtype> taylor_expansion_interp_wrapper(
 
 #pragma warning(default: 4244)
 
-PYBIND11_MODULE(_taylor_expansion2D, m) {
+PYBIND11_MODULE(_taylor_expansion2D_cpp, m) {
     m.doc() = "Python interface for interpolation functions written in c++.";
    
     m.def("_taylor_expansion2D", 

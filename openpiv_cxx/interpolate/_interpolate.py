@@ -1,6 +1,5 @@
-from numpy import ndarray
 from openpiv_cxx.input_checker import check_nd as _check
-from ._bilinear2D import _bilinear2D
+from ._bilinear2D_cpp import _bilinear2D
 
 import numpy as np
 
@@ -8,24 +7,17 @@ import numpy as np
 __all__ = ["bilinear2D"]
 
 
-def bilinear2D(
-    x: ndarray,
-    y: ndarray,
-    z: ndarray,
-    xi: ndarray,
-    yi: ndarray,
-    keep_dtype: bool = False,
-) -> ndarray:
+def bilinear2D(x, y, z, xi, yi, keep_dtype=False):
     """2-D bilinear interpolation over a regular grid.
 
     Parameters
     ----------
-    x, y: ndarray
+    x, y : ndarray
         The `x` and `y`-coordinates in strictly ascending order
         which to evaluate the interpolated values.
-    z: ndarray
+    z : ndarray
         A two dimensionional array.
-    xi, yi: ndarray
+    xi, yi : ndarray
         The `x` and `y`-coordinates at which to evaluate the interpolated
         values.
     keep_dtype : bool

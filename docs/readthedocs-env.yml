@@ -1,0 +1,16 @@
+name: openpiv_cxx-rtd
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python
+  - pip
+  - scikit-build
+  - cmake
+  - numpy
+  - scipy
+  - sphinx
+  - sphinx_rtd_theme
+  - nbsphinx
+  - jupyter_sphinx
+  - sphinxcontrib-bibtex

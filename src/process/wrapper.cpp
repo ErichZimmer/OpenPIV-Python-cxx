@@ -187,7 +187,7 @@ py::array_t<double> find_subpixel_wrapper(
 #pragma warning(default: 4244)
 
 // wrap as Python module
-PYBIND11_MODULE(_process,m)
+PYBIND11_MODULE(_process_cpp, m)
 {
     m.doc() = "pybind11 wrapper of main openpivcore functions";
     m.def("_img2corr_iw", &fft_correlate_window_wrapper, "Correlate two interrogation windows for testing");

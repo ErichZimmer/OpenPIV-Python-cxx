@@ -1,4 +1,4 @@
-from numpy import array, ndarray
+from numpy import array
 from numpy.ma import MaskedArray
 from openpiv_cxx import process as piv_proc
 from openpiv_cxx.interpolate import bilinear2D, whittaker2D
@@ -10,12 +10,8 @@ __all__ = ["first_pass", "multipass_img_deform"]
 
 
 def first_pass(
-    frame_a: ndarray,
-    frame_b: ndarray,
-    window_size: int = 32,
-    overlap: int = 16,
-    correlation_method: str = "circular",
-) -> tuple([[ndarray] * 5]):
+    frame_a, frame_b, window_size=32, overlap=16, correlation_method="circular"
+):
     """Zero order PIV
 
     First pass of the PIV evaluation.
@@ -65,20 +61,20 @@ def first_pass(
 
 
 def multipass_img_deform(
-    frame_a: ndarray,
-    frame_b: ndarray,
-    x_old: ndarray,
-    y_old: ndarray,
-    u_old: ndarray,
-    v_old: ndarray,
-    window_size: int,
-    overlap: int,
-    correlation_method: str = "circular",
-    deformation_method: str = "symmetric",
-    deformation_algorithm: str = "taylor expansions",
-    order: int = 1,
-    radius: int = 2,
-) -> tuple([[ndarray] * 5]):
+    frame_a,
+    frame_b,
+    x_old,
+    y_old,
+    u_old,
+    v_old,
+    window_size,
+    overlap,
+    correlation_method="circular",
+    deformation_method="symmetric",
+    deformation_algorithm="taylor expansions",
+    order=1,
+    radius=2,
+):
     """PIV with image deformation
 
     Multi pass of the PIV evaluation.

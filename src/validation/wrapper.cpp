@@ -196,7 +196,7 @@ double test_median_wrapper(
 
 #pragma warning(default: 4244)
 
-PYBIND11_MODULE(_validation, m) {
+PYBIND11_MODULE(_validation_cpp, m) {
     m.doc() = "Python interface for validation tests written in c++.";
    
     m.def("_difference_test", 
