@@ -35,7 +35,7 @@ pip install --upgrade -r requirements/build.txt
 Next, we can build the actual package with
 
 ```python
-python setup.py install
+python setup.py install .
 ``` 
 
 or
