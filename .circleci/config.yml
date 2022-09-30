@@ -54,7 +54,7 @@ jobs:
     steps:
       - checkout
       - check-skip
-      - merge
+      #- merge
       - apt-install
 
       - run:
@@ -70,18 +70,11 @@ jobs:
       - run:
           name: setup Python venv
           command: |
-            pip install --upgrade pip
-            pip install numpy==1.21.5
-            pip install ninja
-            pip install scikit-build
-            pip install cmake
-            pip install imageio
-            pip install scipy
-            pip install matplotlib    
+            pip install --upgrade -r "requirements/build"  
       - run:
           name: build OpenPIV-cxx
           command: |
-            python setup.py build
+            pip install --no-build-isolation .
       - save_cache:
           key: deps_ccache-{{ .Branch }}
           paths:
