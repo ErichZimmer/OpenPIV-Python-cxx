@@ -1,5 +1,13 @@
 [build-system]
 build-backend = "setuptools.build_meta"
+requires = [
+    "pip",
+    "setuptools",
+    "cmake",
+    "ninja",
+    "scikit-build",
+    "wheel"
+]
 
 [project]
 name = "openpiv_cxx"
