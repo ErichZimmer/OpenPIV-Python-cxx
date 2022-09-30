@@ -1,8 +1,16 @@
 [build-system]
 build-backend = "setuptools.build_meta"
+requires = [
+    "pip",
+    "setuptools",
+    "cmake",
+    "ninja",
+    "scikit-build",
+    "wheel"
+]
 
 [project]
-name = "openpiv_cxx"
+name = "OpenPIV_cxx"
 license = {file = "LICENSE.txt"}
 description = "DPIV software for pre/post processing and analysis of image pairs."
 maintainers = [
