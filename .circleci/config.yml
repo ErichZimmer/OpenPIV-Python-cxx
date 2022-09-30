@@ -46,13 +46,17 @@ jobs:
             sudo apt-get install build-essential curl zip unzip tar ninja-build
       
       - run:
-          name: build openpiv-cxx
+          name: pip install requirements
           command: |
             pip install --upgrade -r requirements/build.txt
             pip install --upgrade -r requirements/depend.txt
             pip install --upgrade -r requirements/docs.txt
             pip install --upgrade -r requirements/test.txt
-            pip install --no-build-isolation .
+            
+      - run:
+          name: build project
+          command: |
+            python setup.py install .
       
       - run:
           name: build docs
