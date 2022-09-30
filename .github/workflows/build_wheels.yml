@@ -27,6 +27,11 @@ jobs:
         with:
           submodules: "recursive"
         
+      - name: Set up Python ${{ matrix.pyver }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.pyver }}
+          
       - name: Install requirements
         run: |
           pip install numpy scikit-build cmake ninja imageio pytest wheel
