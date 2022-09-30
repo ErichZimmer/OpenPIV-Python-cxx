@@ -33,7 +33,7 @@ def main():
     setup(
         name="OpenPIV-cxx",
         description="OpenPIV-Python with c++ backend",
-        version="0.2.4",
+        version="0.2.5",
         license="GPLv3",
         packages=[
             'openpiv_cxx',
