@@ -20,23 +20,19 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-20.04, macos-12, windows-2019]
-        pyver: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        pyver: ["3.7"]
 
     steps:
       - uses: actions/checkout@v3.0.2
         with:
           submodules: "recursive"
+        
+      - name: Install requirements
+        run: |
+          pip install numpy scikit-build cmake ninja imageio pytest wheel
 
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.9.0
-        env:
-          # Build for cpython >= 3.6.
-          CIBW_PROJECT_REQUIRES_PYTHON: "==${{ matrix.pyver }}.*"
-
-          # Build only on 64-bit architectures.
-          CIBW_ARCHS_MACOS: "x86_64 arm64"
-          CIBW_ARCHS_LINUX: auto64
-          CIBW_ARCHS_WINDOWS: auto64
+      - name: Build wheel
+        run: python setup.py bdist_wheel
 
       - uses: actions/upload-artifact@v3
         with:
