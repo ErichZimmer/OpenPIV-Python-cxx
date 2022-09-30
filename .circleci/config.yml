@@ -49,7 +49,7 @@ commands:
             fi     
 jobs:
 # Build OpenPIV-Python-cxx from source
-  build_openpiv_cxx:
+  build:
     <<: *defaults
     steps:
       - checkout
@@ -70,7 +70,8 @@ jobs:
       - run:
           name: setup Python venv
           command: |
-            pip install --upgrade -r ./requirements/build.txt
+            pip install --upgrade pip
+            pip install -r requirements/build.txt
       - run:
           name: build OpenPIV-cxx
           command: |
@@ -93,4 +94,4 @@ workflows:
   version: 2
   default:
     jobs:
-      - build_openpiv_cxx
+      - build
