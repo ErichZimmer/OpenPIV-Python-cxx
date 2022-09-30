@@ -1,25 +1,21 @@
-import sys, os
-
-sys.path.insert(0, os.path.abspath("../../.."))
-
 # -- Project information -----------------------------------------------------
-project = 'OpenPIV-Python-cxx'
-copyright = '2022, OpenPIV Contributors'
-author = 'OpenPIV Contributors'
-release = '0.2.4'
+project = "OpenPIV-Python-cxx"
+copyright = "2022, OpenPIV Contributors"
+author = "OpenPIV Contributors"
+release = "0.2.4"
 
 # -- General configuration ---------------------------------------------------
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.coverage',
-    'sphinx.ext.napoleon',
-#    'numpydoc',
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.coverage",
+    "sphinx.ext.napoleon",
+    #    'numpydoc',
 ]
 
-templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '.ipynb_checkpoints']
+templates_path = ["_templates"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", ".ipynb_checkpoints"]
 
 # -- Options for HTML output -------------------------------------------------
-html_theme = 'alabaster'
-html_static_path = ['_static']
+html_theme = "alabaster"
+html_static_path = ["_static"]

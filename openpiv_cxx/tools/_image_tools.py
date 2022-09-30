@@ -1,12 +1,12 @@
-from numpy import ndarray
 from imageio import imread as _imread, imsave as _imsave
 
 import numpy as np
 
+
 __all__ = ["imread", "imsave", "negative", "rgb2gray"]
 
 
-def rgb2gray(rgb: ndarray) -> ndarray:
+def rgb2gray(rgb):
     """Convert RGB to grayscale
 
     Parameters
@@ -24,7 +24,7 @@ def rgb2gray(rgb: ndarray) -> ndarray:
     return np.dot(rgb[..., :3], [0.299, 0.587, 0.144])
 
 
-def imread(filename: str, flatten: bool = False) -> ndarray:
+def imread(filename, flatten=False):
     """Read an image
 
     Read an image file into a numpy array using imageio.imread.
@@ -55,7 +55,7 @@ def imread(filename: str, flatten: bool = False) -> ndarray:
     return im
 
 
-def imsave(filename: str, arr: ndarray) -> None:
+def imsave(filename, arr) -> None:
     """Write an image.
 
     Write an 8-bit image file from a numpy array using imageio.imread
@@ -86,7 +86,7 @@ def imsave(filename: str, arr: ndarray) -> None:
         _imsave(filename, arr)
 
 
-def negative(image: ndarray) -> ndarray:
+def negative(image):
     """Return the negative of an 8-bit image
 
     Parameter

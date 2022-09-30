@@ -1,0 +1,6 @@
+pip
+setuptools
+cmake
+ninja
+scikit-build
+wheel

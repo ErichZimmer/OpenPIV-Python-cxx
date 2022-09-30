@@ -1,10 +1,8 @@
-from numpy import ndarray
 from openpiv_cxx.input_checker import check_nd as _check
-from typing import Union, Optional
-
+from . import _process_cpp as _proc
 
 import numpy as np
-from . import _process as _proc
+
 
 __all__ = [
     "get_field_shape",
@@ -15,9 +13,7 @@ __all__ = [
 ]
 
 
-def get_field_shape(
-    image_size: tuple([int, int]), window_size: int, overlap: int
-) -> tuple([int, int]):
+def get_field_shape(image_size, window_size, overlap):
     """Get vector field shape.
 
     Compute the shape of the resulting flow field.
@@ -34,7 +30,7 @@ def get_field_shape(
         the number of columns, easy to obtain using .shape.
     window_size : tuple
         The size of the (square) interrogation window.
-    Overlap: tuple
+    overlap : tuple
         The number of pixel by which two adjacent interrogation
         windows overlap.
 
@@ -51,9 +47,7 @@ def get_field_shape(
     return field_shape
 
 
-def get_coordinates(
-    image_size: tuple([int, int]), window_size: int, overlap: int
-) -> tuple([ndarray, ndarray]):
+def get_coordinates(image_size, window_size=32, overlap=16):
     """Get x/y coordinates of vector field.
 
     Compute the x, y coordinates of the centers of the interrogation windows.
@@ -63,13 +57,13 @@ def get_coordinates(
 
     Parameters
     ----------
-    image_size: tuple
+    image_size : tuple
         A two dimensional tuple for the pixel size of the image
         first element is number of rows, second element is
         the number of columns.
     window_size : int
         The size of the (square) interrogation window.
-    overlap: int
+    overlap : int
         The number of pixel by which two adjacent interrogation
         windows overlap.
 
@@ -97,10 +91,10 @@ def get_coordinates(
 
 
 def get_rect_coordinates(
-    image_size: tuple([int, int]),
-    window_size: tuple([int, int]),
-    overlap: tuple([int, int]),
-) -> tuple([ndarray, ndarray]):
+    image_size,
+    window_size=32,
+    overlap=16,
+):
     """Same as get_coordinates, except for rectangualr windows.
 
     Compute the x, y coordinates of the centers of the interrogation windows.
@@ -111,13 +105,13 @@ def get_rect_coordinates(
 
     Parameters
     ----------
-    image_size: tuple
+    image_size : tuple
         A two dimensional tuple for the pixel size of the image
         first element is number of rows, second element is
         the number of columns.
     window_size : int | tuple
-        The size of the (square) interrogation window, [default: 32 pix].
-    overlap: int | tuple
+        The size of the (square) interrogation window.
+    overlap : int | tuple
         The number of pixel by which two adjacent interrogation
         windows overlap.
 
@@ -131,13 +125,10 @@ def get_rect_coordinates(
         interrogation window centers, in pixels.
 
     """
-    if (
-        isinstance(window_size, tuple) == False
-        and isinstance(window_size, list) == False
-    ):
+    if isinstance(window_size, (tuple, list)) == False:
         window_size = [window_size, window_size]
 
-    if isinstance(overlap, tuple) == False and isinstance(overlap, list) == False:
+    if isinstance(overlap, (tuple, list)) == False:
         overlap = [overlap, overlap]
 
     _, y = get_coordinates(image_size, window_size[0], overlap[0])
@@ -147,13 +138,13 @@ def get_rect_coordinates(
 
 
 def fft_correlate_images(
-    image_a: ndarray,
-    image_b: ndarray,
-    window_size: int = 32,
-    overlap: int = 16,
-    correlation_method: str = "circular",
-    thread_count: int = 1,
-) -> ndarray:
+    image_a,
+    image_b,
+    window_size=32,
+    overlap=16,
+    correlation_method="circular",
+    thread_count=1,
+):
     """Standard FFT based cross-correlation of two images.
 
     Parameters
@@ -208,14 +199,14 @@ def fft_correlate_images(
 
 
 def correlation_to_displacement(
-    corr: ndarray,
-    n_rows: Optional[int] = None,
-    n_cols: Optional[int] = None,
-    kernel: str = "2x3",
-    limit_peak_search: bool = True,
-    thread_count: int = 1,
-    return_type: str = "first_peak",
-) -> tuple([[ndarray] * 4]):
+    corr,
+    n_rows=None,
+    n_cols=None,
+    kernel="2x3",
+    limit_peak_search=True,
+    thread_count=1,
+    return_type="first_peak",
+):
     """Standard subpixel estimation.
 
     Parameters
@@ -240,7 +231,7 @@ def correlation_to_displacement(
 
     Returns
     -------
-    u, v: ndarray
+    u, v : ndarray
         2D array of displacements in pixels/dt.
     peakHeight : ndarray
         2D array of correlation peak heights

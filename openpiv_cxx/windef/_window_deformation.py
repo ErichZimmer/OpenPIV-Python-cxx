@@ -1,4 +1,4 @@
-from numpy import arange, meshgrid, ndarray
+from numpy import arange, meshgrid
 from openpiv_cxx.interpolate import bilinear2D, whittaker2D, taylor_expansion2D
 from openpiv_cxx.input_checker import check_nd as _check
 
@@ -6,9 +6,7 @@ from openpiv_cxx.input_checker import check_nd as _check
 __all__ = ["create_deformation_field", "deform_windows"]
 
 
-def create_deformation_field(
-    frame: ndarray, x: ndarray, y: ndarray, u: ndarray, v: ndarray
-) -> tuple([[ndarray] * 4]):
+def create_deformation_field(frame, x, y, u, v):
     """Create a deformation field
 
     Deform an image by window deformation where a new grid is defined based
@@ -59,17 +57,17 @@ def create_deformation_field(
 
 
 def deform_windows(
-    frame_a: ndarray,
-    frame_b: ndarray,
-    x: ndarray,
-    y: ndarray,
-    u: ndarray,
-    v: ndarray,
-    deformation_method: str = "whittaker-shanon",
-    order: int = 1,
-    radius: int = 1,
-    deformation_order: int = 1,
-) -> tuple([ndarray, ndarray]):
+    frame_a,
+    frame_b,
+    x,
+    y,
+    u,
+    v,
+    deformation_method="whittaker-shanon",
+    order=1,
+    radius=1,
+    deformation_order=1,
+):
     """Deform images by interpolation
 
     Deform an image pair by window deformation where a new grid is defined based
@@ -103,18 +101,18 @@ def deform_windows(
         The order of the Taylor expansions interpolation kernel.
     radius : scalar
         The radius of the Whittaker-Shannon interpolation kernel.
+        Optimal radii are 3 and 5.
     deformation_method : str
         Type of deformation to use.
     deformation_order : scalar
         Order of deformation to use where '1' deforms the second image
-        and '2' deforms both image symetrically.
+        and '2' deforms both images symetrically.
 
     Returns
     -------
     frame_def_a, frame_def_b : ndarray
         Deformed images based on the meshgrid and displacements of the
         previous pass
-
 
     """
     _check(ndim=2, frame_a=frame_a, frame_b=frame_b, x=x, y=y, u=u, v=v)

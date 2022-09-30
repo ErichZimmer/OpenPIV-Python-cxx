@@ -1,7 +1,7 @@
 Information for Developers and Contributors
 ===========================================
 
-OpenPIV-Python-cxx is a continuation of the OpenPIV project to create free, opensource, and fast particle image velocimetry (PIV) software. The core functions are written in c++ to help alleviate memory constraints on consumer grade laptops and desktops while remaining fast. However, this package needs help from developers to improve further.
+OpenPIV-Python-cxx is a continuation of the OpenPIV project to create free, open source, and fast particle image velocimetry (PIV) software. The core functions are written in c++ to help alleviate memory constraints on consumer grade laptops and desktops while remaining fast. However, this package needs help from developers to improve further.
 
 Development Workflow
 ---------------------

@@ -70,7 +70,7 @@ py::array_t<imgDtype> whittaker_interp_wrapper(
 
 #pragma warning(default: 4244)
 
-PYBIND11_MODULE(_whittaker2D, m) {
+PYBIND11_MODULE(_whittaker2D_cpp, m) {
     m.doc() = "Python interface for interpolation functions written in c++.";
    
     m.def("_whittaker2D", 

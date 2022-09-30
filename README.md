@@ -27,7 +27,22 @@ To build the package, first you need to satisfy the requirements for vcpkg. Here
 Next, dowload and install a python environment manager, such as miniconda. Setup a virtual environment and activate it  (with conda, use `conda create --name <env name> python=3.8`). You can now install git through conda or pip (unless you want to install it differently). When using git to clone this repository, you must clone it recursively due to third-party packages used in this repository. So when cloning, use `git clone --recursive https://github.com/ErichZimmer/OpenPIV-Python-cxx.git`.
 
 ### To build:
-When building this package, set your current directory to this package in the terminal used to compile this package (e.g. cd ...). Use `python -m setup.py build` to validate everything works (not necessary, just to prevent pollutting your virtual environment). If no errors are generated, then you can proceed with `python -m setup.py install` (deprecated) or `pip install .`. If you run into any issues, please create an issue so it can be resolved.
+When building this package, set your current directory to this package in the terminal used to compile this package (e.g. cd ...). We need to install the build requirements and upgrade pip. To do this, execute the folowing line:
+```python 
+pip install --upgrade -r requirements/build.txt
+```
+
+Next, we can build the actual package with
+
+```python
+python setup.py install
+``` 
+
+or
+
+```python
+pip install --no-build-isolation .
+``` 
 
 ### Optional dependencies
 To further increase accuracy and performance, some functions utilize extra third-party packages. For instance, the smoothing algorithm implented by references 1 and 2 use SciPy minimization functions. Here are some optional, but not needed dependencies:
@@ -37,6 +52,8 @@ To further increase accuracy and performance, some functions utilize extra third
  - pandas : data visualization and analysis 
  - ffmpeg : loading and creating movies
  - openpiv_tk_gui : GUI for OpenPIV-Python (currently needs some modifications for this repository)
+
+These can be installed using `pip install openpiv_cxx[full]`.
  
 ### Optional dependencies
 Documentation is inspired by [openpiv_tk_gui](https://github.com/OpenPIV/openpiv_tk_gui)

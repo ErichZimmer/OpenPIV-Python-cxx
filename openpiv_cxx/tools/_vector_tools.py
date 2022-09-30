@@ -1,5 +1,3 @@
-from typing import Optional
-from numpy import ndarray
 from openpiv_cxx.input_checker import check_nd as _check
 
 import numpy as np
@@ -8,7 +6,7 @@ import numpy as np
 __all__ = ["save", "transform_coordinates", "uniform_scaling"]
 
 
-def save(filename: str, fmt: str = "%8.4f", delimiter: str = "\t", **kwargs) -> None:
+def save(filename, fmt="%8.4f", delimiter="\t", **kwargs):
     """Save flow field to an ascii file.
 
     Parameters
@@ -55,9 +53,7 @@ def save(filename: str, fmt: str = "%8.4f", delimiter: str = "\t", **kwargs) -> 
     np.savetxt(filename, out.T, fmt=fmt, delimiter=delimiter, header=header)
 
 
-def transform_coordinates(
-    x: ndarray, y: ndarray, u: ndarray, v: ndarray
-) -> tuple([ndarray] * 4):
+def transform_coordinates(x, y, u, v):
     """Set origin of flow field.
 
     Converts coordinate systems from/to the image based / physical based.
@@ -86,9 +82,7 @@ def transform_coordinates(
     return x, y, u, v
 
 
-def uniform_scaling(
-    x: ndarray, y: ndarray, u: ndarray, v: ndarray, scaling_factor: float
-) -> tuple([ndarray] * 4):
+def uniform_scaling(x, y, u, v, scaling_factor):
     """Apply an uniform scaling.
 
     Parameters

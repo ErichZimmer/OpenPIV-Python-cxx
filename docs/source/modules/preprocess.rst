@@ -1,4 +1,4 @@
-.. module:: openpiv_cxx.preprocess
+.. module:: openpiv_cxx.filters
 
 ==========
 Preprocess
@@ -13,6 +13,7 @@ Spatial filters
     contrast_stretch
     gaussian_filter
     highpass_filter
-    variance_normalization_filter
     intensity_cap
+    sobel_filter
     threshold_binarization 
+    variance_normalization_filter

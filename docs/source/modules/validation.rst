@@ -1,4 +1,4 @@
-.. module:: openpiv_cxx.validation
+.. module:: openpiv_cxx.validate
 
 ==========
 Validation
