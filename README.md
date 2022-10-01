@@ -49,9 +49,7 @@ To further increase accuracy and performance, some functions utilize extra third
  - scipy : all-in-one post processing algorithm (smoothn) and processing of data
  - scikit-image : addditional image pre-processing
  - matplotlib  : data visualization and creation of publication-ready plots
- - pandas : data visualization and analysis 
  - ffmpeg : loading and creating movies
- - openpiv_tk_gui : GUI for OpenPIV-Python (currently needs some modifications for this repository)
 
 These can be installed using `pip install openpiv_cxx[full]`.
  
