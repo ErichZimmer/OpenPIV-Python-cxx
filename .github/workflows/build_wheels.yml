@@ -15,7 +15,7 @@ on:
 jobs:
   build_wheels:
     name: Build wheel for ${{ matrix.buildplat[1] }}, Python ${{ matrix.pyver }}
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'build_wheels') }} #|| github.event_name != 'pull_request' }}
+    #if: ${{ contains(github.event.pull_request.labels.*.name, 'build_wheels') }} || github.event_name != 'pull_request' }}
     runs-on: ${{ matrix.buildplat[0] }}
     strategy:
       matrix:
