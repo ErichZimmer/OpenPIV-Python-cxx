@@ -6,8 +6,8 @@ on:
   push:
     branches:
       - "master"
-    tags:
-      - "v*"
+    #tags:
+    #  - "v*"
 
   pull_request:
       types: [opened, labeled, reopened, synchronize]
@@ -48,7 +48,7 @@ jobs:
   build_sdist:
     name: Build source distribution
     runs-on: ubuntu-latest
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'build_wheels') }} #|| github.event_name != 'pull_request' }}
+    #if: ${{ contains(github.event.pull_request.labels.*.name, 'build_wheels') }} || github.event_name != 'pull_request' }}
     steps:
       - uses: actions/checkout@v3.0.2
         with:
