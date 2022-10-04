@@ -57,6 +57,7 @@ def main():
     
     # get extras
     extras = {}
+    extras["build"] = get_pkg_from_txt("requirements/build.txt")
     extras["full"] = get_pkg_from_txt("requirements/full.txt")
     extras["docs"] = get_pkg_from_txt("requirements/docs.txt") + extras["full"]
     extras["test"] = get_pkg_from_txt("requirements/test.txt") + extras["full"]

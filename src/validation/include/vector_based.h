@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <vector>
 
+
 // check 8 points to see if vector in question has less than 50% of points invalid
 void difference_test2D(
     const double*,

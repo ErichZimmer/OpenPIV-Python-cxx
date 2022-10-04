@@ -77,7 +77,7 @@ double meanI(
             sum += img[row * img_stride + col];
     }
 
-    return sum / N_M;
+    return sum / static_cast<double>(N_M);
 }
 
 
@@ -104,8 +104,8 @@ std::vector<double> mean_std(
         }
     }
 
-    img_mean = img_sum / N_M;
-    img_std = std::sqrt( (img_std_temp / N_M) + (img_mean*img_mean) - (2*img_mean*img_mean) );
+    img_mean = img_sum / static_cast<double>(N_M);
+    img_std = std::sqrt( (img_std_temp / static_cast<double>(N_M)) + (img_mean*img_mean) - (2*img_mean*img_mean) );
 
     std::vector<double> stat_out(2);
     stat_out[0] = img_mean; 

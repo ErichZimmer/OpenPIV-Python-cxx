@@ -1,5 +1,4 @@
 # include packages
-find_package(cxxopts CONFIG REQUIRED)
 find_package(Threads REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 
@@ -23,7 +22,6 @@ include_directories(${OPENPIV_CXX_DIR}/openpiv)
 add_compile_definitions(_USE_MATH_DEFINES)
 
 target_link_libraries(_process_cpp
-    PRIVATE cxxopts::cxxopts
     PRIVATE fmt::fmt-header-only
     Threads::Threads
     openpivcore

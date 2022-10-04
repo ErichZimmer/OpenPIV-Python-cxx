@@ -4,6 +4,8 @@
 // validation
 #include "vector_based.h"
 
+#include <iostream>
+
 
 // check 8 points to see if vector in question has less than 50% of points invalid
 void difference_test2D(
@@ -23,6 +25,10 @@ void difference_test2D(
 
         for (std::uint32_t j = 1; j < M - 1; ++j)
         {
+            // set invalid flag and mask to zero
+            invalid_flag = 0;
+            mask[i * M + j] = 0;
+
             // find current u and v vectors
             u_of_q = u[i * M + j];
             v_of_q = v[i * M + j];
@@ -39,17 +45,18 @@ void difference_test2D(
                     ui = u[(i + ii - 1) * M + (j + jj - 1)];
                     vi = v[(i + ii - 1) * M + (j + jj - 1)];
                     if (std::isfinite(ui) || std::isfinite(vi)) // should nans be treated as invalid points?
+                    {
                         if ((std::abs( ui - u_of_q ) > threshold_u) || (std::abs( vi - v_of_q ) > threshold_v))
+                        {
                             invalid_flag += 1;
+                        }
+                    }
                 }
             }
 
             // if more than 4 points are invalid, then mark the vector as invalid
             if (invalid_flag > 4)
                 mask[i * M + j] = 1;
-
-            // reset invalid flag
-            invalid_flag = 0;
         }
     }
 }
@@ -102,9 +109,9 @@ void local_median_test(
     std::size_t kernel_size = kernel_radius * 2 + 1;
     
     // we only need the 8 vectors around the vector of question (u/v _of_q)
-    std::vector<bool> footprint(kernel_size * kernel_size, 1);
-    std::size_t half_size = footprint.size() / 2;
-    footprint[half_size] = 0;
+    std::vector<bool> footprint(kernel_size * kernel_size);
+    std::size_t half_size = (kernel_size * kernel_size) / 2;
+    footprint[half_size] = 1;
     
     // assume padding is equal to kernel_radius
     for (std::uint32_t i = kernel_radius; i < N - kernel_radius; ++i)
@@ -114,14 +121,19 @@ void local_median_test(
         
         for (std::uint32_t j = kernel_radius; j < M - kernel_radius; ++j)
         {
-            std::vector<double> kernel_u;
-            std::vector<double> kernel_v;
+            // set mask to 0
+            mask[i * M + j] = 0;
 
             u_of_q = u[i * M + j];
             v_of_q = v[i * M + j];
 
             if ( !std::isfinite(u_of_q) || !std::isfinite(v_of_q) )
+            {
                 continue; // Don't process nans
+            }
+
+            std::vector<double> kernel_u;
+            std::vector<double> kernel_v;
 
             // cycle u[i +/- 1, j +/- 1] and v[i +/- 1, j +/- 1] to find valid points
             for (std::uint32_t ii = 0; ii < kernel_size; ++ii)
@@ -132,10 +144,10 @@ void local_median_test(
                     vi = v[(i + ii - kernel_radius) * M + (j + jj - kernel_radius)];
 
                     // only need points around vector
-                    if ((std::isfinite(ui) && footprint[ii * kernel_size + jj]))
+                    if ( std::isfinite(ui) && (footprint[ii * kernel_size + jj] != 1) )
                         kernel_u.push_back(ui);
 
-                    if ((std::isfinite(vi) && footprint[ii * kernel_size + jj]))
+                    if ( std::isfinite(vi) && (footprint[ii * kernel_size + jj] != 1) )
                         kernel_v.push_back(vi);
                 }
             }
@@ -186,9 +198,12 @@ void normalized_local_median_test(
     {
         // declare variables here in case of future row-based parallelism
         double u_of_q, v_of_q, ui, vi, u_med, v_med, u_res, v_res, u_rm, v_rm = 0.0;
-        
+
         for (std::uint32_t j = kernel_radius; j < M - kernel_radius; ++j)
         {
+            // set mask to 0
+            mask[i * M + j] = 0;
+
             std::vector<double> kernel_u;
             std::vector<double> kernel_v;
 

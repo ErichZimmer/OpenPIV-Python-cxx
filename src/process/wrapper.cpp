@@ -30,8 +30,8 @@ using namespace openpiv;
 
 // wrap C++ function with NumPy array IO
 py::array_t<double> fft_correlate_window_wrapper(
-    py::array_t<double, py::array::c_style | py::array::forcecast> np_img_a,
-    py::array_t<double, py::array::c_style | py::array::forcecast> np_img_b
+    py::array_t<double, py::array::c_style | py::array::forcecast>& np_img_a,
+    py::array_t<double, py::array::c_style | py::array::forcecast>& np_img_b
 ){
     // check inputs
     if ( np_img_a.ndim() != 2 )
@@ -72,8 +72,8 @@ py::array_t<double> fft_correlate_window_wrapper(
 
 
 py::array_t<double> fft_correlate_images_standard_wrapper( // big function name lol
-    py::array_t<double, py::array::c_style | py::array::forcecast> np_img_a,
-    py::array_t<double, py::array::c_style | py::array::forcecast> np_img_b,
+    py::array_t<double, py::array::c_style | py::array::forcecast>& np_img_a,
+    py::array_t<double, py::array::c_style | py::array::forcecast>& np_img_b,
     int window_size,
     int overlap,
     int correlation_method,
@@ -133,7 +133,7 @@ py::array_t<double> fft_correlate_images_standard_wrapper( // big function name 
 
 
 py::array_t<double> find_subpixel_wrapper(
-    py::array_t<double, py::array::c_style | py::array::forcecast> np_cmatrix,
+    py::array_t<double, py::array::c_style | py::array::forcecast>& np_cmatrix,
     int search_method,
     int limit_peak_search,
     int num_peaks,

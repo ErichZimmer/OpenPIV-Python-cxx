@@ -13,7 +13,7 @@ __all__ = [
     "global_std",
     "local_difference",
     "local_median",
-    "normalized_local_median",
+    "normalized_local_median"
 ]
 
 
@@ -25,9 +25,9 @@ __all__ = [
 def global_val(
     u,
     v,
+    mask=None,
     u_thresholds=[-10, 10],
     v_thresholds=[-10, 10],
-    mask=None,
     convention="openpiv",
 ):
     """Eliminate spurious vectors with a global threshold.
@@ -80,11 +80,11 @@ def global_val(
     )
 
     if convention == "openpiv":
-        u[ind] = np.nan
-        v[ind] = np.nan
+        u[ind != 0] = np.nan
+        v[ind != 0] = np.nan
 
         mask = np.zeros_like(u, dtype=bool)
-        mask[ind] = True
+        mask[ind != 0] = True
 
         return u, v, mask
 
@@ -92,15 +92,21 @@ def global_val(
         if isinstance(mask, np.ndarray):
             if mask.shape != ind.shape:
                 raise ValueError("mask shape must be same as u/v shape")
-            mask[ind] = 1
+            mask[ind != 0] = 1
         else:
             mask = np.zeros_like(u, dtype=int)
-            mask[ind] = 1
+            mask[ind != 0] = 1
 
         return mask
 
 
-def global_std(u, v, mask=None, std_threshold=3.0, convention="openpiv"):
+def global_std(
+    u, 
+    v,
+    mask=None, 
+    std_threshold=3.0, 
+    convention="openpiv"
+):
     """Eliminate spurious vectors with a global threshold defined by the
     standard deviation
 
@@ -154,21 +160,19 @@ def global_std(u, v, mask=None, std_threshold=3.0, convention="openpiv"):
         tmpu = np.copy(u)
         tmpv = np.copy(v)
 
-    ind = np.logical_or(
-        np.abs(tmpu - np.nanmean(tmpu)) > std_threshold * np.nanstd(tmpu),
-        np.abs(tmpv - np.nanmean(tmpv)) > std_threshold * np.nanstd(tmpv),
-    )
+    ind = np.logical_or(np.abs(tmpu - np.nanmean(tmpu)) > std_threshold * np.nanstd(tmpu), 
+                        np.abs(tmpv - np.nanmean(tmpv)) > std_threshold * np.nanstd(tmpv))
 
     if np.all(ind):  # if all is True, something is really wrong
         print("Warning! probably a uniform shift data, do not use this filter")
         ind = ~ind
 
     if convention == "openpiv":
-        u[ind] = np.nan
-        v[ind] = np.nan
+        u[ind != 0] = np.nan
+        v[ind != 0] = np.nan
 
         mask = np.zeros_like(u, dtype=bool)
-        mask[ind] = True
+        mask[ind != 0] = True
 
         return u, v, mask
 

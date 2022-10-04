@@ -111,12 +111,10 @@ std::vector<double> process_images_standard(
         core::gf_image& view_a, core::gf_image& view_b,
         core::gf_image& output)
      {
-        
-        double mean_A = 0, mean_B = 0;
         auto mean_stdA = mean_std(img_a, ia.bottom(), ia.top(), ia.left(), ia.right());
         auto mean_stdB = mean_std(img_b, ia.bottom(), ia.top(), ia.left(), ia.right());
 
-        double norm = mean_stdA[1] * mean_stdB[1] * paddedWindow.area();
+        double norm = mean_stdA[1] * mean_stdB[1] * static_cast<double>(paddedWindow.area() * ia.area());
 
         placeIntoPadded(img_a, view_a, ia.bottom(), ia.top(), ia.left(), ia.right(), mean_stdA[0]);
         placeIntoPadded(img_b, view_b, ia.bottom(), ia.top(), ia.left(), ia.right(), mean_stdB[0]);

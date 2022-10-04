@@ -41,18 +41,18 @@ python setup.py install .
 or
 
 ```python
+pip install .
+``` 
+or if the compilation fails due to build isolation,
+
+```python
 pip install --no-build-isolation .
 ``` 
 
 ### Optional dependencies
 To further increase accuracy and performance, some functions utilize extra third-party packages. For instance, the smoothing algorithm implented by references 1 and 2 use SciPy minimization functions. Here are some optional, but not needed dependencies:
- - scipy : all-in-one post processing algorithm (smoothn) and processing of data
- - scikit-image : addditional image pre-processing
+ - scipy : all-in-one post processing algorithm (smoothn)
  - matplotlib  : data visualization and creation of publication-ready plots
- - pandas : data visualization and analysis 
- - ffmpeg : loading and creating movies
- - openpiv_tk_gui : GUI for OpenPIV-Python (currently needs some modifications for this repository)
-
 These can be installed using `pip install openpiv_cxx[full]`.
  
 ### Optional dependencies
@@ -60,11 +60,11 @@ Documentation is inspired by [openpiv_tk_gui](https://github.com/OpenPIV/openpiv
 Find the [detailed documentation on readthedocs.io](https://openpiv-python-cxx.readthedocs.io/en/latest/index.html)
 
 ## To-do:
- - [ ] Full compatability with OpenPIV-Python
+ - [ ] Full compatability with OpenPIV-Python (and subsequently openpiv_tk_gui)
  - [ ] Contour finding for mask images
  - [ ] dynamic/algorithmic masking
  - [ ] two-phase separation
- - [ ] FFTW-double (or float) precision for much faster processing
+ - [ ] FFTW double/single precision for much faster processing
  - [ ] Error correlation-based correction algorithm
  - [ ] Repeated correlation
  - [ ] 2D NxN subpixel centroid approximation

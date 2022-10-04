@@ -11,7 +11,7 @@
 // validation
 #include "vector_based.h"
 
-using imgDtype = double;
+using vecDtype = double;
 
 // Interface
 namespace py = pybind11;
@@ -19,11 +19,12 @@ namespace py = pybind11;
 // wrap C++ function with NumPy array IO
 #pragma warning(disable: 4244)
 
-py::object difference_test2D_wrapper(
-    py::array_t<imgDtype> u,
-    py::array_t<imgDtype> v,
-    imgDtype threshold_u,
-    imgDtype threshold_v
+
+py::array_t<int> difference_test2D_wrapper(
+    py::array_t<vecDtype, py::array::c_style | py::array::forcecast>& u,
+    py::array_t<vecDtype, py::array::c_style | py::array::forcecast>& v,
+    vecDtype threshold_u,
+    vecDtype threshold_v
 ){
     // check input dimensions
     if ( u.ndim() != 2 )
@@ -43,8 +44,8 @@ py::object difference_test2D_wrapper(
     auto buf_v = v.request();
     auto buf_m = mask.request();
 
-    imgDtype* ptr_u  = (imgDtype*) buf_u.ptr;
-    imgDtype* ptr_v  = (imgDtype*) buf_v.ptr;
+    vecDtype* ptr_u  = (vecDtype*) buf_u.ptr;
+    vecDtype* ptr_v  = (vecDtype*) buf_v.ptr;
     int* ptr_m  = (int*) buf_m.ptr;
 
     // call pure C++ function
@@ -63,11 +64,11 @@ py::object difference_test2D_wrapper(
 }
 
 
-py::object local_median_wrapper(
-    py::array_t<imgDtype> u,
-    py::array_t<imgDtype> v,
-    imgDtype threshold_u,
-    imgDtype threshold_v,
+py::array_t<int> local_median_wrapper(
+    py::array_t<vecDtype, py::array::c_style | py::array::forcecast>& u,
+    py::array_t<vecDtype, py::array::c_style | py::array::forcecast>& v,
+    vecDtype threshold_u,
+    vecDtype threshold_v,
     int kernel_radius,
     int kernel_min_size
 ){
@@ -95,9 +96,9 @@ py::object local_median_wrapper(
     auto buf_v = v.request();
     auto buf_m = mask.request();
 
-    imgDtype* ptr_u      = (imgDtype*) buf_u.ptr;
-    imgDtype* ptr_v      = (imgDtype*) buf_v.ptr;
-    int* ptr_mask        = (int*) buf_m.ptr;
+    vecDtype* ptr_u = (vecDtype*) buf_u.ptr;
+    vecDtype* ptr_v = (vecDtype*) buf_v.ptr;
+    int* ptr_mask   = (int*) buf_m.ptr;
 
     // call pure C++ function
     local_median_test(
@@ -117,11 +118,11 @@ py::object local_median_wrapper(
 }
 
 
-py::object normalized_local_median_wrapper(
-    py::array_t<imgDtype> u,
-    py::array_t<imgDtype> v,
-    imgDtype threshold_u,
-    imgDtype threshold_v,
+py::array_t<int> normalized_local_median_wrapper(
+    py::array_t<vecDtype, py::array::c_style | py::array::forcecast>& u,
+    py::array_t<vecDtype, py::array::c_style | py::array::forcecast>& v,
+    vecDtype threshold_u,
+    vecDtype threshold_v,
     int kernel_radius,
     double eps,
     int kernel_min_size
@@ -150,8 +151,8 @@ py::object normalized_local_median_wrapper(
     auto buf_v = v.request();
     auto buf_m = mask.request();
 
-    imgDtype* ptr_u      = (imgDtype*) buf_u.ptr;
-    imgDtype* ptr_v      = (imgDtype*) buf_v.ptr;
+    vecDtype* ptr_u      = (vecDtype*) buf_u.ptr;
+    vecDtype* ptr_v      = (vecDtype*) buf_v.ptr;
     int* ptr_mask        = (int*) buf_m.ptr;
 
     // call pure C++ function
@@ -174,13 +175,13 @@ py::object normalized_local_median_wrapper(
 
 
 double test_median_wrapper(
-    py::array_t<imgDtype> arr
+    py::array_t<vecDtype> arr
 ){       
     auto buf_arr = arr.request();
 
     int N_M = buf_arr.size;
 
-    imgDtype* ptr_arr  = (imgDtype*) buf_arr.ptr;
+    vecDtype* ptr_arr  = (vecDtype*) buf_arr.ptr;
 
     // call pure C++ function
     double median = test_median(

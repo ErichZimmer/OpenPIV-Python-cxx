@@ -1,3 +1,5 @@
+from openpiv_cxx.input_checker import check_nd as _check
+
 import numpy as np
 
 
@@ -15,7 +17,6 @@ def sig2noise_val(
     u,
     v,
     s2n,
-    w=None,
     threshold=1.05,
     mask=None,
     convention="openpiv",
@@ -28,18 +29,14 @@ def sig2noise_val(
     Parameters
     ----------
     u : ndarray
-        A two or three dimensional array containing the u velocity component.
+        A two dimensional array containing the u velocity component.
 
     v : ndarray
-        A two or three dimensional array containing the v velocity component.
+        A two dimensional array containing the v velocity component.
 
     s2n : ndarray
-        A two or three dimensional array containing the value  of the signal to
+        A two dimensional array containing the value  of the signal to
         noise ratio from cross-correlation function.
-
-    w : ndarray, optional
-        A two or three dimensional array containing the w (in z-direction)
-        velocity component.
 
     threshold: float
         The signal to noise ratio threshold value.
@@ -62,11 +59,6 @@ def sig2noise_val(
         where spurious vectors have been replaced by NaN if convention
         is set to 'openpiv'.
 
-    w : ndarray, optional
-        Optional, a two or three dimensional array containing the w
-        (in z-direction) velocity component, where spurious vectors
-        have been replaced by NaN if convention is set to 'openpiv'.
-
     mask : ndarray
         A boolean or integer array where elemtents that = 0 are valid
         and 1 = invalid.
@@ -76,18 +68,22 @@ def sig2noise_val(
     R. D. Keane and R. J. Adrian, Measurement Science & Technology, 1990, 1, 1202-1215.
 
     """
+    
+    
+    if threshold < 0:
+        raise ValueError(
+            "Threshold can not be less than zero"
+        )
+        
     ind = s2n < threshold
 
     if convention == "openpiv":
-        u[ind] = np.nan
-        v[ind] = np.nan
+        u[ind != 0] = np.nan
+        v[ind != 0] = np.nan
 
         mask = np.zeros_like(u, dtype=bool)
-        mask[ind] = True
+        mask[ind != 0] = True
 
-        if isinstance(w, np.ndarray):
-            w[ind] = np.nan
-            return u, v, w, mask
 
         return u, v, mask
 
@@ -95,9 +91,9 @@ def sig2noise_val(
         if isinstance(mask, np.ndarray):
             if mask.shape != ind.shape:
                 raise ValueError("mask shape must be same as u/v shape")
-            mask[ind] = 1
+            mask[ind != 0] = 1
         else:
             mask = np.zeros_like(u, dtype=int)
-            mask[ind] = 1
+            mask[ind != 0] = 1
 
         return mask
