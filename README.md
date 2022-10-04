@@ -53,6 +53,11 @@ pip install --no-build-isolation .
 To further increase accuracy and performance, some functions utilize extra third-party packages. For instance, the smoothing algorithm implented by references 1 and 2 use SciPy minimization functions. Here are some optional, but not needed dependencies:
  - scipy : all-in-one post processing algorithm (smoothn)
  - matplotlib  : data visualization and creation of publication-ready plots
+<<<<<<< HEAD
+=======
+ - ffmpeg : loading and creating movies
+
+>>>>>>> 1a38187755e039f4c097779278ffc9a1c067c088
 These can be installed using `pip install openpiv_cxx[full]`.
  
 ### Optional dependencies
