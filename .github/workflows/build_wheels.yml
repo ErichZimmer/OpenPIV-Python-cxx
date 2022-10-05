@@ -1,6 +1,9 @@
 name: Build wheels
 
 on:
+  # Manually trigger build
+  workflow_dispatch:
+
   # Trigger on pushes to the mainline branches and version tags. This prevents building commits
   # twice when the pull request source branch is in the same repository.
   push:
