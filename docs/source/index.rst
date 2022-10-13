@@ -19,10 +19,10 @@ Table of Contents
    :caption: API
 
    modules/interpolate
-   modules/preprocess
+   modules/filters
    modules/process
    modules/tools
-   modules/validation
+   modules/validate
    modules/windef
 
 .. toctree::

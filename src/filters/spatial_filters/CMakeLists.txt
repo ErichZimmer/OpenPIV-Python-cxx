@@ -10,4 +10,4 @@ pybind11_add_module(_spatial_filters_cpp
     ${SOURCE_FILES}
 )
 
-install(TARGETS _spatial_filters_cpp DESTINATION openpiv_cxx/filters)
+install(TARGETS _spatial_filters_cpp DESTINATION lib/filters)

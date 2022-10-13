@@ -63,10 +63,10 @@ def main():
     extras["test"] = get_pkg_from_txt("requirements/test.txt") + extras["full"]
     
     setup(
-        version="0.3.4",
+        version="0.3.5",
         package_dir={
             "openpiv_cxx": "lib",
-            #"openpiv_cxx._libs": "lib/_libs",
+            "openpiv_cxx._libs": "lib/_libs",
             "openpiv_cxx.filters": "lib/filters",
             "openpiv_cxx.input_checker": "lib/input_checker",
             "openpiv_cxx.inpaint_nans": "lib/inpaint_nans",

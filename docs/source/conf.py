@@ -1,8 +1,11 @@
+import openpiv_cxx
+from openpiv_cxx import *
+
 # -- Project information -----------------------------------------------------
 project = "OpenPIV-Python-cxx"
 copyright = "2022, OpenPIV Contributors"
 author = "OpenPIV Contributors"
-release = "0.2.4"
+release = "0.3.5"
 
 # -- General configuration ---------------------------------------------------
 extensions = [

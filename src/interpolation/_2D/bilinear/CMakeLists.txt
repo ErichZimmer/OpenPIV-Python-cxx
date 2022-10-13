@@ -9,4 +9,4 @@ pybind11_add_module(_bilinear2D_cpp
     ${SOURCE_FILES}
 )
 
-install(TARGETS _bilinear2D_cpp DESTINATION openpiv_cxx/interpolate)
+install(TARGETS _bilinear2D_cpp DESTINATION lib/interpolate)

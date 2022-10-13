@@ -27,4 +27,4 @@ target_link_libraries(_process_cpp
     openpivcore
 )
 
-install(TARGETS _process_cpp DESTINATION openpiv_cxx/process)
+install(TARGETS _process_cpp DESTINATION lib/process)

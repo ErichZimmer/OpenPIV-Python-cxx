@@ -10,4 +10,4 @@ pybind11_add_module(_validation_cpp
     ${SOURCE_FILES}
 )
 
-install(TARGETS _validation_cpp DESTINATION openpiv_cxx/validate)
+install(TARGETS _validation_cpp DESTINATION lib/validate)

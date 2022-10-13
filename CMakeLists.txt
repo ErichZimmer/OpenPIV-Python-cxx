@@ -58,5 +58,5 @@ endif()
 
 message(STATUS "Files ${CMAKE_BINARY_DIR}/out/*.${_EXT} copied to _libs")
 install(DIRECTORY ${CMAKE_BINARY_DIR}/out/
-        DESTINATION openpiv_cxx/_libs
+        DESTINATION lib/_libs
         FILES_MATCHING PATTERN ${_EXT})

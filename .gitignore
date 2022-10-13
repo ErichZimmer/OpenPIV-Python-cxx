@@ -12,6 +12,7 @@ dist/*
 *.ipynb_checkpoints*
 
 _skbuild/
+_libs/
 build/
 
 *.m
