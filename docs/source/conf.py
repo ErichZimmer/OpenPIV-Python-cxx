@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 import openpiv_cxx
 from openpiv_cxx import *
+=======
+
+import openpiv_cxx
+>>>>>>> 2eefe067e21993ca4875c9ed4dce6e913b6c6417
 
 # -- Project information -----------------------------------------------------
 project = "OpenPIV-Python-cxx"
