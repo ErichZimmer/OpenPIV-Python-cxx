@@ -1,3 +1,6 @@
+
+import openpiv_cxx
+
 # -- Project information -----------------------------------------------------
 project = "OpenPIV-Python-cxx"
 copyright = "2022, OpenPIV Contributors"
