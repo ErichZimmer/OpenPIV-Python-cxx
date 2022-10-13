@@ -20,7 +20,7 @@ void difference_test2D(
 
 
 double median(
-    std::vector<double>&
+    std::vector<double>
 );
 
 
@@ -33,7 +33,7 @@ void local_median_test(
     std::uint32_t,
     std::uint32_t,
     std::uint32_t,
-    int kernel_min_size
+    std::size_t
 );
 
 
@@ -46,8 +46,8 @@ void normalized_local_median_test(
     std::uint32_t,
     std::uint32_t,
     std::uint32_t,
-    double eps,
-    int kernel_min_size
+    double,
+    std::size_t
 );
 
 

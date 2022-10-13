@@ -117,7 +117,6 @@ void process_cmatrix_2x3(
     auto processor = [
         cmatrix,
         results,
-        maxStep,
         stride_2d,
         &stride_1d,
         &U, &V, &PH, &P2P,

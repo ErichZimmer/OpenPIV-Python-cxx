@@ -62,7 +62,8 @@ void difference_test2D(
 }
 
 
-double median(std::vector<double>& arr)
+// pass by copy to avoid changing original data
+double median(std::vector<double> arr)
 {   
     if ( arr.size() == 0 ) // empty kernel
         return 0.0;
@@ -89,7 +90,7 @@ double median(std::vector<double>& arr)
             std::begin(arr) + n
         );
 
-        return 0.5 * (arr_n + arr[n - 1]);
+        return 0.5 * (arr_n + arr_m);
     }
 }
 
@@ -104,7 +105,7 @@ void local_median_test(
     std::uint32_t N,
     std::uint32_t M,
     std::uint32_t kernel_radius,
-    int kernel_min_size = 0
+    std::size_t kernel_min_size = 0
 ){
     std::size_t kernel_size = kernel_radius * 2 + 1;
     
@@ -184,7 +185,7 @@ void normalized_local_median_test(
     std::uint32_t M,
     std::uint32_t kernel_radius,
     double eps = 0.1,
-    int kernel_min_size = 0
+    std::size_t kernel_min_size = 0
 ){
     std::size_t kernel_size = kernel_radius * 2 + 1;
     

@@ -63,9 +63,24 @@ def main():
     extras["test"] = get_pkg_from_txt("requirements/test.txt") + extras["full"]
     
     setup(
-        version="0.3.2",
+        version="0.3.4",
+        package_dir={
+            "openpiv_cxx": "lib",
+            #"openpiv_cxx._libs": "lib/_libs",
+            "openpiv_cxx.filters": "lib/filters",
+            "openpiv_cxx.input_checker": "lib/input_checker",
+            "openpiv_cxx.inpaint_nans": "lib/inpaint_nans",
+            "openpiv_cxx.interpolate": "lib/interpolate",
+            "openpiv_cxx.openpiv": "lib/openpiv",
+            "openpiv_cxx.process": "lib/process",
+            "openpiv_cxx.validate": "lib/validate",
+            "openpiv_cxx.smooth": "lib/smooth",
+            "openpiv_cxx.tools": "lib/tools",
+            "openpiv_cxx.windef": "lib/windef"
+        },
         packages=[
             "openpiv_cxx",
+            "openpiv_cxx._libs",
             "openpiv_cxx.filters",
             "openpiv_cxx.input_checker",
             "openpiv_cxx.inpaint_nans",

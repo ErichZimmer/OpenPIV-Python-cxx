@@ -37,7 +37,7 @@ else()
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG -g -O3 -ffast-math")
 endif()
 
-# build libopenpiv
+# build openpivcore
 add_subdirectory(${OPENPIV_CXX_DIR}/openpiv)
 
 # include source directory
