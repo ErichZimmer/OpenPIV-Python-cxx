@@ -1,6 +1,6 @@
-| Platforms | Statistics |
-| --------- | ---------- |
-| [![Windows](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_windows.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_windows.yml) | ![License](https://img.shields.io/github/license/ErichZimmer/OpenPIV-Python-cxx) |
+| Platforms | Statistics | Health |
+| --------- | ---------- | ------ |
+| [![Windows](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_windows.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_windows.yml) | ![License](https://img.shields.io/github/license/ErichZimmer/OpenPIV-Python-cxx) | [![Documentation Status](https://readthedocs.org/projects/openpiv-python-cxx/badge/?version=latest)](https://openpiv-python-cxx.readthedocs.io/en/latest/?badge=latest) |
 | [![macOS](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_macos.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_macos.yml) | ![Issues](https://img.shields.io/github/issues/ErichZimmer/OpenPIV-Python-cxx) |
 | [![Linux](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_linux.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_linux.yml) | ![Stars](https://img.shields.io/github/stars/ErichZimmer/OpenPIV-Python-cxx) |
 
@@ -57,11 +57,8 @@ pip install --no-build-isolation .
 To further increase accuracy and performance, some functions utilize extra third-party packages. For instance, the smoothing algorithm implented by references 1 and 2 use SciPy minimization functions. Here are some optional, but not needed dependencies:
  - scipy : all-in-one post processing algorithm (smoothn)
  - matplotlib  : data visualization and creation of publication-ready plots
-<<<<<<< HEAD
-=======
  - ffmpeg : loading and creating movies
 
->>>>>>> 1a38187755e039f4c097779278ffc9a1c067c088
 These can be installed using `pip install openpiv_cxx[full]`.
  
 ### Optional dependencies
