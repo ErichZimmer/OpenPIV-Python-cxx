@@ -28,3 +28,14 @@ target_link_libraries(_process_cpp
 )
 
 install(TARGETS _process_cpp DESTINATION lib/process)
+
+if(APPLE)
+    set_target_properties(_process_cpp PROPERTIES INSTALL_RPATH "@loader_path")
+else()
+    set_target_properties(_process_cpp PROPERTIES INSTALL_RPATH "\$ORIGIN")
+endif()
+
+if(_using_conda OR DEFINED ENV{CIBUILDWHEEL})
+    set_target_properties(_process_cpp
+                          PROPERTIES INSTALL_RPATH_USE_LINK_PATH True)
+endif()

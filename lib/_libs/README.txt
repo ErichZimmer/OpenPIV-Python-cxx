@@ -1,1 +1,0 @@
-This is where dynamic library dependencencies and their liscenses would go. It is added to path by __set_path__.py so this package can find the libraries. Eventually, a wheel patching script would be made to emulate static linking.

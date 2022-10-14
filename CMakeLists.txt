@@ -37,13 +37,26 @@ else()
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG -g -O3 -ffast-math")
 endif()
 
+# Set the _using_conda variable when building against a conda environment
+get_filename_component(_python_bin_dir ${PYTHON_EXECUTABLE} DIRECTORY)
+if(EXISTS "${_python_bin_dir}/../conda-meta")
+  message("-- Detected conda environment, setting INSTALL_RPATH_USE_LINK_PATH")
+  set(_using_conda On)
+else()
+  set(_using_conda Off)
+endif()
+
 # build openpivcore
 add_subdirectory(${OPENPIV_CXX_DIR}/openpiv)
 
 # include source directory
 add_subdirectory(src)
 
-# install runtime dependencies
+if(_using_conda OR DEFINED ENV{CIBUILDWHEEL})
+    set_target_properties(openpivcore PROPERTIES INSTALL_RPATH_USE_LINK_PATH True)
+endif()
+
+# install built runtime dependencies
 if (WIN32)
     set(_EXT "*.dll")
 elseif (APPLE)
@@ -54,9 +67,8 @@ else()
     message(FATAL_ERROR "Could not determine OS for dynamic libraries")
 endif()
 
-##file(GLOB DIST_DLLS ${CMAKE_BINARY_DIR}/out/*.${_EXT})
-
-message(STATUS "Files ${CMAKE_BINARY_DIR}/out/*.${_EXT} copied to _libs")
+# Since the submodule process is the only one using shared libraries, place the shared libraries there (for now).
 install(DIRECTORY ${CMAKE_BINARY_DIR}/out/
-        DESTINATION lib/_libs
+        DESTINATION lib/process
         FILES_MATCHING PATTERN ${_EXT})
+        
