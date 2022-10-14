@@ -24,7 +24,11 @@ To build the package, first you need to satisfy the requirements for vcpkg. Here
  + (UNIX) curl, zip, unzip, tar (apt install curl, zip, unzip, tar)
  + (UNIX) ninja (apt install ninja-build)
 
-Next, dowload and install a python environment manager, such as miniconda. Setup a virtual environment and activate it  (with conda, use `conda create --name <env name> python=3.8`). You can now install git through conda or pip (unless you want to install it differently). When using git to clone this repository, you must clone it recursively due to third-party packages used in this repository. So when cloning, use `git clone --recursive https://github.com/ErichZimmer/OpenPIV-Python-cxx.git`.
+Next, dowload and install a python environment manager, such as miniconda or edm.
+
+Setup a virtual environment and activate it (with conda, use conda create --name <env name> python=3.8), (with edm is edm environments create <env name> --version=3.8 and then edm shell -e <env name>)
+
+You can now install git through conda or pip (unless you want to install it differently). When using git to clone this repository, you must clone it recursively due to third-party packages used in this repository. So when cloning, use git clone --recursive https://github.com/ErichZimmer/OpenPIV-Python-cxx.git.
 
 ### To build:
 When building this package, set your current directory to this package in the terminal used to compile this package (e.g. cd ...). We need to install the build requirements and upgrade pip. To do this, execute the folowing line:
