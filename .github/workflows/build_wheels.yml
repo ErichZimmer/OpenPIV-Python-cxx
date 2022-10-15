@@ -48,6 +48,7 @@ jobs:
           CIBW_BUILD: ${{ matrix.pyver }}-${{ matrix.buildplat[1] }}
           
           # setup environment
+          CIBW_BEFORE_BUILD_LINUX: "apt install build-essential pkg-config curl zip unzip tar"
           MACOSX_DEPLOYMENT_TARGET: "10.14"
           CIBW_BUILD_FRONTEND: "build"
 
