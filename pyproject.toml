@@ -53,7 +53,7 @@ tracker = "https://github.com/ErichZimmer/OpenPIV-Python-cxx/issues"
 skip = "pp* *_ppc64le *_i686 *_s390x *-musllinux*"
 build-verbosity = "3"
 test-requires = ["pytest", "pytest-cov", "pytest-xdist", "scipy", "matplotlib"]
-test-command = "pytest {project}/tests"
+test-command = "cd {project}/tests && pytest"
 
 [tool.cibuildwheel.linux]
 manylinux-x86_64-image = "manylinux2014"
