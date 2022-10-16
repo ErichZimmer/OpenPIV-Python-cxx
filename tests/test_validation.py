@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from pathlib import Path
+from os.path import join
 from openpiv_cxx import validate
 
 # load test field (use absolute path because CIBW can't locate test data)
