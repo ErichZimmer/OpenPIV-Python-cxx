@@ -1,11 +1,13 @@
 import numpy as np
 import pytest
 
+from os.path import join
+
 from openpiv_cxx.tools import imread, imsave
 from openpiv_cxx import filters
 from openpiv_cxx.filters import _kernels
 
-path_to_img = "../synthetic_tests/vel_magnitude/vel_0a.bmp"
+path_to_img = join(__file__, '..', '..', 'synthetic_tests', 'vel_magnitude', 'vel_0a.bmp')
 
 
 def test_contrast_stretch():
