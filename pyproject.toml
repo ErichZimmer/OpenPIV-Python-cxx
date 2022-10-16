@@ -44,7 +44,7 @@ dynamic = ["version", "dependencies", "optional-dependencies"]
 
 [project.urls]
 homepage = "https://github.com/ErichZimmer/OpenPIV-Python-cxx"
-# documentation = ""
+documentation = "https://openpiv-python-cxx.readthedocs.io/en/latest/index.html"
 source = "https://github.com/ErichZimmer/OpenPIV-Python-cxx"
 download = "https://github.com/ErichZimmer/OpenPIV-Python-cxx/releases"
 tracker = "https://github.com/ErichZimmer/OpenPIV-Python-cxx/issues"
@@ -55,3 +55,10 @@ build-verbosity = "3"
 test-requires = ["pytest", "pytest-cov", "pytest-xdist", "scipy", "matplotlib"]
 test-command = "pytest {project}/tests"
 
+[tool.cibuildwheel.linux]
+manylinux-x86_64-image = "manylinux2014"
+manylinux-aarch64-image = "manylinux2014"
+
+[tool.cibuildwheel.macos]
+archs = "x86_64 arm64"
+test-skip = "*_arm64 *_universal2:arm64"
