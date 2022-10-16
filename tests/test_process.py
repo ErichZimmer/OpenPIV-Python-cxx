@@ -106,5 +106,5 @@ def test_correlation_to_displacement() -> None:
 
     u, v, _, _ = process.correlation_to_displacement(corr)
 
-    assert np.mean(np.abs(u - shift_u)) < 0.2
-    assert np.mean(np.abs(v - shift_v)) < 0.2
+    assert np.nanmean(np.abs(u - shift_u)) < 0.2
+    assert np.nanmean(np.abs(v - shift_v)) < 0.2
