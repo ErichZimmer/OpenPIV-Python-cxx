@@ -2,6 +2,7 @@ recursive-include lib *.py *.txt
 recursive-include src *.cpp *.h CMakeLists.txt
 recursive-include extern *
 recursive-include requirements *.txt
+recursive-include tests *.py *.vec *.txt
 include CMakeLists.txt
 include LICENSE
 include README.md
