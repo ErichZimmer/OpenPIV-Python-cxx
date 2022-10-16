@@ -1,14 +1,10 @@
 import numpy as np
 import pytest
 
-from pathlib import Path
-from os.path import join
 from openpiv_cxx import validate
 
-# load test field (use absolute path because CIBW can't locate test data)
-current_full_path = Path().resolve()
-file_dir = join(current_full_path, "exp1_001.vec")
-data = np.loadtxt(file_dir, delimiter="\t")
+# read test data
+data = np.loadtxt("exp1_001.vec", delimiter="\t")
 
 # extract individual components
 u, v, s2n = data[:,2], data[:,3], data[:,4]
