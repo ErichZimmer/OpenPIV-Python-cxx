@@ -60,7 +60,7 @@ manylinux-x86_64-image = "manylinux2014"
 manylinux-aarch64-image = "manylinux2014"
 
 [tool.cibuildwheel.macos]
-archs = "x86_64 arm64"
+archs = "x86_64" # arm64" # arm64 does not currently compile
 test-skip = "*_arm64 *_universal2:arm64"
 
 [tool.cibuildwheel.windows]
