@@ -1,7 +1,7 @@
 | Platforms | Statistics | Health |
 | --------- | ---------- | ------ |
 | [![Windows](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_windows.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_windows.yml) | ![License](https://img.shields.io/github/license/ErichZimmer/OpenPIV-Python-cxx) | [![Documentation Status](https://readthedocs.org/projects/openpiv-python-cxx/badge/?version=latest)](https://openpiv-python-cxx.readthedocs.io/en/latest/?badge=latest) |
-| [![macOS](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_macos.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_macos.yml) | ![Issues](https://img.shields.io/github/issues/ErichZimmer/OpenPIV-Python-cxx) |
+| [![macOS](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_macos.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_macos.yml) | ![Issues](https://img.shields.io/github/issues/ErichZimmer/OpenPIV-Python-cxx) | [![Build wheels](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_wheels.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_wheels.yml) |
 | [![Linux](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_linux.yml/badge.svg)](https://github.com/ErichZimmer/OpenPIV-Python-cxx/actions/workflows/build_linux.yml) | ![Stars](https://img.shields.io/github/stars/ErichZimmer/OpenPIV-Python-cxx) |
 
 # OpenPIV
@@ -101,8 +101,10 @@ Copyright statement: `smoothn.py` is a Python version of `smoothn.m` originally 
 
  - Raffel M, Willert CE, Kompenhans J (1998) Particle image velocimetry: a practical guide, Springer, Berlin Heidelberg New York, pp 177-188
 
+ - Scarano, Fulvio. (2001). Iterative image deformation methods in PIV. Measurement Science and Technology. 13. R1. 10.1088/0957-0233/13/1/201. 
+ 
  - Taylor, Z., Gurka, R., Kopp, G., & Liberzon, A. (2010). Long-Duration Time-Resolved PIV to Study Unsteady Aerodynamics. IEEE Transactions On Instrumentation And Measurement, 59(12), 3262-3269. https://doi.org/10.1109/tim.2010.2047149
  
- - Wikipedia contributors. (2022, April 10). Bilinear interpolation. In Wikipedia, The Free Encyclopedia. Retrieved July 1, 2022, from https://en.wikipedia.org/wiki/Bilinear_interpolation
+ - Wikipedia contributors. (2022, April 10). Bilinear interpolation. In Wikipedia, The Free Encyclopedia. Retrieved 1 July 2022, from https://en.wikipedia.org/wiki/Bilinear_interpolation
  
- - Wikipedia contributors. (2022, March 18). Whittaker-Shannon interpolation formula. In Wikipedia, The Free Encyclopedia. Retrieved June 30, 2022, from https://en.wikipedia.org/w/index.php?title=Whittaker%E2%80%93Shannon_interpolation_formula&oldid=1077909297
+ - Wikipedia contributors. (2022, March 18). Whittaker-Shannon interpolation formula. In Wikipedia, The Free Encyclopedia. Retrieved 30 June 2022, from https://en.wikipedia.org/w/index.php?title=Whittaker%E2%80%93Shannon_interpolation_formula&oldid=1077909297
