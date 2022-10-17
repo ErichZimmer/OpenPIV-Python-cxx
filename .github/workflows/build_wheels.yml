@@ -31,7 +31,7 @@ jobs:
         - [macos-10.14, macosx_*]
         - [windows-2019, win_amd64]
         - [windows-2019, win32]
-        pyver: ["cp37"]
+        pyver: ["cp37", "cp38", "cp39", "cp310", "cp311"]
 
     steps:
       - uses: actions/checkout@v3.0.2
