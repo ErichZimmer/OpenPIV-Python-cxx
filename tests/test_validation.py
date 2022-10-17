@@ -5,8 +5,7 @@ from os.path import join
 from openpiv_cxx import validate
 
 # read test data
-path = join(__file__, '..', 'exp1_001.vec')
-data = np.loadtxt(path, delimiter="\t")
+data = np.loadtxt("exp1_001.vec", delimiter="\t")
 
 # extract individual components
 u, v, s2n = data[:,2], data[:,3], data[:,4]
