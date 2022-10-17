@@ -44,7 +44,7 @@ dynamic = ["version", "dependencies", "optional-dependencies"]
 
 [project.urls]
 homepage = "https://github.com/ErichZimmer/OpenPIV-Python-cxx"
-# documentation = ""
+documentation = "https://openpiv-python-cxx.readthedocs.io/en/latest/index.html"
 source = "https://github.com/ErichZimmer/OpenPIV-Python-cxx"
 download = "https://github.com/ErichZimmer/OpenPIV-Python-cxx/releases"
 tracker = "https://github.com/ErichZimmer/OpenPIV-Python-cxx/issues"
@@ -53,5 +53,15 @@ tracker = "https://github.com/ErichZimmer/OpenPIV-Python-cxx/issues"
 skip = "pp* *_ppc64le *_i686 *_s390x *-musllinux*"
 build-verbosity = "3"
 test-requires = ["pytest", "pytest-cov", "pytest-xdist", "scipy", "matplotlib"]
-test-command = "pytest {project}/tests"
+test-command = "cd {package}/tests && pytest ."
 
+[tool.cibuildwheel.linux]
+manylinux-x86_64-image = "manylinux2014"
+manylinux-aarch64-image = "manylinux2014"
+
+[tool.cibuildwheel.macos]
+archs = "x86_64" # arm64" # arm64 does not currently compile
+test-skip = "*_arm64 *_universal2:arm64"
+
+[tool.cibuildwheel.windows]
+test-skip = "cp37* cp38*"
