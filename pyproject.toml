@@ -64,4 +64,4 @@ archs = "x86_64" # arm64" # arm64 does not currently compile
 test-skip = "*_arm64 *_universal2:arm64"
 
 [tool.cibuildwheel.windows]
-test-skip = "cp37* cp38*"
+test-skip = "cp3*"
