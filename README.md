@@ -89,11 +89,10 @@ Find the [detailed documentation on readthedocs.io](https://openpiv-python-cxx.r
 3. [Alex Liberzon](http://github.com/alexlib)
 
 Copyright statement: `smoothn.py` is a Python version of `smoothn.m` originally created by D. Garcia [https://de.mathworks.com/matlabcentral/fileexchange/25634-smoothn], written by Prof. Lewis and available on Github [https://github.com/profLewis/geogg122/blob/master/Chapter5_Interpolation/python/smoothn.py]. We include a version of it in the `openpiv` folder for convenience and preservation. We are thankful to the original authors for releasing their work as an open source. OpenPIV license does not relate to this code. Please communicate with the authors regarding their license. 
-
 ## References
-- Garcia, D. (2010). Robust smoothing of gridded data in one and higher dimensions with missing values. Computational Statistics & Data Analysis, 54(4), 1167–1178. Elsevier BV. https://doi.org/10.1016%2Fj.csda.2009.09.020
+ - Garcia, D. (2010). Robust smoothing of gridded data in one and higher dimensions with missing values. Computational Statistics & Data Analysis, 54(4), 1167–1178. Elsevier BV. https://doi.org/10.1016%2Fj.csda.2009.09.020
 
-- Garcia, D. (2010). A fast all-in-one method for automated post-processing of PIV data. Experiments in Fluids, 50(5), 1247–1259. Springer Science and Business Media LLC. https://doi.org/10.1007%2Fs00348-010-0985-y
+ - Garcia, D. (2010). A fast all-in-one method for automated post-processing of PIV data. Experiments in Fluids, 50(5), 1247–1259. Springer Science and Business Media LLC. https://doi.org/10.1007%2Fs00348-010-0985-y
 
  - Kim, B.J., Sung, H.J. (2006). A further assessment of interpolation schemes for window deformation in PIV. Exp Fluids 41, 499–511. https://doi.org/10.1007/s00348-006-0177-y
 
@@ -103,6 +102,8 @@ Copyright statement: `smoothn.py` is a Python version of `smoothn.m` originally 
 
  - Scarano, Fulvio. (2001). Iterative image deformation methods in PIV. Measurement Science and Technology. 13. R1. 10.1088/0957-0233/13/1/201. 
  
+ - Stein, D. (n.d.). Dbstein/FAST_INTERP: Numba accelerated interpolation on regular grids in 1, 2, and 3 dimensions. GitHub. Retrieved September 2, 2022, from https://github.com/dbstein/fast_interp 
+
  - Taylor, Z., Gurka, R., Kopp, G., & Liberzon, A. (2010). Long-Duration Time-Resolved PIV to Study Unsteady Aerodynamics. IEEE Transactions On Instrumentation And Measurement, 59(12), 3262-3269. https://doi.org/10.1109/tim.2010.2047149
  
  - Wikipedia contributors. (2022, April 10). Bilinear interpolation. In Wikipedia, The Free Encyclopedia. Retrieved 1 July 2022, from https://en.wikipedia.org/wiki/Bilinear_interpolation
