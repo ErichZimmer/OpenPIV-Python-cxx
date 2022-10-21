@@ -25,10 +25,8 @@ __all__ = [
 def global_val(
     u,
     v,
-    mask=None,
     u_thresholds=[-10, 10],
     v_thresholds=[-10, 10],
-    convention="openpiv",
 ):
     """Eliminate spurious vectors with a global threshold.
 
@@ -43,29 +41,17 @@ def global_val(
         A two dimensional array containing the u velocity component.
     v : ndarray
         A two dimensional array containing the v velocity component.
-    mask : ndarray, optional
-        A two dimensional array containing the flags for invalid vectors.
     u_thresholds: tuple
         u_thresholds = (u_min, u_max). If u < u_min or u > u_max
         the vector is treated as an outlier.
     v_thresholds: tuple
         v_thresholds = (v_min, v_max). If v < v_min or v > v_max
         the vector is treated as an outlier.
-    convention: str
-        Which flag convention to use.
 
     Returns
     -------
-    u : ndarray
-        A two dimensional array containing the u velocity component,
-        where spurious vectors have been replaced by NaN if convention
-        is set to 'openpiv'.
-    v : ndarray
-        A two dimensional array containing the v velocity component,
-        where spurious vectors have been replaced by NaN if convention
-        is set to 'openpiv'.
     mask : ndarray
-        A boolean or integer array where elemtents that = 0 are valid
+        An integer array where elemtents that = 0 are valid
         and 1 = invalid.
 
     """
@@ -79,33 +65,16 @@ def global_val(
         np.logical_or(v < v_thresholds[0], v > v_thresholds[1]),
     )
 
-    if convention == "openpiv":
-        u[ind != 0] = np.nan
-        v[ind != 0] = np.nan
+    mask = np.zeros_like(u, dtype=int)
+    mask[ind != 0] = 1
 
-        mask = np.zeros_like(u, dtype=bool)
-        mask[ind != 0] = True
-
-        return u, v, mask
-
-    else:
-        if isinstance(mask, np.ndarray):
-            if mask.shape != ind.shape:
-                raise ValueError("mask shape must be same as u/v shape")
-            mask[ind != 0] = 1
-        else:
-            mask = np.zeros_like(u, dtype=int)
-            mask[ind != 0] = 1
-
-        return mask
+    return mask
 
 
 def global_std(
     u, 
     v,
-    mask=None, 
     std_threshold=3.0, 
-    convention="openpiv"
 ):
     """Eliminate spurious vectors with a global threshold defined by the
     standard deviation
@@ -120,27 +89,15 @@ def global_std(
         A two dimensional array containing the u velocity component.
     v : ndarray
         A two dimensional array containing the v velocity component.
-    mask : ndarray, optional
-        A two dimensional array containing the flags for invalid vectors.
     std_threshold : float
         If the length of the vector (actually the sum of squared components) is
         larger than std_threshold times standard deviation of the flow field,
         then the vector is treated as an outlier.
-    convention : str
-        Which flag convention to use.
 
     Returns
     -------
-    u : ndarray, optional
-        A two dimensional array containing the u velocity component,
-        where spurious vectors have been replaced by NaN if convention
-        is set to 'openpiv'.
-    v : ndarray, optional
-        A two dimensional array containing the v velocity component,
-        where spurious vectors have been replaced by NaN if convention
-        is set to 'openpiv'.
     mask : ndarray
-        A boolean or integer array where elemtents that = 0 are valid
+        An integer array where elemtents that = 0 are valid
         and 1 = invalid.
 
     """
@@ -167,25 +124,10 @@ def global_std(
         print("Warning! probably a uniform shift data, do not use this filter")
         ind = ~ind
 
-    if convention == "openpiv":
-        u[ind != 0] = np.nan
-        v[ind != 0] = np.nan
+    mask = np.zeros_like(u, dtype=int)
+    mask[ind] = 1
 
-        mask = np.zeros_like(u, dtype=bool)
-        mask[ind != 0] = True
-
-        return u, v, mask
-
-    else:
-        if isinstance(mask, np.ndarray):
-            if mask.shape != ind.shape:
-                raise ValueError("mask shape must be same as u/v shape")
-            mask[ind] = 1
-        else:
-            mask = np.zeros_like(u, dtype=int)
-            mask[ind] = 1
-
-        return mask
+    return mask
 
 
 ##############################################################################
@@ -196,11 +138,9 @@ def global_std(
 def local_difference(
     u,
     v,
-    mask=None,
     threshold_u=3.0,
     threshold_v=3.0,
     threshold=None,
-    convention="openpiv",
 ):
     """Eliminate spurious vectors with a local threshold.
 
@@ -215,36 +155,21 @@ def local_difference(
         A two dimensional array containing the u velocity component.
     v : ndarray
         A two dimensional array containing the v velocity component.
-    mask : ndarray, optional
-        A two dimensional array containing the flags for invalid vectors.
     threshold_u : float
         Threshold for u component.
     threshold_v : float
         Threshold for v component.
     threshold : float, optional
         Set thresholds for both u and v components.
-    convention : str
-        Which flag convention to use.
 
     Returns
     -------
-    u : ndarray, optional
-        A two dimensional array containing the u velocity component,
-        where spurious vectors have been replaced by NaN if convention
-        is set to 'openpiv'.
-    v : ndarray, optional
-        A two dimensional array containing the v velocity component,
-        where spurious vectors have been replaced by NaN if convention
-        is set to 'openpiv'.
     mask : ndarray
-        A boolean or integer array where elemtents that = 0 are valid
+        An integer array where elemtents that = 0 are valid
         and 1 = invalid.
 
     """
     _check(ndim=2, u=u, v=v)
-
-    if isinstance(mask, np.ndarray):
-        _check(ndim=2, mask=mask)
 
     if threshold != None:
         threshold_u = threshold_v = threshold
@@ -266,37 +191,20 @@ def local_difference(
 
     ind = ind[slices]
 
-    if convention == "openpiv":
-        u[ind != 0] = np.nan
-        v[ind != 0] = np.nan
+    mask = np.zeros_like(u, dtype=int)
+    mask[ind != 0] = 1
 
-        mask = np.zeros_like(u, dtype=bool)
-        mask[ind != 0] = True
-
-        return u, v, mask
-
-    else:
-        if isinstance(mask, np.ndarray):
-            if mask.shape != ind.shape:
-                raise ValueError("mask shape must be same as u/v shape")
-            mask[ind != 0] = 1
-        else:
-            mask = np.zeros_like(u, dtype=int)
-            mask[ind != 0] = 1
-
-        return mask
+    return mask
 
 
 def local_median(
     u,
     v,
-    mask=None,
     threshold_u=3.0,
     threshold_v=3.0,
     threshold=None,
     size=2,
     kernel_min_size=1,
-    convention="openpiv",
 ):
     """Eliminate spurious vectors with a local median threshold.
 
@@ -311,8 +219,6 @@ def local_median(
         A two dimensional array containing the u velocity component.
     v : ndarray
         A two dimensional array containing the v velocity component.
-    mask : ndarray, optional
-        A two dimensional array containing the flags for invalid vectors.
     threshold_u : float
         Threshold for u component.
     threshold_v : float
@@ -324,28 +230,15 @@ def local_median(
     kernel_min_size : int
         The minimum amount of non-NaN values in a kernel. If less, the kernel
         is marked as invalid due to not enough valid points.
-    convention : str
-        Which flag convention to use.
 
     Returns
     -------
-    u : ndarray, optional
-        A two dimensional array containing the u velocity component,
-        where spurious vectors have been replaced by NaN if convention
-        is set to 'openpiv'.
-    v : ndarray, optional
-        A two dimensional array containing the v velocity component,
-        where spurious vectors have been replaced by NaN if convention
-        is set to 'openpiv'.
     mask : ndarray
-        A boolean or integer array where elemtents that = 0 are valid
+        An integer array where elemtents that = 0 are valid
         and 1 = invalid.
 
     """
     _check(ndim=2, u=u, v=v)
-
-    if isinstance(mask, np.ndarray):
-        _check(ndim=2, mask=mask)
 
     if threshold != None:
         threshold_u = threshold_v = threshold
@@ -369,38 +262,21 @@ def local_median(
 
     ind = ind[slices]
 
-    if convention == "openpiv":
-        u[ind != 0] = np.nan
-        v[ind != 0] = np.nan
+    mask = np.zeros_like(u, dtype=int)
+    mask[ind != 0] = 1
 
-        mask = np.zeros_like(u, dtype=bool)
-        mask[ind != 0] = True
-
-        return u, v, mask
-
-    else:
-        if isinstance(mask, np.ndarray):
-            if mask.shape != ind.shape:
-                raise ValueError("mask shape must be same as u/v shape")
-            mask[ind != 0] = 1
-        else:
-            mask = np.zeros_like(u, dtype=int)
-            mask[ind != 0] = 1
-
-        return mask
+    return mask
 
 
 def normalized_local_median(
     u,
     v,
-    mask=None,
     threshold_u=3.0,
     threshold_v=3.0,
     threshold=None,
     size=2,
     kernel_min_size=1,
     eps=0.1,
-    convention="openpiv",
 ):
     """Eliminate spurious vectors with a local normalized median threshold.
 
@@ -415,8 +291,6 @@ def normalized_local_median(
         A two dimensional array containing the u velocity component.
     v : ndarray
         A two dimensional array containing the v velocity component.
-    mask : ndarray, optional
-        A two dimensional array containing the flags for invalid vectors.
     threshold_u : float
         Threshold for u component.
     threshold_v : float
@@ -430,28 +304,15 @@ def normalized_local_median(
         is marked as invalid due to not enough valid points.
     eps : float
         Epsilon, should remain bewteen 0.1 and 0.2.
-    convention: str
-        Which flag convention to use.
 
     Returns
     -------
-    u : ndarray, optional
-        A two dimensional array containing the u velocity component,
-        where spurious vectors have been replaced by NaN if convention
-        is set to 'openpiv'.
-    v : ndarray, optional
-        A two dimensional array containing the v velocity component,
-        where spurious vectors have been replaced by NaN if convention
-        is set to 'openpiv'.
     mask : ndarray
         A boolean or integer array where elemtents that = 0 are valid
         and 1 = invalid.
 
     """
     _check(ndim=2, u=u, v=v)
-
-    if isinstance(mask, np.ndarray):
-        _check(ndim=2, mask=mask)
 
     if threshold != None:
         threshold_u = threshold_v = threshold
@@ -481,22 +342,7 @@ def normalized_local_median(
 
     ind = ind[slices]
 
-    if convention == "openpiv":
-        u[ind != 0] = np.nan
-        v[ind != 0] = np.nan
+    mask = np.zeros_like(u, dtype=int)
+    mask[ind != 0] = 1
 
-        mask = np.zeros_like(u, dtype=bool)
-        mask[ind != 0] = True
-
-        return u, v, mask
-
-    else:
-        if isinstance(mask, np.ndarray):
-            if mask.shape != ind.shape:
-                raise ValueError("mask shape must be same as u/v shape")
-            mask[ind != 0] = 1
-        else:
-            mask = np.zeros_like(u, dtype=int)
-            mask[ind != 0] = 1
-
-        return mask
+    return mask

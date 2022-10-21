@@ -16,8 +16,6 @@ __all__ = [
     "highpass_filter",
     "intensity_cap",
     "sobel_filter",
-    "sobel_h_filter",
-    "sobel_v_filter",
     "threshold_binarization",    
     "variance_normalization_filter"
 ]
@@ -345,6 +343,7 @@ def variance_normalization_filter(
 
 def sobel_filter(
     img,
+    orientation=None,
     keep_dtype = False
 ):
     """A simple sobel filter.
@@ -353,6 +352,8 @@ def sobel_filter(
     ----------
     img : ndarray
         A two dimensional array containing pixel intenensities.
+    orientation : str
+        The orientation of the sobel filter.
     keep_dtype : bool
         Cast output to original dtype.
 
@@ -402,124 +403,18 @@ def sobel_filter(
     if max_ > 1:
         img /= max_
     
-    out1 = _convolve_kernel(img, kernel1)
-    out2 = _convolve_kernel(img, kernel2)
+    if orientation is None or orientation.lower() in ['h', "horizontal"]:   
+        out1 = _convolve_kernel(img, kernel1)
+        if orientation is not None:
+            new_img = out1
+        
+    if orientation is None or orientation.lower() in ['v', "vertical"]:   
+        out2 = _convolve_kernel(img, kernel2)
+        if orientation is not None:
+            new_img = out2
     
-    new_img = np.sqrt(np.square(out1) + np.square(out2))
-    
-    if max_ > 1:
-        new_img *= max_
-    
-    if img_dtype != "float32" and keep_dtype == True:
-        new_img = new_img.astype(img_dtype)
-    
-    return new_img
-
-
-def sobel_h_filter(
-    img,
-    keep_dtype = False
-):
-    """A simple horizontal sobel filter.
-
-    Parameters
-    ----------
-    img : ndarray
-        A two dimensional array containing pixel intenensities.
-    keep_dtype : bool
-        Cast output to original dtype.
-
-    Returns
-    -------
-    new_img : ndarray
-        A two dimensional array containing pixel intenensities.
-    
-    Notes
-    -----
-    
-    We use the following kernel::
-     
-      1   2   1
-      0   0   0
-     -1  -2  -1
-    
-    """
-    _check(ndim=2, img=img)
-    
-    kernel = np.asarray([
-        [ 1,  2,  1],
-        [ 0,  0,  0],
-        [-1, -2, -1]
-    ], dtype = "float32")
-    
-    # store original image data
-    img_dtype = img.dtype
-    max_ = img.max()
-    
-    if img_dtype != "float32":
-        img = img.astype("float32")
-    
-    if max_ > 1:
-        img /= max_
-    
-    new_img = _convolve_kernel(img, kernel)
-    
-    if max_ > 1:
-        new_img *= max_
-    
-    if img_dtype != "float32" and keep_dtype == True:
-        new_img = new_img.astype(img_dtype)
-    
-    return new_img
-
-
-def sobel_v_filter(
-    img,
-    keep_dtype = False
-):
-    """A simple vertical sobel filter.
-
-    Parameters
-    ----------
-    img : ndarray
-        A two dimensional array containing pixel intenensities.
-    keep_dtype : bool
-        Cast output to original dtype.
-
-    Returns
-    -------
-    new_img : ndarray
-        A two dimensional array containing pixel intenensities.
-    
-    Notes
-    -----
-    
-    We use the following kernel::
-     
-      1   0  -1
-      2   0  -2
-      1   0  -1
-    
-    """
-    _check(ndim=2, img=img)
-    
-    kernel = np.asarray([
-        [ 1,  0, -1],
-        [ 2,  0, -2],
-        [ 1,  0, -1]
-    ], dtype = "float32")
-    
-    # store original image data
-    img_dtype = img.dtype
-    max_ = img.max()
-    
-    if img_dtype != "float32":
-        img = img.astype("float32")
-    
-    if max_ > 1:
-        img /= max_
-    
-    new_img = _convolve_kernel(img, kernel)
+    if orientation is None:
+        new_img = np.sqrt(np.square(out1) + np.square(out2))
     
     if max_ > 1:
         new_img *= max_

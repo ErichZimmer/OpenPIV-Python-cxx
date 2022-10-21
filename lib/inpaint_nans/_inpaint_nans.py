@@ -1,5 +1,7 @@
 import numpy as np
 
+from openpiv_cxx.input_checker import check_nd as _check
+
 
 __all__ = ["replace_outliers"]
 
@@ -181,63 +183,85 @@ def get_dist(kernel, kernel_size):
 
 
 def replace_outliers(
-    u, v, w=None, method="localmean", max_iter=5, tol=1e-3, kernel_size=1
-):
+    u,
+    v,
+    invalid_mask,
+    method="localmean",
+    max_iter=5,
+    tol=1e-3,
+    kernel_size=1,
+    ):
     """Replace invalid vectors in an velocity field using an iterative image
         inpainting algorithm.
-
     The algorithm is the following:
-
     1) For each element in the arrays of the ``u`` and ``v`` components,
        replace it by a weighted average
        of the neighbouring elements which are not invalid themselves. The
        weights depends of the method type. If ``method=localmean`` weight
        are equal to 1/( (2*kernel_size+1)**2 -1 )
-
     2) Several iterations are needed if there are adjacent invalid elements.
        If this is the case, inforation is "spread" from the edges of the
        missing regions iteratively, until the variation is below a certain
        threshold.
-
+       
     Parameters
     ----------
     u : ndarray
-        The u velocity component field.
+        2D array of the u velocity component field.
     v : ndarray
-        The v velocity component field.
-    w : ndarray, optional
-        The w velocity component field.
+        2D array of the v velocity component field.
+    invalid_mask : ndarray
+        2D mask array.
+    grid_mask : ndarray
+        2D array of positions masked by the user.
     max_iter : int
         The number of iterations.
     kernel_size : int
-        The half size of the kernel, default is 1.
+        The size of the kernel, default is 1.
     method : str
         The type of kernel used for repairing missing vectors.
-
+        
     Returns
     -------
     uf : ndarray
         The smoothed u velocity component field, where invalid vectors have
-        been replaced
+        been replaced.
     vf : ndarray
         The smoothed v velocity component field, where invalid vectors have
-        been replaced
-    wf : ndarray, optional
-        The smoothed w velocity component field, where invalid vectors have
-        been replaced
-
+        been replaced.
     """
+    # we shall now replace NaNs only at invalid_mask positions,
+    # regardless the grid_mask (which is a user-provided masked region)
+    _check(ndim=2, u=u, v=v, invalid_mask=invalid_mask)
+    
+    if invalid_mask.shapee != u.shape:
+        raise ValueError(
+            "invalid mask must have same shape as u and v"
+        )             
+    
+    if not isinstance(u, np.ma.MaskedArray):
+        u = np.ma.masked_array(u, mask=np.ma.nomask)
+    
+    if not isinstance(u, np.ma.MaskedArray):
+        v = np.ma.masked_array(u, mask=np.ma.nomask)
+        
+    # store grid_mask for reinforcement
+    grid_mask = u.mask.copy()
+
+    u[invalid_mask] = np.nan
+    v[invalid_mask] = np.nan
+    
     uf = replace_nans(
-        u, method=method, max_iter=max_iter, tol=tol, kernel_size=kernel_size
+        u, method=method, max_iter=max_iter, tol=tol,
+        kernel_size=kernel_size
     )
     vf = replace_nans(
-        v, method=method, max_iter=max_iter, tol=tol, kernel_size=kernel_size
+        v, method=method, max_iter=max_iter, tol=tol,
+        kernel_size=kernel_size
     )
 
-    if isinstance(w, np.ndarray):
-        wf = replace_nans(
-            w, method=method, max_iter=max_iter, tol=tol, kernel_size=kernel_size
-        )
-        return uf, vf, wf
-
-    return uf, vf
+ 
+    uf = np.ma.masked_array(uf, mask=grid_mask)
+    vf = np.ma.masked_array(vf, mask=grid_mask)
+    
+    return uf, vf 
