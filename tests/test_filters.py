@@ -112,25 +112,13 @@ def test_sobel_h_filter():
     img = imread(path_to_img)
     
     # use default values
-    new_img = filters.sobel_h_filter(img)
+    new_img = filters.sobel_filter(img, orientation = 'h')
     
-    # test for errors
-    with pytest.raises(ValueError):
-        invalid_img = np.random.rand(32,32,32) # for non-2d case
-        
-        # input is not 2D
-        new_img = filters.sobel_h_filter(invalid_img)
+
 
 
 def test_sobel_v_filter():
     img = imread(path_to_img)
     
     # use default values
-    new_img = filters.sobel_v_filter(img)
-    
-    # test for errors
-    with pytest.raises(ValueError):
-        invalid_img = np.random.rand(32,32,32) # for non-2d case
-        
-        # input is not 2D
-        new_img = filters.sobel_v_filter(invalid_img)
+    new_img = filters.sobel_filter(img, orientation = 'v')
