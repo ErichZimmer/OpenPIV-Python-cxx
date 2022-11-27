@@ -36,17 +36,31 @@ def main():
 
     # modify cmake script based on our needs
     txt_to_mod = (
+        "set(POCKETFFT_EXTERNAL_LIBRARY_CXX ${OPENPIV_CXX_DIR}/external/pocketfft)\n"
+    )
+
+    dir_to_modify = normpath(join(openpiv_cxx_dir, "openpiv/CMakeLists.txt"))
+
+    line_to_modify = 19
+    
+    if check_cmake_txt(dir_to_modify, line_to_modify, txt_to_mod) == False:
+        print("Modifying openpiv-c--qt CMakeLists.txt to suite current build")
+        modify_cmake_txt(dir_to_modify, line_to_modify, txt_to_mod)
+
+    txt_to_mod = (
         "  set(TIFF_EXTERNAL_LIBRARY_CXX ${OPENPIV_CXX_DIR}/external/libtiff/4.0.10)\n"
     )
 
     dir_to_modify = normpath(join(openpiv_cxx_dir, "openpiv/CMakeLists.txt"))
 
-    line_to_modify = 24
-
+    line_to_modify = 28
+    
     if check_cmake_txt(dir_to_modify, line_to_modify, txt_to_mod) == False:
-        print("Modifying openpiv-c--qt CMakeLists.txt to suite current build")
+        print("Modifying openpiv-c--qt CMakeLists.txt to suite current build (again)")
         modify_cmake_txt(dir_to_modify, line_to_modify, txt_to_mod)
 
+        
+        
     # remove existing builds
     if exists("_skbuild") == True:
         print("Found previous _skbuild build. Removing folder")
@@ -66,16 +80,16 @@ def main():
         version="0.4.0",
         package_dir={
             "openpiv_cxx": "lib",
-            "openpiv_cxx.filters": "lib/filters",
+            "openpiv_cxx.filters":       "lib/filters",
             "openpiv_cxx.input_checker": "lib/input_checker",
-            "openpiv_cxx.inpaint_nans": "lib/inpaint_nans",
-            "openpiv_cxx.interpolate": "lib/interpolate",
-            "openpiv_cxx.openpiv": "lib/openpiv",
-            "openpiv_cxx.process": "lib/process",
-            "openpiv_cxx.validate": "lib/validate",
-            "openpiv_cxx.smooth": "lib/smooth",
-            "openpiv_cxx.tools": "lib/tools",
-            "openpiv_cxx.windef": "lib/windef"
+            "openpiv_cxx.inpaint_nans":  "lib/inpaint_nans",
+            "openpiv_cxx.interpolate":   "lib/interpolate",
+            "openpiv_cxx.openpiv":    "lib/openpiv",
+            "openpiv_cxx.process":    "lib/process",
+            "openpiv_cxx.validate":   "lib/validate",
+            "openpiv_cxx.smooth":     "lib/smooth",
+            "openpiv_cxx.tools":      "lib/tools",
+            "openpiv_cxx.windef":     "lib/windef"
         },
         packages=[
             "openpiv_cxx",
