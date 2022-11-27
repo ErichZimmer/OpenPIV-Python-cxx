@@ -74,7 +74,7 @@ Table of Contents
 #include "openpiv_utils.h"
 
 // openpiv
-#include "algos/fft.h"
+#include "algos/pocket_fft.h"
 #include "core/enumerate.h"
 #include "core/grid.h"
 #include "core/image_utils.h"
@@ -91,9 +91,9 @@ std::vector<imgDtype> process_window(
 ){  
     auto fft_size = core::size{ img_a.width(), img_a.height() };
 
-    auto fft = algos::FFT( fft_size );
+    auto fft = algos::PocketFFT( fft_size );
 
-    auto correlator = &algos::FFT::cross_correlate_real<core::image, core::g_f>;
+    auto correlator = &algos::PocketFFT::cross_correlate_real<core::image, core::g_f>;
     
     core::image<core::g<imgDtype>> output{ (fft.*correlator)( img_a, img_b ) };
 
@@ -145,9 +145,9 @@ std::vector<imgDtype> process_images_standard(
     std::uint32_t cmatrix_stride = size * size;
 
     // process!
-    auto fft = algos::FFT( paddedWindow );
-    auto correlator = &algos::FFT::cross_correlate_real<core::image, core::g_f>;
-    auto autocorrelator = &algos::FFT::auto_correlate<core::image, core::g_f>;
+    auto fft = algos::PocketFFT( paddedWindow );
+    auto correlator = &algos::PocketFFT::cross_correlate_real<core::image, core::g_f>;
+    auto autocorrelator = &algos::PocketFFT::auto_correlate<core::image, core::g_f>;
 
     core::image<core::g<imgDtype>> bias_correction{ paddedWindow.width(), paddedWindow.height() };
     core::fill(bias_correction, core::g<imgDtype>{ 1.0 } );
