@@ -24,24 +24,24 @@ using namespace openpiv;
 struct is_peak_struct{
     std::uint32_t h = 0;
     std::uint32_t w = 0;
-    core::g_f val = 0.0;
+    core::g<imgDtype> val = 0.0;
     bool ispeak = false;
 };
 
 
-core::peaks_t<core::g_f> find_peaks_brute(
-    const core::gf_image& im, 
+core::image<core::g<imgDtype>> find_peaks_brute(
+    const core::image<core::g<imgDtype>>& im, 
     std::uint16_t num_peaks,
     std::uint32_t peak_radius
 ){
-    core::peaks_t<core::g_f> result;
+    core::peaks_t<core::g<imgDtype>> result;
     const std::uint32_t result_w = 2*peak_radius + 1;
     const std::uint32_t result_h = result_w;
 
     // create vector of peak indexes    
     auto bl = im.rect().bottomLeft();
 
-    core::g_f previous_max = 9999999999.99;
+    core::g<imgDtype> previous_max = 9999999999.99;
     is_peak_struct temp_peak;
     temp_peak.ispeak = false;
 
@@ -49,9 +49,9 @@ core::peaks_t<core::g_f> find_peaks_brute(
     {
         for ( std::uint32_t h=peak_radius; h<im.height()-2*peak_radius; ++h )
         {
-            const core::g_f* above = im.line( h-1 );
-            const core::g_f* line = im.line( h );
-            const core::g_f* below = im.line( h+1 );
+            const core::g<imgDtype>* above = im.line( h-1 );
+            const core::g<imgDtype>* line = im.line( h );
+            const core::g<imgDtype>* below = im.line( h+1 );
 
             for ( std::uint32_t w=peak_radius; w<im.width()-peak_radius; ++w )
             {
@@ -89,8 +89,8 @@ core::peaks_t<core::g_f> find_peaks_brute(
 
 
 void process_cmatrix_2x3(
-    double* cmatrix,
-    double* results,
+    const imgDtype* cmatrix,
+    imgDtype* results,
     std::uint32_t maxStep,
     std::uint32_t stride_2d,
     std::vector<std::uint32_t> stride_1d,
@@ -130,7 +130,7 @@ void process_cmatrix_2x3(
 
         auto ia = core::size{stride_1d[0], stride_1d[1]};
 
-        auto corrCut = core::gf_image(ia);
+        auto corrCut = core::image<core::g<imgDtype>>(ia);
 
         std::copy(
             cmatrix + (step  * stride_2d),
@@ -139,7 +139,7 @@ void process_cmatrix_2x3(
         );
 
         // find peaks
-        core::peaks_t<core::g_f> peaks = core::find_peaks( corrCut, num_peaks, radius );
+        core::peaks_t<core::g<imgDtype>> peaks = core::find_peaks( corrCut, num_peaks, radius );
 
         // sub-pixel fitting
         if ( peaks.size() != num_peaks )
@@ -151,26 +151,26 @@ void process_cmatrix_2x3(
             return;
         }
 
-        core::point2<double> uv;
+        core::point2<imgDtype> uv;
         if (return_type == 1 || return_type == 0) // peak 1
         {
             uv = core::fit_simple_gaussian( peaks[0] );
-            results[step + U] = uv[0] - static_cast<double>( stride_1d[0]/2 );
-            results[step + V] = uv[1] - static_cast<double>( stride_1d[1]/2 );
+            results[step + U] = uv[0] - static_cast<imgDtype>( stride_1d[0] ) / 2.0;
+            results[step + V] = uv[1] - static_cast<imgDtype>( stride_1d[1] ) / 2.0;
         }
 
         if (return_type == 2 || return_type == 0) // peak 2
         {
             uv = core::fit_simple_gaussian( peaks[1] );
-            results[step + U2] = uv[0] - static_cast<double>( stride_1d[0]/2 );
-            results[step + V2] = uv[1] - static_cast<double>( stride_1d[1]/2 );
+            results[step + U2] = uv[0] - static_cast<imgDtype>( stride_1d[0] ) / 2.0;
+            results[step + V2] = uv[1] - static_cast<imgDtype>( stride_1d[1] ) / 2.0;
         }
 
         if (return_type == 3 || return_type == 0) // peak 3
         {
             uv = core::fit_simple_gaussian( peaks[2] );
-            results[step + U3] = uv[0] - static_cast<double>( stride_1d[0]/2 );
-            results[step + V3] = uv[1] - static_cast<double>( stride_1d[1]/2 );
+            results[step + U3] = uv[0] - static_cast<imgDtype>( stride_1d[0] ) / 2.0;
+            results[step + V3] = uv[1] - static_cast<imgDtype>( stride_1d[1] ) / 2.0;
         }
 
         // primary peak information

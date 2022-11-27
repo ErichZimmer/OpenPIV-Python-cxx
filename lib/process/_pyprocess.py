@@ -13,6 +13,10 @@ __all__ = [
 ]
 
 
+Float = np.float64
+Int = np.int64
+
+
 def get_field_shape(image_size, window_size, overlap):
     """Get vector field shape.
 
@@ -69,10 +73,10 @@ def get_coordinates(image_size, window_size=32, overlap=16):
 
     Returns
     -------
-    x : ndarray
+    x : 2D int32 array
         A two dimensional array containing the x coordinates of the
         interrogation window centers, in pixels.
-    y : ndarray
+    y : 2D int32 array
         A two dimensional array containing the y coordinates of the
         interrogation window centers, in pixels.
 
@@ -117,10 +121,10 @@ def get_rect_coordinates(
 
     Returns
     -------
-    x : ndarray
+    x : 2D int32 array
         A two dimensional array containing the x coordinates of the
         interrogation window centers, in pixels.
-    y : ndarray
+    y : 2D int32 array
         A two dimensional array containing the y coordinates of the
         interrogation window centers, in pixels.
 
@@ -149,9 +153,9 @@ def fft_correlate_images(
 
     Parameters
     ----------
-    frame_a : ndarray
+    frame_a : 2D float32 array
         A two dimensionional array containing grey levels of the first frame.
-    frame_b : ndarray
+    frame_b : 2D float32 array
         A two dimensionional array containing grey levels of the second frame.
     window_size : int
         The size of the (square) interrogation window, [default: 32 pix].
@@ -167,7 +171,7 @@ def fft_correlate_images(
 
     Returns
     -------
-    corr : ndarray
+    corr : 2D float32 array
         A three dimensional array with axis 0 being the two dimensional correlation matrix
         of an interrogation window.
 
@@ -177,11 +181,11 @@ def fft_correlate_images(
     if correlation_method not in ["circular", "linear"]:
         raise ValueError(f"Unsupported correlation method: {correlation_method}.")
 
-    if image_a.dtype != "float64":
-        image_a = image_a.astype("float64")
+    if image_a.dtype != Float:
+        image_a = image_a.astype(Float)
 
-    if image_b.dtype != "float64":
-        image_b = image_b.astype("float64")
+    if image_b.dtype != Float:
+        image_b = image_b.astype(Float)
 
     if correlation_method == "circular":
         correlation_method = 0  # circular
@@ -211,7 +215,7 @@ def correlation_to_displacement(
 
     Parameters
     ----------
-    corr : 3D ndarray
+    corr : 3D 2D float32 array
         A three dimensional array with axis 0 being the two dimensional correlation matrix
         of an interrogation window.
     n_rows, n_cols : int, optional
@@ -231,15 +235,15 @@ def correlation_to_displacement(
 
     Returns
     -------
-    u, v : ndarray
+    u, v : 2D float64 array
         2D array of displacements in pixels/dt.
-    peakHeight : ndarray
+    peakHeight : 2D float64 array
         2D array of correlation peak heights
-    peak2peak : ndarray
+    peak2peak : 2D float64 array
         2D array of signal-to-noise ratios.
-    u2, v2 : ndarray, optional
+    u2, v2 : 2D float64 array, optional
         2D array of displacements in pixels/dt for a second peak.
-    u3, v3 : ndarray, optional
+    u3, v3 : 2D float64 array, optional
         2D array of displacements in pixels/dt for a third peak.
 
     """

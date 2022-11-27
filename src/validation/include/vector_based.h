@@ -52,7 +52,7 @@ void normalized_local_median_test(
 
 
 double test_median(
-    double*,
+    const double*,
     size_t
 );
 

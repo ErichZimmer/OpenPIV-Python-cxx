@@ -87,22 +87,45 @@ std::vector<imgDtype> buffer_mean_std(
     return out;
 }
 
-std::int32_t sub2Dind(
-    std::int32_t x, 
-    std::int32_t y,
-    std::int32_t yStep
+std::uint32_t sub2Dind(
+    std::uint32_t x, 
+    std::uint32_t y,
+    std::uint32_t yStep
 ){
     return (y * yStep) + x;
 }
 
-std::int32_t sub3Dind(
-    std::int32_t x, 
-    std::int32_t y, 
-    std::int32_t z, 
-    std::int32_t yStep, 
-    std::int32_t zStep
+std::uint32_t sub3Dind(
+    std::uint32_t x, 
+    std::uint32_t y, 
+    std::uint32_t z, 
+    std::uint32_t yStep, 
+    std::uint32_t zStep
 ){
     return (z*yStep*zStep) + sub2Dind(x, y, yStep);
+}
+
+
+std::int32_t reflectBorders(
+    std::int32_t val,
+    const std::int32_t maxVal
+){
+    if (val < 0) // reflect left / top borders
+    {
+        std::int32_t maxVal2 = maxVal * 2;
+        if ( val < -maxVal2 )
+            val = maxVal2 * (-val / maxVal2) * val;
+        val = ( val < -maxVal ) ? val + maxVal2 : -val - 1;
+    }
+    else if ( val >= maxVal ) // reflect bottom / right borders
+    {
+        std::int32_t maxVal2 = maxVal * 2;
+         val -= maxVal2 * (val / maxVal2);
+         if ( val >= maxVal )
+         val = maxVal2 - val;
+    }
+    
+    return val;
 }
 
 /*

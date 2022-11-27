@@ -3,37 +3,11 @@
 #include <iterator>
 #include <functional>
 #include <numeric>
-#include <cstdint>
+#include <iostream>
 
-#include "kernels.h"
+#include "filters.h"
 #include "utils.h"
 
-void parallel_bulk( // for future parallel
-    std::function<void(std::size_t)>& lambda,
-    std::size_t img_rows,
-    std::size_t kernel_size,
-    std::size_t thread_count = 4
-){
-    /* Perform bulk processing due to costs of creating/maintaining queues */
-    // get chunk size and starting row
-    std::size_t chunk_size = img_rows/thread_count, row = kernel_size / 2;
-    // allocate vector of shuck sizes
-    std::vector<size_t> chunk_sizes( thread_count, chunk_size );
-    // fix rounding errors to remove undefined behavior
-    chunk_sizes.back() = (img_rows - 2*(kernel_size / 2) - (thread_count-1)*chunk_size);
-
-    for ( const auto& chunk_size_ : chunk_sizes )
-    {
-        auto processor = [row, chunk_size_, &lambda] ()
-        {
-            for ( std::size_t j=row; j<row + chunk_size_; ++j )
-                lambda(j);
-        };
-        
-        processor(); // would be multi-threaded later...
-        row += chunk_size_;
-    }
-}
 
 void intensity_cap_filter(
     imgDtype* input,
@@ -52,6 +26,7 @@ void intensity_cap_filter(
     buffer_clip(input, 0.f, upper_limit, N_M);
 }
 
+
 void binarize_filter(
     imgDtype* output,
     imgDtype* input,
@@ -60,78 +35,162 @@ void binarize_filter(
 ){
 
     // perform binarization, assuming pixel intensity range of [0..1]
-    for (int i{}; i < N_M; ++i)
+    for (int i = 0; i < N_M; ++i)
         output[i] = (input[i] > threshold) ? 1.f : 0.f;
 }
 
-void apply_kernel_lowpass(
-    imgDtype* output,
-    imgDtype* input,
-    std::vector<imgDtype>& kernel,
-    int img_rows, int img_cols,
-    int kernel_size
+// Referenced from https://github.com/chaowang15/fast-image-convolution-cpp
+void convolve2D(
+    const imgDtype* in, 
+    imgDtype* out, 
+    std::uint32_t dataSizeX, 
+    std::uint32_t dataSizeY, 
+    const imgDtype* kernelX, 
+    const imgDtype* kernelY, 
+    std::uint32_t kSize
 ){
-    int step{ img_cols };
 
-    // setup lambda function for column processing
-    auto process_row = [
-        output,
-        input,
-        &kernel,
-        &img_cols,
-        &step,
-        &kernel_size
-    ]( int _row ) mutable
+    // Temporary buffer for image
+    std::uint32_t N = dataSizeX * dataSizeY;
+    std::vector<imgDtype> temp_img(N, 0.f);
+
+    // Save temporary vertical convolution for one row
+    std::vector<imgDtype> tmpSum_x(dataSizeX, 0.f);
+
+    // find half width of kernel
+    std::uint32_t kCenter = kSize >> 1;
+    
+    // endIndex and kCenter are used for start and end for edge and general cases
+    std::uint32_t endIndex = dataSizeX - kCenter; 
+
+    // used for indexing offsets
+    std::uint32_t off = 0;
+    
+    // offsets for borders
+    // current offset is reflection, e.g., dcba|abcd|dcba
+    std::vector<std::uint32_t> offsets(kCenter * kSize, 0);
+    for (std::int32_t i = 0; i < static_cast<std::int32_t>(kCenter); ++i)
     {
-        for (int col{kernel_size / 2}; col < (img_cols - kernel_size / 2); ++col)
-            output[step * _row + col] = kernels::apply_conv_kernel(
-                input,
-                kernel,
-                _row, col, step,
-                kernel_size
-            );
-    };
-
-    // process rows serially
-    for (int row{ kernel_size / 2 }; row < img_rows - kernel_size / 2; ++row)
-        process_row(row);
-}
-
-
-void apply_kernel_highpass(
-    imgDtype* output,
-    imgDtype* input,
-    std::vector<imgDtype>& kernel,
-    int img_rows, int img_cols,
-    int kernel_size,
-    bool clip_at_zero = false
-){
-    int step{ img_cols };
-
-    // setup lambda function for column processing
-    auto process_row = [
-        output,
-        input,
-        &kernel,
-        &img_cols,
-        &step,
-        &kernel_size
-    ]( int _row ) mutable
+        for (std::int32_t j = 0; j < static_cast<std::int32_t>(kSize); ++j)
+        {
+            offsets[i * kSize + j] = reflectBorders(j - static_cast<std::int32_t>(kCenter) + i, dataSizeX);
+        }
+    }
+    
+    // Convolution is slit into left/top, middle, and right/bottom cases
+    // We start with horizontal 1D convolutions, then perform vertical 1D convolutions.
+    
+    // left border case
+    for (std::uint32_t j = 0; j < dataSizeY; ++j)
     {
-        for (int col{kernel_size / 2}; col < (img_cols - kernel_size / 2); ++col)
-            output[step * _row + col] = input[step * _row + col] - kernels::apply_conv_kernel(
-                input,
-                kernel,
-                _row, col, step,
-                kernel_size
-            );
-    };
+        for (std::uint32_t i = 0; i < kCenter; ++i)
+        {
+            std::uint32_t idx = j * dataSizeX + i;
+            std::uint32_t kInd = i * kSize; // get correct offsets
+            for (std::uint32_t k = 0; k < kSize; ++k)
+            {
+                temp_img[idx] += in[idx + offsets[kInd + k] - i] * kernelX[k];
+            }
+        }
+    }
 
-    // process rows serially
-    for (int row{ kernel_size / 2 }; row < img_rows - kernel_size / 2; ++row)
-        process_row(row);
+    // center case
+    for (std::uint32_t j = 0; j < dataSizeY; ++j)
+    {
+        for (std::uint32_t i = kCenter; i < endIndex; ++i)
+        {
+            std::uint32_t idx = j * dataSizeX + i;
+            for (std::uint32_t k = 0; k < kSize; k++)
+                temp_img[idx] += in[idx - kCenter + k] * kernelX[k];
+        }
+    }
 
-    // clip pixel values less than zero if necessary
-    if (clip_at_zero) 
-        buffer_clip(output, 0.f, 1.f, img_rows * img_cols);
+    // right border case
+    for (std::uint32_t j = 0; j < dataSizeY; ++j)
+    {
+        off = kCenter - 1;
+        for (std::uint32_t i = endIndex; i < dataSizeX; ++i)
+        {
+            std::uint32_t idx = j * dataSizeX + i;
+            std::uint32_t kInd = off * kSize;
+            for (std::uint32_t k = 0, m = kSize - 1; k < kSize; ++k, --m)
+            {
+                temp_img[idx] += in[idx - offsets[kInd + m] + off] * kernelX[k];
+            }
+            off--;
+        }
+    }
+
+    // Now perform convolution in vertical direction.
+    endIndex = dataSizeY - kCenter;
+
+    // top border case
+    for (std::uint32_t j = 0; j < kCenter; ++j)
+    {
+        std::uint32_t idx = 0;
+        std::uint32_t kInd = j * kSize;
+        for (std::uint32_t k = 0; k < kSize; ++k)
+        {
+            std::uint32_t row = offsets[kInd + k];
+            for (std::uint32_t i = 0; i < dataSizeX; ++i)
+            {
+                idx = row * dataSizeX + i;
+                tmpSum_x[i] += temp_img[idx] * kernelY[k];
+            }
+        }
+        // Copy tmpSum_x to output image
+        for (std::uint32_t i = 0; i < dataSizeX; ++i)
+        {
+            idx = j * dataSizeX + i;
+            out[idx] = tmpSum_x[i] + 0.5f;
+            tmpSum_x[i] = 0.f;
+        }
+    }
+
+    // center case
+    for (std::uint32_t j = kCenter; j < endIndex; ++j)
+    {
+        std::uint32_t idx = 0;
+        for (std::uint32_t k = 0; k < kSize; ++k)
+        {
+            std::uint32_t row = j - kCenter + k;
+            for (std::uint32_t i = 0; i < dataSizeX; ++i)
+            {
+                idx = row * dataSizeX + i;
+                tmpSum_x[i] += temp_img[idx] * kernelY[k];
+            }
+        }
+        for (std::uint32_t i = 0; i < dataSizeX; ++i)
+        {
+            idx = j * dataSizeX + i;
+            out[idx] = tmpSum_x[i] + 0.5f;
+            tmpSum_x[i] = 0.f;
+        }
+    }
+
+    // bottom border case
+    off = kCenter - 1;
+    for (std::uint32_t j = endIndex; j < dataSizeY; ++j)
+    {
+        std::uint32_t idx = 0;
+        std::uint32_t kInd = off * kSize;
+        for (std::uint32_t k = 0, m = kSize - 1; k < kSize; ++k, --m)
+        {
+            std::uint32_t row = dataSizeY - offsets[kInd + m] - 1;
+            for (std::uint32_t i = 0; i < dataSizeX; ++i)
+            {
+                idx = row * dataSizeX + i;
+                tmpSum_x[i] += temp_img[idx] * kernelY[k];
+            }
+        }
+        off--;
+        
+        // Copy tmpSum_x to output image
+        for (std::uint32_t i = 0; i < dataSizeX; ++i)
+        {
+            idx = j * dataSizeX + i;
+            out[idx] = tmpSum_x[i] + 0.5f;
+            tmpSum_x[i] = 0.f;
+        }
+    }
 }

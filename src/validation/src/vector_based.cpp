@@ -267,7 +267,7 @@ void normalized_local_median_test(
 
 
 double test_median(
-    double* arr,
+    const double* arr,
     size_t N_M
 ){
     double test_scalar = 0.0;

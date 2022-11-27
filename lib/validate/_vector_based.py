@@ -17,6 +17,9 @@ __all__ = [
 ]
 
 
+Float = np.float64
+
+
 ##############################################################################
 # These functions are implemented in NumPy as they are already "fast enough" #
 ##############################################################################
@@ -37,9 +40,9 @@ def global_val(
 
     Parameters
     ----------
-    u : ndarray
+    u : 2D array
         A two dimensional array containing the u velocity component.
-    v : ndarray
+    v : 2D array
         A two dimensional array containing the v velocity component.
     u_thresholds: tuple
         u_thresholds = (u_min, u_max). If u < u_min or u > u_max
@@ -50,7 +53,7 @@ def global_val(
 
     Returns
     -------
-    mask : ndarray
+    mask : 2D array
         An integer array where elemtents that = 0 are valid
         and 1 = invalid.
 
@@ -85,9 +88,9 @@ def global_std(
 
     Parameters
     ----------
-    u : ndarray
+    u : 2D array
         A two dimensional array containing the u velocity component.
-    v : ndarray
+    v : 2D array
         A two dimensional array containing the v velocity component.
     std_threshold : float
         If the length of the vector (actually the sum of squared components) is
@@ -96,7 +99,7 @@ def global_std(
 
     Returns
     -------
-    mask : ndarray
+    mask : 2D array
         An integer array where elemtents that = 0 are valid
         and 1 = invalid.
 
@@ -151,9 +154,9 @@ def local_difference(
 
     Parameters
     ----------
-    u : ndarray
+    u : 2D array
         A two dimensional array containing the u velocity component.
-    v : ndarray
+    v : 2D array
         A two dimensional array containing the v velocity component.
     threshold_u : float
         Threshold for u component.
@@ -164,9 +167,9 @@ def local_difference(
 
     Returns
     -------
-    mask : ndarray
-        An integer array where elemtents that = 0 are valid
-        and 1 = invalid.
+    mask : 2D array
+        A boolean or integer array where elemtents that equal 0 are valid
+        and equal 1 are invalid.
 
     """
     _check(ndim=2, u=u, v=v)
@@ -179,11 +182,11 @@ def local_difference(
     buffer_v = np.pad(v, 1, mode="constant", constant_values=np.nan)
 
     # make sure array is float64
-    if buffer_u.dtype != "float64":
-        buffer_u = buffer_u.astype("float64")
+    if buffer_u.dtype != Float:
+        buffer_u = buffer_u.astype(Float)
 
-    if buffer_v.dtype != "float64":
-        buffer_v = buffer_v.astype("float64")
+    if buffer_v.dtype != Float:
+        buffer_v = buffer_v.astype(Float)
 
     ind = _difference_test(buffer_u, buffer_v, float(threshold_u), float(threshold_v))
 
@@ -215,9 +218,9 @@ def local_median(
 
     Parameters
     ----------
-    u : ndarray
+    u : 2D array
         A two dimensional array containing the u velocity component.
-    v : ndarray
+    v : 2D array
         A two dimensional array containing the v velocity component.
     threshold_u : float
         Threshold for u component.
@@ -233,9 +236,9 @@ def local_median(
 
     Returns
     -------
-    mask : ndarray
-        An integer array where elemtents that = 0 are valid
-        and 1 = invalid.
+    mask : 2D array
+        A boolean or integer array where elemtents that equal 0 are valid
+        and equal 1 are invalid.
 
     """
     _check(ndim=2, u=u, v=v)
@@ -248,11 +251,11 @@ def local_median(
     buffer_v = np.pad(v, size, mode="constant", constant_values=np.nan)
 
     # make sure array is float64
-    if buffer_u.dtype != "float64":
-        buffer_u = buffer_u.astype("float64")
+    if buffer_u.dtype != Float:
+        buffer_u = buffer_u.astype(Float)
 
-    if buffer_v.dtype != "float64":
-        buffer_v = buffer_v.astype("float64")
+    if buffer_v.dtype != Float:
+        buffer_v = buffer_v.astype(Float)
 
     ind = _local_median_test(
         buffer_u, buffer_v, threshold_u, threshold_v, int(size), int(kernel_min_size)
@@ -287,9 +290,9 @@ def normalized_local_median(
 
     Parameters
     ----------
-    u : ndarray
+    u : 2D array
         A two dimensional array containing the u velocity component.
-    v : ndarray
+    v : 2D array
         A two dimensional array containing the v velocity component.
     threshold_u : float
         Threshold for u component.
@@ -307,9 +310,9 @@ def normalized_local_median(
 
     Returns
     -------
-    mask : ndarray
-        A boolean or integer array where elemtents that = 0 are valid
-        and 1 = invalid.
+    mask : 2D array
+        A boolean or integer array where elemtents that equal 0 are valid
+        and equal 1 are invalid.
 
     """
     _check(ndim=2, u=u, v=v)
@@ -322,11 +325,11 @@ def normalized_local_median(
     buffer_v = np.pad(v, size, mode="constant", constant_values=np.nan)
 
     # make sure array is float64
-    if buffer_u.dtype != "float64":
-        buffer_u = buffer_u.astype("float64")
+    if buffer_u.dtype != Float:
+        buffer_u = buffer_u.astype(Float)
 
-    if buffer_v.dtype != "float64":
-        buffer_v = buffer_v.astype("float64")
+    if buffer_v.dtype != Float:
+        buffer_v = buffer_v.astype(Float)
 
     ind = _normalized_local_median_test(
         buffer_u,

@@ -41,19 +41,25 @@ std::vector<imgDtype> buffer_mean_std(
     std::size_t
 );
 
-std::int32_t sub2Dind(
-    std::int32_t,
-    std::int32_t,
-    std::int32_t
+std::uint32_t sub2Dind(
+    std::uint32_t,
+    std::uint32_t,
+    std::uint32_t
 );
 
-std::int32_t sub3Dind(
-    std::int32_t,
-    std::int32_t,
-    std::int32_t,
-    std::int32_t,
-    std::int32_t
+std::uint32_t sub3Dind(
+    std::uint32_t,
+    std::uint32_t,
+    std::uint32_t,
+    std::uint32_t,
+    std::uint32_t
 );
+
+std::int32_t reflectBorders(
+    std::int32_t,
+    const std::int32_t
+);
+
 /*
 imgDtype vector_median(
    imgDtype&,
