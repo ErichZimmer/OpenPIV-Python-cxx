@@ -29,51 +29,6 @@ Table of Contents
 #include "openpiv_utils.h"
 
 // openpiv
-#include "algos/fft.h"
-#include "core/enumerate.h"
-#include "core/grid.h"
-#include "core/image_utils.h"
-#include "core/image_expression.h"
-#include "core/stream_utils.h"
-#include "core/vector.h"
-
-// pocketFFT
-#include "pocketfft_hdronly.h"
-
-using namespace openpiv;
-
-
-/*
-Due to Link Error 2005 on core::generate_cartesian_grid,
-all correlation functions are placed in one file for now.
-*/
-
-/*
-~~~~~~~~~~~~~~~~~
-Table of Contents
-~~~~~~~~~~~~~~~~~
-1:   comments
-17:  includes
-47:  standard cross-correlation of one interrogation window
-72:  standard cross-correlation
-178: auto-correlation
-*/
-
-#include "openpiv_correlation.h"
-
-// std
-#include <atomic>
-#include <chrono>
-#include <fstream>
-#include <iostream>
-#include <thread>
-#include <cmath>
-
-// utils
-#include "threadpool.hpp"
-#include "openpiv_utils.h"
-
-// openpiv
 #include "algos/pocket_fft.h"
 #include "core/enumerate.h"
 #include "core/grid.h"
