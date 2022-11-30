@@ -118,19 +118,19 @@ std::vector<imgDtype> process_images_standard(
         &correlator,
         &bias_correction,
         &vslice
-     ]( std::size_t i, const core::rect& ia, 
-        core::image<core::g<imgDtype>>& view_a, 
-        core::image<core::g<imgDtype>>& view_b,
-        core::image<core::g<imgDtype>>& output)
+     ]( std::size_t i, const core::rect& ia )
      {
+        core::image<core::g<imgDtype>> view_a{ paddedWindow.width(), paddedWindow.height() };
+        core::image<core::g<imgDtype>> view_b{ paddedWindow.width(), paddedWindow.height() };
+         
         auto mean_stdA = mean_std(img_a, ia.bottom(), ia.top(), ia.left(), ia.right());
         auto mean_stdB = mean_std(img_b, ia.bottom(), ia.top(), ia.left(), ia.right());
 
         placeIntoPadded(img_a, view_a, ia.bottom(), ia.top(), ia.left(), ia.right(), vslice[0], mean_stdA[0]);
         placeIntoPadded(img_b, view_b, ia.bottom(), ia.top(), ia.left(), ia.right(), vslice[0], mean_stdB[0]);
 
-        // prepare & correlate
-        output = (fft.*correlator)( view_a, view_b );
+        // correlate
+        core::image<core::g<imgDtype>> output{ (fft.*correlator)( view_a, view_b ) };
 
         /// normalize output and correct bias
         output = output / bias_correction;
@@ -158,29 +158,22 @@ std::vector<imgDtype> process_images_standard(
         for ( const auto& chunk_size_ : chunk_sizes )
         {
             pool.enqueue(
-                [i, chunk_size_, &grid, &processor, &paddedWindow]() {
-                    core::gf_image view_a{ paddedWindow.height(), paddedWindow.width() };
-                    core::gf_image view_b{ paddedWindow.height(), paddedWindow.width() };
-                    core::gf_image output{ paddedWindow.height(), paddedWindow.width() };
-                    
+                [i, chunk_size_, &grid, &processor, &paddedWindow]() {                 
                     for ( std::size_t j=i; j<i + chunk_size_; ++j )
-                        processor(j, grid[j], view_a, view_b, output);
+                        processor(j, grid[j]);
                 } );
             i += chunk_size_;
         }
     }
     else
     {
-        core::gf_image view_a{ paddedWindow.height(), paddedWindow.width() };
-        core::gf_image view_b{ paddedWindow.height(), paddedWindow.width() };
-        core::gf_image output{ paddedWindow.height(), paddedWindow.width() };
-
         for (std::size_t i = 0; i < grid.size(); ++i)
-            processor(i, grid[i], view_a, view_b, output);
+            processor(i, grid[i]);
     }
 
     return cmatrix;
 }
+
 
 
 // autocorrelation
@@ -322,14 +315,14 @@ std::vector<imgDtype> process_images_ecc(
     // get strides for pocketFFT
     std::uint32_t y = paddedWindow.height();
     std::uint32_t x = paddedWindow.width();
-    std::uint32_t new_x = x / 2 + 1;
+    std::uint32_t x = x / 2 + 1;
 
     core::image<core::g<imgDtype>> in_a(x, y);
     core::image<core::g<imgDtype>> in_b(x, y);
     core::image<core::g<imgDtype>> res(x, y);
 
-    core::image<core::complex<imgDtype>> out_a(new_x, y);
-    core::image<core::complex<imgDtype>> out_b(new_x, y);
+    core::image<core::complex<imgDtype>> out_a(x, y);
+    core::image<core::complex<imgDtype>> out_b(x, y);
     
     pocketfft::shape_t shape{
         static_cast<std::size_t>(y),
@@ -337,14 +330,14 @@ std::vector<imgDtype> process_images_ecc(
     };
     pocketfft::shape_t shape2{
         static_cast<std::size_t>(y),
-        static_cast<std::size_t>(new_x)
+        static_cast<std::size_t>(x)
     };
 
     ptrdiff_t s = sizeof(imgDtype);
     ptrdiff_t s2 = sizeof(core::complex<imgDtype>);
 
     pocketfft::stride_t stride{ x * s, s };
-    pocketfft::stride_t stride2{ new_x * s2, s2 };
+    pocketfft::stride_t stride2{ x * s2, s2 };
     
     pocketfft::shape_t axes = {
         static_cast<std::size_t>(0),
@@ -358,7 +351,7 @@ std::vector<imgDtype> process_images_ecc(
     core::image<core::g<imgDtype>> bias_correction{ paddedWindow.width(), paddedWindow.height() };
     core::fill(bias_correction, core::g<imgDtype>{ 1.0 } );
 
-    core::image<core::complex<imgDtype>> bias_correction_cmp{ new_x, y };
+    core::image<core::complex<imgDtype>> bias_correction_cmp{ x, y };
 
     // FFT real to complex 
     pocketfft::r2c<imgDtype>(
@@ -478,12 +471,12 @@ std::vector<imgDtype> process_images_ecc(
         for ( const auto& chunk_size_ : chunk_sizes )
         {
             pool.enqueue(
-                [i, chunk_size_, &grid, &processor, &x, &new_x, &y]() {
+                [i, chunk_size_, &grid, &processor, &x, &x, &y]() {
                     core::image<core::g<imgDtype>> view_a{ x, y };
                     core::image<core::g<imgDtype>> view_b{ x, y };
                     core::image<core::g<imgDtype>> output{ x, y };
-                    core::image<core::complex<imgDtype>> view_a_comp{ new_x, y };
-                    core::image<core::complex<imgDtype>> view_b_comp{ new_x, y };
+                    core::image<core::complex<imgDtype>> view_a_comp{ x, y };
+                    core::image<core::complex<imgDtype>> view_b_comp{ x, y };
 
                     for ( std::size_t j=i; j<i + chunk_size_; ++j )
                         processor(
@@ -500,8 +493,8 @@ std::vector<imgDtype> process_images_ecc(
         core::image<core::g<imgDtype>> view_a{ x, y };
         core::image<core::g<imgDtype>> view_b{ x, y };
         core::image<core::g<imgDtype>> output{ x, y };
-        core::image<core::complex<imgDtype>> view_a_comp{ new_x, y };
-        core::image<core::complex<imgDtype>> view_b_comp{ new_x, y };
+        core::image<core::complex<imgDtype>> view_a_comp{ x, y };
+        core::image<core::complex<imgDtype>> view_b_comp{ x, y };
 
         for (std::size_t i = 0; i < grid.size(); ++i)
             processor(

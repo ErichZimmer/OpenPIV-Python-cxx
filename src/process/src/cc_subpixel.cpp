@@ -115,13 +115,14 @@ void process_cmatrix_2x3(
     std::size_t V3  = maxStep * 7;
 
     auto processor = [
-        cmatrix,
-        results,
+        &cmatrix,
+        &results,
         stride_2d,
         &stride_1d,
         &U, &V, &PH, &P2P,
         &U2, &V2,
         &U3, &V3,
+        limit_peak_search,
         return_type
      ]( std::size_t step )
      {
@@ -139,7 +140,15 @@ void process_cmatrix_2x3(
         );
 
         // find peaks
-        core::peaks_t<core::g<imgDtype>> peaks = core::find_peaks( corrCut, num_peaks, radius );
+        core::peaks_t<core::g<imgDtype>> peaks;
+        if ( limit_peak_search )
+        {
+            // reduce search radius
+            auto centre = core::create_image_view( corrCut, corrCut.rect().dilate(0.5) );
+            peaks = core::find_peaks( centre, num_peaks, radius );
+        } else {
+            peaks = core::find_peaks( corrCut, num_peaks, radius );
+        }
 
         // sub-pixel fitting
         if ( peaks.size() != num_peaks )
