@@ -22,7 +22,7 @@ def check_cmake_txt(dir_, line_num, line_mod):
 def modify_cmake_txt(dir_, line_num, line_mod):
     with open(dir_, "r", encoding="utf-8") as file:
         data = file.readlines()
-
+    print(data[line_num])
     data[line_num] = line_mod
 
     with open(dir_, "w", encoding="utf-8") as file:
@@ -57,7 +57,7 @@ def main():
     line_to_modify = 29
 
     if check_cmake_txt(dir_to_modify, line_to_modify - off, txt_to_mod) == False:
-        print(f"Modifying openpiv-c--qt CMakeLists.txt {line_to_modify} to suite current build (again)")
+        print(f"Modifying openpiv-c--qt CMakeLists.txt line {line_to_modify} to suite current build")
         modify_cmake_txt(dir_to_modify, line_to_modify - off, txt_to_mod)
 
         
