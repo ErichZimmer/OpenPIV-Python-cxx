@@ -8,8 +8,11 @@ file(GLOB SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 # include wrapper headers
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# include libopenpivcore headers
+# include openpivcore headers
 include_directories(${OPENPIV_CXX_DIR}/openpiv)
+
+# include pocketfft headers
+include_directories(${OPENPIV_CXX_DIR}/external/pocketfft)
 
 # include threading headers
 include_directories(${PROJECT_SOURCE_DIR}/extern/extras)
