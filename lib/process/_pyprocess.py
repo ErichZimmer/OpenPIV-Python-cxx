@@ -280,27 +280,11 @@ def correlation_to_displacement(
     else:
         return_type = 0
 
-    if limit_peak_search == True and corr.shape[1] >= 12 and corr.shape[1] >= 12:
-        corr_slice = (  # use the one-quarter rule for limited peak search
-            slice(0, corr.shape[0]),
-            slice(
-                corr.shape[1] // 2 - corr.shape[1] // 4,
-                corr.shape[1] // 2 + corr.shape[1] // 4,
-            ),
-            slice(
-                corr.shape[2] // 2 - corr.shape[2] // 4,
-                corr.shape[2] // 2 + corr.shape[2] // 4,
-            ),
-        )
-    else:
-        corr_slice = (
-            slice(0, corr.shape[0]),
-            slice(0, corr.shape[1]),
-            slice(0, corr.shape[2]),
-        )
+    if limit_peak_search == True and corr.shape[1] <= 12 and corr.shape[1] <= 12:
+        corr_slice = 0
 
     u1, v1, peakHeight, peak2peak, u2, v2, u3, v3 = _proc._corr2vec(
-        corr[corr_slice], kernel, limit_peak_search, int(thread_count), return_type
+        corr, kernel, limit_peak_search, int(thread_count), return_type
     ).reshape(shape)
 
     if return_type == 1:
