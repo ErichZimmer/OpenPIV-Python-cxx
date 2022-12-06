@@ -8,7 +8,8 @@ from pathlib import Path
 def get_pkg_from_txt(dir_):
     with open(dir_, "r", encoding="utf-8") as file:
         data = file.readlines()
-        data = [pkg.strip("\n") for pkg in data] 
+        data = [pkg.strip("\n") for pkg in data]
+    
     return data
 
 
@@ -22,7 +23,7 @@ def check_cmake_txt(dir_, line_num, line_mod):
 def modify_cmake_txt(dir_, line_num, line_mod):
     with open(dir_, "r", encoding="utf-8") as file:
         data = file.readlines()
-    print(data[line_num])
+
     data[line_num] = line_mod
 
     with open(dir_, "w", encoding="utf-8") as file:
