@@ -207,7 +207,7 @@ def correlation_to_displacement(
     n_rows=None,
     n_cols=None,
     kernel="2x3",
-    limit_peak_search=True,
+    limit_peak_search=False,
     thread_count=1,
     return_type="first_peak",
 ):
@@ -281,7 +281,7 @@ def correlation_to_displacement(
         return_type = 0
 
     if limit_peak_search == True and corr.shape[1] <= 12 and corr.shape[1] <= 12:
-        corr_slice = 0
+        limit_peak_search = 0
 
     u1, v1, peakHeight, peak2peak, u2, v2, u3, v3 = _proc._corr2vec(
         corr, kernel, limit_peak_search, int(thread_count), return_type
