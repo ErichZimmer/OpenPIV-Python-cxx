@@ -155,8 +155,8 @@ void process_cmatrix_2x3(
         {
             results[step + U] = NAN;
             results[step + V] = NAN;
-            results[step + PH] = NAN;
-            results[step + P2P] = NAN;
+            results[step + PH] = 0.0;
+            results[step + P2P] = 0.0;
             return;
         }
 
