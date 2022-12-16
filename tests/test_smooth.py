@@ -13,7 +13,6 @@ u = data[:,2]
 u = u.reshape(29,41)
 
 
-
 def test_smooth_spline_no_mask():
     u_smth = smooth.smooth_spline(u, s=1)
 
