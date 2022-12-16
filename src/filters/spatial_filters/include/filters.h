@@ -14,7 +14,8 @@ using imgDtype = constants::imgDtype;
 
 void intensity_cap_filter(
     imgDtype*,
-    int,
+    imgDtype*,
+    std::size_t,
     imgDtype
 );
 

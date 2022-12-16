@@ -6,12 +6,57 @@
 #include <iostream>
 
 #include "filters.h"
-#include "utils.h"
+
+
+std::int32_t reflectBorders(
+    std::int32_t val,
+    const std::int32_t maxVal
+){
+    if (val < 0) // reflect left / top borders
+    {
+        std::int32_t maxVal2 = maxVal * 2;
+        if ( val < -maxVal2 )
+            val = maxVal2 * (-val / maxVal2) * val;
+        val = ( val < -maxVal ) ? val + maxVal2 : -val - 1;
+    }
+    else if ( val >= maxVal ) // reflect bottom / right borders
+    {
+        std::int32_t maxVal2 = maxVal * 2;
+         val -= maxVal2 * (val / maxVal2);
+         if ( val >= maxVal )
+         val = maxVal2 - val;
+    }
+    
+    return val;
+}
+
+
+std::vector<imgDtype> buffer_mean_std(
+    imgDtype* in,
+    std::size_t N_M
+){
+    imgDtype sum{}, mean{}, std_{};
+    std::size_t i{};
+
+    for (i = 0; i < N_M; ++i)
+    {
+        sum += in[i];
+        std_ += in[i]*in[i]; // temp
+    }
+    mean = sum / N_M;
+    std_ = sqrt( (std_ / N_M) + (mean*mean) - (2*mean*mean) );
+
+    std::vector<imgDtype> out(2);
+    out[0] = mean; out[1] = std_;
+
+    return out;
+}
 
 
 void intensity_cap_filter(
     imgDtype* input,
-    int N_M,
+    imgDtype* output,
+    std::size_t N_M,
     imgDtype std_mult = 2.f
 ){
     imgDtype upper_limit{};
@@ -23,19 +68,29 @@ void intensity_cap_filter(
     upper_limit = mean_std[0] + std_mult * mean_std[1];
 
     // perform intensity capping
-    buffer_clip(input, 0.f, upper_limit, N_M);
+    imgDtype val = 0.f;
+    
+    for (std::size_t i = 0; i < N_M; ++i)
+    {
+        val = input[i];
+        
+        if ( val > upper_limit )
+            val = upper_limit;
+        
+        output[i] = val;
+    }
 }
 
 
 void binarize_filter(
     imgDtype* output,
     imgDtype* input,
-    int N_M,
+    std::size_t N_M,
     imgDtype threshold
 ){
 
     // perform binarization, assuming pixel intensity range of [0..1]
-    for (int i = 0; i < N_M; ++i)
+    for (std::size_t i = 0; i < N_M; ++i)
         output[i] = (input[i] > threshold) ? 1.f : 0.f;
 }
 
@@ -142,7 +197,7 @@ void convolve2D(
         for (std::uint32_t i = 0; i < dataSizeX; ++i)
         {
             idx = j * dataSizeX + i;
-            out[idx] = tmpSum_x[i] + 0.5f;
+            out[idx] = tmpSum_x[i];
             tmpSum_x[i] = 0.f;
         }
     }
@@ -163,7 +218,7 @@ void convolve2D(
         for (std::uint32_t i = 0; i < dataSizeX; ++i)
         {
             idx = j * dataSizeX + i;
-            out[idx] = tmpSum_x[i] + 0.5f;
+            out[idx] = tmpSum_x[i];
             tmpSum_x[i] = 0.f;
         }
     }
@@ -189,7 +244,7 @@ void convolve2D(
         for (std::uint32_t i = 0; i < dataSizeX; ++i)
         {
             idx = j * dataSizeX + i;
-            out[idx] = tmpSum_x[i] + 0.5f;
+            out[idx] = tmpSum_x[i];
             tmpSum_x[i] = 0.f;
         }
     }
