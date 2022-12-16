@@ -207,9 +207,9 @@ def correlation_to_displacement(
     n_rows=None,
     n_cols=None,
     kernel="2x3",
-    limit_peak_search=False,
+    limit_peak_search=True,
     thread_count=1,
-    return_type="first_peak",
+    return_type="first peak",
 ):
     """Standard subpixel estimation.
 
@@ -252,10 +252,10 @@ def correlation_to_displacement(
     if kernel not in ["2x3"]:
         raise ValueError(f"Unsupported peak search method method: {kernel}.")
 
-    if return_type not in ["first_peak", "second_peak", "third_peak", "all_peaks"]:
+    if return_type not in ["first peak", "second peak", "third peak", "all peaks"]:
         raise ValueError(
             f"Unsupported return type: {return_type}. \nSupported "
-            + "peak types are 'first_peak', 'second_peak', 'third_peak', 'all_peaks'"
+            + "peak types are 'first peak', 'second peak', 'third peak', 'all peaks'"
         )
 
     if kernel == "2x3":
@@ -271,17 +271,17 @@ def correlation_to_displacement(
     else:
         shape = (8, n_rows, n_cols)
 
-    if return_type == "first_peak":
+    if return_type == "first peak":
         return_type = 1
-    elif return_type == "second_peak":
+    elif return_type == "second peak":
         return_type = 2
-    elif return_type == "third_peak":
+    elif return_type == "third peak":
         return_type = 3
     else:
         return_type = 0
 
     if limit_peak_search == True and corr.shape[1] <= 12 and corr.shape[1] <= 12:
-        limit_peak_search = 0
+        corr_slice = 0
 
     u1, v1, peakHeight, peak2peak, u2, v2, u3, v3 = _proc._corr2vec(
         corr, kernel, limit_peak_search, int(thread_count), return_type

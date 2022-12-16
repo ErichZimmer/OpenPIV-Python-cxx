@@ -131,7 +131,7 @@ def _gaussian_kernel_sigma_2D(sigma, truncate=4.0):
     )
 
 
-def gaussian_kernel(half_width=None, sigma=1.0, truncate=4.0, ndim=2):
+def gaussian_kernel(sigma=1.0, truncate=4.0, half_width=None, ndim=2):
     """Gaussian kernel of specified width, sigma, and dimensions.
 
     Parameters

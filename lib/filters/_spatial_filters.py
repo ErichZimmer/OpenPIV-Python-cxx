@@ -79,7 +79,7 @@ def convolve_2D_sep(
     
     2D convolution by 1D kernels for horizontal and vertical axes.
     The convolution operates in O(2N) insteas of O(N*M), so it is usually
-    much faster. Borders are treated using the following scheme: dcba|abcd|dbca.
+    much faster. Borders are treated using the following scheme: dcba|abcd|dcba.
     
     Parameters
     ----------
@@ -98,6 +98,12 @@ def convolve_2D_sep(
     """
     _check(ndim=2, img=img)
     _check(ndim=1, kernel_h=kernel_h, kernel_v=kernel_v)
+    
+    if kernel_h.size != kernel_v.size:
+        raise ValueError(
+            f"kernel_h (size={kernel_h}) must be same size as" +
+            f"kernel_v (size={kernel_v})"
+        )
     
     # img, kernel_h, and kernel_v are automatically float32 in c++
     return _convolve2D(
@@ -238,6 +244,7 @@ def sobel_filter(
     img
 ):
     """Simple Sobel filter
+    
     Simple 2D Sobel filter by convolution of 1D arrays.
     
     Parameters
