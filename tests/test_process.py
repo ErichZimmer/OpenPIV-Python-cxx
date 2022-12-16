@@ -61,7 +61,7 @@ def test_fft_correlate_images_01():
     assert_equal(max_idx[1], corr.shape[1] // 2)
 
 
-def test_fft_correlate_images_02() -> None:
+def test_fft_correlate_images_02():
     frame_a, frame_b = Frame_a.copy(), Frame_b.copy()
 
     corr = process.fft_correlate_images(frame_a, frame_b, correlation_method="linear")[
@@ -180,7 +180,10 @@ def test_correlation_to_displacement_02():
         correlation_method="linear"
     )
 
-    u, v, _, _ = process.correlation_to_displacement(corr)
+    u, v, _, _ = process.correlation_to_displacement(
+        corr,
+        limit_peak_search=False
+    )
 
     assert_(np.nanmean(np.abs(u - shift_u)) < 0.05)
     assert_(np.nanmean(np.abs(v - shift_v)) < 0.05)
