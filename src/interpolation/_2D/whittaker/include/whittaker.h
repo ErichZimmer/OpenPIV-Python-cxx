@@ -15,8 +15,8 @@ void whittaker2D(
     const double*,
     const double*,
     double*,
-    uint32_t,
-    uint32_t,
+    std::uint32_t,
+    std::uint32_t,
     int
 );
 

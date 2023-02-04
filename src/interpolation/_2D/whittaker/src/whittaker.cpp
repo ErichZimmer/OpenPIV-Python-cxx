@@ -23,20 +23,19 @@ void whittaker2D(
     const double* Y,
     const double* Z,
     double* out,
-    uint32_t N,
-    uint32_t M,
+    std::uint32_t N,
+    std::uint32_t M,
     int radius
 ){
-    int xn, yn;
+    int xn=0, yn=0, x=0, y=0;
     int i0=0, i1=0, j0=0, j1=0;
     double dx, dy, bx, by, sx, sy;
     int nMax = static_cast<int>(N) - 1;
     int mMax = static_cast<int>(M) - 1;
-    
-    
-    for (uint32_t i = 0; i < N; ++i)
+
+    for (std::uint32_t i = 0; i < N; ++i)
     {
-        for (uint32_t j = 0; j < M; ++j)
+        for (std::uint32_t j = 0; j < M; ++j)
         {
             bx = X[i * M + j];
             by = Y[i * M + j];
@@ -48,32 +47,30 @@ void whittaker2D(
             i1 = xn + radius;
             j0 = yn - radius;
             j1 = yn + radius;
-            
-//            std::cout << i0 << ' ' << i1 << ' ' << j0 << ' ' << j1 << '\n';
-            
-            i0 = std::max(i0, 0);
-            i1 = std::min(i1, nMax);
-                
-            j0 = std::max(j0, 0);
-            j1 = std::min(j1, mMax);
-
-//            std::cout << i0 << ' ' << i1 << ' ' << j0 << ' ' << j1 << '\n';
 
             out[i * M + j] = 0.0;
 
+            // Border policy is nearest value.
+            // If we use constants (e.g., zero), the code would likely be much faster.
             for (int k = i0; k <= i1; ++k)
             {
-                dx = double(k) - bx;
-                sx = sinc(dx);
+                x = k;
+                x = std::max<int>(x, 0);
+                x = std::min<int>(x, nMax);
 
-//                std::cout << i << ' ' << j << ' ' << k << ' ' << dx << ": " << sx << '\n';
+                dx = double(x) - bx;
+                sx = sinc(dx);
 
                 for (int h = j0; h <= j1; ++h)
                 {
-                    dy = double(h) - by;
+                    y = h;
+                    y = std::max<int>(y, 0);
+                    y = std::min<int>(y, mMax);
+
+                    dy = double(y) - by;
                     sy = sinc(dy);
 
-                    out[i * M + j] += Z[k * M + h] * sx * sy;
+                    out[i * M + j] += Z[x * M + y] * sx * sy;
                 }
             }
         }
