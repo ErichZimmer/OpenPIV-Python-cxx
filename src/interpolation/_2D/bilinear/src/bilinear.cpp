@@ -6,13 +6,13 @@
 #include "bilinear.h"
 
     
-int find_index(
+std::uint32_t find_index(
     const int* arr,
     double x,
-    uint32_t ub  // upper bound
+    std::uint32_t ub  // upper bound
 ){
     int mid = 0;
-    uint32_t lb = 0;
+    std::uint32_t lb = 0;
 
     while (lb < ub)
     {
@@ -35,17 +35,17 @@ void bilinear2D(
     const double* xi,
     const double* yi,
     double* out,
-    uint32_t N,
-    uint32_t M,
-    uint32_t img_step,
-    uint32_t xUpperBound,
-    uint32_t yUpperBound
+    std::uint32_t N,
+    std::uint32_t M,
+    std::uint32_t img_step,
+    std::uint32_t xUpperBound,
+    std::uint32_t yUpperBound
 ){
     int y1, y2, x1, x2;
     double y, x, z11, z12, z21, z22;
-    uint32_t y_ind, x_ind, ii, jj;
+    std::uint32_t y_ind, x_ind, ii, jj;
     
-    for (uint32_t i = 0; i < N; ++i)
+    for (std::uint32_t i = 0; i < N; ++i)
     {
         x_ind = find_index(X, xi[i], xUpperBound);
 
@@ -60,7 +60,7 @@ void bilinear2D(
         x2 = X[x_ind];
         x  = xi[ii];
 
-        for (uint32_t j = 0; j < M; ++j)
+        for (std::uint32_t j = 0; j < M; ++j)
         {
             y_ind = find_index(Y, yi[j], yUpperBound);
 
