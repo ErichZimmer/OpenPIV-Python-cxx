@@ -12,10 +12,10 @@ std::string get_execution_type(int execution_type)
 }
 
 
-core::gf_image convert_image(
-    py::array_t<double, py::array::c_style | py::array::forcecast>& np_img
+core::image<core::g<imgDtype>> convert_image(
+    const py::array_t<imgDtype, py::array::c_style | py::array::forcecast>& np_img
 ){
-    core::gf_image img(
+    core::image<core::g<imgDtype>> img(
         static_cast<std::uint32_t>(np_img.shape(1)), 
         static_cast<std::uint32_t>(np_img.shape(0))
     );
@@ -23,25 +23,51 @@ core::gf_image convert_image(
     std::memcpy(
         img.data(),
         np_img.data(),
-        np_img.size()*sizeof(double)
+        np_img.size()*sizeof(imgDtype)
     );
     
     return img;
 }
 
 
+std::uint32_t multof(
+    const std::uint32_t i,
+    const std::uint32_t mult
+){
+    std::uint32_t n = 0;
+
+    while (n < i)
+    {
+        n = n + mult;
+    }
+
+    return n;
+}
+
+std::uint32_t nextPower2(
+    const std::uint32_t i
+){
+    std::uint32_t n = 1;
+
+    while (n < i)
+    {
+        n = n * 2;
+    }
+
+    return n;
+}
+
+
 void placeIntoPadded(
-    const core::gf_image& image,
-    core::gf_image& intWindow,
+    const core::image<core::g<imgDtype>>& image,
+    core::image<core::g<imgDtype>>& intWindow,
     int y1,
     int y2,
     int x1,
     int x2,
-    double meanI = 0.0
+    std::uint32_t pad,
+    imgDtype meanI = 0.0
 ){
-    const std::size_t padY = intWindow.height() / 2 - (y2 - y1) / 2;
-    const std::size_t padX = intWindow.width()  / 2 - (x2 - x1) / 2;
-
     std::size_t imgY = y1;
     std::size_t imgX = x1;
 
@@ -50,22 +76,29 @@ void placeIntoPadded(
 
     std::size_t image_stride = image.width();
     std::size_t result_stride = intWindow.width();
+    
+    imgDtype val = 0.0;
 
     for (std::size_t row = 0; row < maxRow; ++row)
+    {
         for (std::size_t col = 0; col < maxCol; ++col)
-            intWindow[(padY + row) * result_stride + padX + col] = 
-                image[(imgY + row) * image_stride  + imgX + col] - meanI;
+        {
+            val = image[(imgY + row) * image_stride  + imgX + col] - meanI;
+            intWindow[(pad  + row) * result_stride + pad  + col] =  val;
+//                ( val > 0.0 ) ? val : 0.0;
+        }
+    }
 }
 
 
-double meanI(
-    const core::gf_image& img,
+imgDtype meanI(
+    const core::image<core::g<imgDtype>>& img,
     std::size_t y1,
     std::size_t y2,
     std::size_t x1,
     std::size_t x2
 ){
-    double sum, std_ = 0.0;
+    imgDtype sum = 0.0;
     
     std::size_t deltaY = (y2 - y1), deltaX = (x2 - x1);
     std::size_t N_M = deltaY * deltaX;
@@ -78,19 +111,19 @@ double meanI(
             sum += img[row * img_stride + col];
     }
 
-    return sum / static_cast<double>(N_M);
+    return sum / static_cast<imgDtype>(N_M);
 }
 
 
-std::vector<double> mean_std(
-    const core::gf_image& img,
+std::vector<imgDtype> mean_std(
+    const core::image<core::g<imgDtype>>& img,
     std::size_t y1,
     std::size_t y2,
     std::size_t x1,
     std::size_t x2
 ){
-    double img_sum, img_std_temp = 0.0;
-    double img_mean, img_std = 0.0;
+    imgDtype img_sum, img_std_temp = 0.0;
+    imgDtype img_mean, img_std = 0.0;
     
     std::size_t deltaY = (y2 - y1), deltaX = (x2 - x1);
     std::size_t N_M = deltaY * deltaX;
@@ -105,10 +138,10 @@ std::vector<double> mean_std(
         }
     }
 
-    img_mean = img_sum / static_cast<double>(N_M);
-    img_std = std::sqrt( (img_std_temp / static_cast<double>(N_M)) + (img_mean*img_mean) - (2*img_mean*img_mean) );
+    img_mean = img_sum / static_cast<imgDtype>(N_M);
+    img_std = std::sqrt( (img_std_temp / static_cast<imgDtype>(N_M)) + (img_mean*img_mean) - (2*img_mean*img_mean) );
 
-    std::vector<double> stat_out(2);
+    std::vector<imgDtype> stat_out(2);
     stat_out[0] = img_mean; 
     stat_out[1] = img_std;
 
@@ -117,8 +150,8 @@ std::vector<double> mean_std(
 
         
 void applyScalarToImage(
-    core::gf_image& image,
-    double scalar,
+    core::image<core::g<imgDtype>>& image,
+    imgDtype scalar,
     std::size_t N_M
 ){
     for (std::size_t i = 0; i < N_M; ++i)
@@ -127,32 +160,24 @@ void applyScalarToImage(
 
 
 void placeIntoCmatrix(
-    std::vector<double>& cmatrix,
-    const core::gf_image& output,
-    const core::size& padSize,
+    std::vector<imgDtype>& cmatrix,
+    const core::image<core::g<imgDtype>>& output,
     const core::rect& ia,
+    const std::vector<std::uint32_t>& vslice,
     std::size_t ind
 ){
-    const std::size_t padY = padSize.height() / 2 - ia.height() / 2;
-    const std::size_t padX = padSize.width() / 2 - ia.width() / 2;
+
 
     std::size_t k = 0;
     std::size_t output_stride = output.width();
     std::size_t window_stride = ia.area();
 
-    for (std::size_t row = { padY }; row < padSize.height() - padY; ++row)
+    for (std::size_t row = vslice[0]; row < vslice[1]; ++row)
     {
-        for (std::size_t col = { padX }; col < padSize.width() - padX; ++col)
+        for (std::size_t col = vslice[0]; col < vslice[1]; ++col)
         {
             cmatrix[ind * window_stride + k] = output[row * output_stride + col];
             ++k;
         }
     }
-    /*
-    std::copy(
-        output.begin() + row + padX, 
-        output.begin() + row + padX + ia.width(), 
-        cmatrix.begin() + ind * (ia.area())
-    );
-    */
 }

@@ -15,27 +15,27 @@ def create_deformation_field(frame, x, y, u, v):
 
     Parameters
     ----------
-    frame : ndarray
+    frame : 2D float32 array
         A two dimensional array of integers containing grey levels of
         an image.
-    x : ndarray
+    x : 2D int32 array
         A two dimensional array containing the x coordinates of the
         interrogation window centers, in pixels.
-    y : ndarray
+    y : 2D int32 array
         A two dimensional array containing the y coordinates of the
         interrogation window centers, in pixels.
-    u : ndarray
+    u : 2D float64 array
         A two dimensional array containing the u velocity component,
         in pixels/seconds.
-    v : ndarray
+    v : 2D float64 array
         A two dimensional array containing the v velocity component,
         in pixels/seconds.
 
     Returns
     -------
-        x, y : ndarray
+        x, y : 2D int32 array
             A new grid with same dimensions as frame
-        u, v : ndarray
+        u, v : 2D float64 array
             Deformation field u/v components
 
 
@@ -79,22 +79,22 @@ def deform_windows(
 
     Parameters
     ----------
-    frame_a : ndarray
+    frame_a : 2D float32 array
         A two dimensional array of integers containing grey levels of
         the first frame.
-    frame_b : ndarray
+    frame_b : 2D float32 array
         A two dimensional array of integers containing grey levels of
         the second frame.
-    x : ndarray
+    x : 2D int32 array
         A two dimensional array containing the x coordinates of the
         interrogation window centers, in pixels.
-    y : ndarray
+    y : 2D int32 array
         A two dimensional array containing the y coordinates of the
         interrogation window centers, in pixels.
-    u : ndarray
+    u : 2D float64 array
         A two dimensional array containing the u velocity component,
         in pixels/seconds.
-    v : ndarray
+    v : 2D float64 array
         A two dimensional array containing the v velocity component,
         in pixels/seconds.
     order : scalar
@@ -110,7 +110,7 @@ def deform_windows(
 
     Returns
     -------
-    frame_def_a, frame_def_b : ndarray
+    frame_def_a, frame_def_b : 2D float32 array
         Deformed images based on the meshgrid and displacements of the
         previous pass
 

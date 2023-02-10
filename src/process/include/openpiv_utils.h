@@ -3,7 +3,7 @@
 
 // std
 #include <vector>
-// #include <cinttypes>
+#include <cinttypes>
 #include <cstddef>
 
 // openpiv
@@ -16,37 +16,54 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 
-using namespace openpiv;
+// utils
+#include "constants.h"
+
+
 namespace py = pybind11;
+using namespace openpiv;
+using imgDtype = constants::imgDtype;
 
 
 std::string get_execution_type(int);
 
 
-core::gf_image convert_image(
-    py::array_t<double, py::array::c_style | py::array::forcecast>&
+core::image<core::g<imgDtype>> convert_image(
+    const py::array_t<imgDtype, py::array::c_style | py::array::forcecast>&
+);
+
+
+std::uint32_t multof(
+    const std::uint32_t,
+    const std::uint32_t
+);
+
+
+std::uint32_t nextPower2(
+    const std::uint32_t
 );
 
 
 void placeIntoPadded(
-    const core::gf_image&,
-    core::gf_image&,
+    const core::image<core::g<imgDtype>>&,
+    core::image<core::g<imgDtype>>&,
     int, int,
     int, int,
-    double
+    std::uint32_t,
+    imgDtype
 );
 
 
-double meanI(
-    const core::gf_image&,
+imgDtype meanI(
+    const core::image<core::g<imgDtype>>&,
     std::size_t,
     std::size_t,
     std::size_t,
     std::size_t
 );
 
-std::vector<double> mean_std(
-    const core::gf_image&,
+std::vector<imgDtype> mean_std(
+    const core::image<core::g<imgDtype>>&,
     std::size_t,
     std::size_t,
     std::size_t,
@@ -55,17 +72,17 @@ std::vector<double> mean_std(
 
         
 void applyScalarToImage(
-    core::gf_image&,
-    double,
+    core::image<core::g<imgDtype>>&,
+    imgDtype,
     std::size_t
 );
 
 
 void placeIntoCmatrix(
-    std::vector<double>&,
-    const core::gf_image&,
-    const core::size&,
+    std::vector<imgDtype>&,
+    const core::image<core::g<imgDtype>>&,
     const core::rect&,
+    const std::vector<std::uint32_t>&,
     std::size_t
 );
 

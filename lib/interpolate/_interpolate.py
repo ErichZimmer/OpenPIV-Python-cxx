@@ -7,25 +7,29 @@ import numpy as np
 __all__ = ["bilinear2D"]
 
 
+Float = np.float64
+Int = np.int32
+
+
 def bilinear2D(x, y, z, xi, yi, keep_dtype=False):
     """2-D bilinear interpolation over a regular grid.
 
     Parameters
     ----------
-    x, y : ndarray
-        The `x` and `y`-coordinates in strictly ascending order
+    x, y : 2D int64 array
+        The coordinates, in strictly ascending order,
         which to evaluate the interpolated values.
-    z : ndarray
+    z : 2D float64 array
         A two dimensionional array.
-    xi, yi : ndarray
-        The `x` and `y`-coordinates at which to evaluate the interpolated
+    xi, yi : 2D float64 array
+        The coordinates at which to evaluate the interpolated
         values.
     keep_dtype : bool
         Whether to cast the output to the original dtype or not.
 
     Returns
     -------
-    z_deform : ndarray
+    z_deform : 2D float64 array
         The interpolated array.
 
     References
@@ -42,8 +46,8 @@ def bilinear2D(x, y, z, xi, yi, keep_dtype=False):
     orig_dtype = z.dtype
 
     # convert to 64 bit float for interpolation
-    if orig_dtype != "float64":
-        z = z.astype("float64")
+    if orig_dtype != Float:
+        z = z.astype(Float)
 
     if not np.all(np.diff(x) > 0.0):
         raise ValueError("x must be strictly increasing")
@@ -51,22 +55,22 @@ def bilinear2D(x, y, z, xi, yi, keep_dtype=False):
     if not np.all(np.diff(y) > 0.0):
         raise ValueError("y must be strictly increasing")
 
-    if x.dtype != "int64":
-        x = x.astype("int64")
+    if x.dtype != Int:
+        x = x.astype(Int)
 
-    if y.dtype != "int64":
-        y = y.astype("int64")
+    if y.dtype != Int:
+        y = y.astype(Int)
 
-    if xi.dtype != "float64":
-        xi = xi.astype("float64")
+    if xi.dtype != Float:
+        xi = xi.astype(Float)
 
-    if yi.dtype != "float64":
-        yi = yi.astype("float64")
+    if yi.dtype != Float:
+        yi = yi.astype(Float)
 
     z_interp = _bilinear2D(x, y, z, xi, yi)
 
     # cast to original dtype if needed
-    if orig_dtype != "float64" and keep_dtype == True:
+    if orig_dtype != Float and keep_dtype == True:
         z_interp = z_interp.astype(orig_dtype)
 
     return z_interp

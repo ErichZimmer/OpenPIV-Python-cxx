@@ -1,25 +1,30 @@
-#ifndef CC_ALL_H
-#define CC_ALL_H
+#ifndef CC_CROSSCORRELATE_H
+#define CC_CROSSCORRELATE_H
 
 // std
 #include <cinttypes>
 #include <vector>
 
-// pybind11
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
+// openpiv
+#include "core/image.h"
 
-namespace py = pybind11;
+// utils
+#include "constants.h"
 
-std::vector<double> process_window(
-    py::array_t<double, py::array::c_style | py::array::forcecast>&,
-    py::array_t<double, py::array::c_style | py::array::forcecast>&
+
+using namespace openpiv;
+using imgDtype = constants::imgDtype;
+
+
+std::vector<imgDtype> process_window(
+    const core::image<core::g<imgDtype>>&,
+    const core::image<core::g<imgDtype>>&
 );
 
 
-std::vector<double> process_images_standard(
-    py::array_t<double, py::array::c_style | py::array::forcecast>&,
-    py::array_t<double, py::array::c_style | py::array::forcecast>&,
+std::vector<imgDtype> images_to_correlation_standard(
+    const core::image<core::g<imgDtype>>&,
+    const core::image<core::g<imgDtype>>&,
     std::uint32_t,
     std::uint32_t,
     int,
@@ -27,12 +32,15 @@ std::vector<double> process_images_standard(
 );
 
 
-std::vector<double> process_images_autocorrelate(
-    py::array_t<double, py::array::c_style | py::array::forcecast>&,
+void correlation_based_correction(
+    imgDtype*,
+    imgDtype*,
     std::uint32_t,
     std::uint32_t,
-    int,
+    std::uint32_t,
+    std::uint32_t,
     int
 );
+
 
 #endif

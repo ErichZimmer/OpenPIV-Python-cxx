@@ -34,8 +34,8 @@ def sig2noise_val(
     Returns
     -------
     mask : ndarray
-        An integer array where elemtents that = 0 are valid
-        and 1 = invalid.
+        A boolean or integer array where elemtents that equal 0 are valid
+        and equal 1 are invalid.
 
     References
     ----------

@@ -3,6 +3,8 @@
 Interpolation
 =============
 
+This module contains various functions for interpolating and mapping images.
+
 Gridded 2D Interpolation
 ========================
     bilinear2D - 2D bilinear interpolation

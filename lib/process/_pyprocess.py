@@ -9,8 +9,13 @@ __all__ = [
     "get_coordinates",
     "get_rect_coordinates",
     "fft_correlate_images",
-    "correlation_to_displacement",
+    "correlation_based_correction",
+    "correlation_to_displacement"
 ]
+
+
+Float = np.float64
+Int = np.int32
 
 
 def get_field_shape(image_size, window_size, overlap):
@@ -69,10 +74,10 @@ def get_coordinates(image_size, window_size=32, overlap=16):
 
     Returns
     -------
-    x : ndarray
+    x : 2D int32 array
         A two dimensional array containing the x coordinates of the
         interrogation window centers, in pixels.
-    y : ndarray
+    y : 2D int32 array
         A two dimensional array containing the y coordinates of the
         interrogation window centers, in pixels.
 
@@ -117,10 +122,10 @@ def get_rect_coordinates(
 
     Returns
     -------
-    x : ndarray
+    x : 2D int32 array
         A two dimensional array containing the x coordinates of the
         interrogation window centers, in pixels.
-    y : ndarray
+    y : 2D int32 array
         A two dimensional array containing the y coordinates of the
         interrogation window centers, in pixels.
 
@@ -147,11 +152,14 @@ def fft_correlate_images(
 ):
     """Standard FFT based cross-correlation of two images.
 
+    Simple zero-order Particle Image Velocimetry (PIV) with CPU thread
+    parellalization for faster processing.
+    
     Parameters
     ----------
-    frame_a : ndarray
+    frame_a : 2D float64 array
         A two dimensionional array containing grey levels of the first frame.
-    frame_b : ndarray
+    frame_b : 2D float64 array
         A two dimensionional array containing grey levels of the second frame.
     window_size : int
         The size of the (square) interrogation window, [default: 32 pix].
@@ -167,7 +175,7 @@ def fft_correlate_images(
 
     Returns
     -------
-    corr : ndarray
+    corr : 3D float64 array
         A three dimensional array with axis 0 being the two dimensional correlation matrix
         of an interrogation window.
 
@@ -177,11 +185,11 @@ def fft_correlate_images(
     if correlation_method not in ["circular", "linear"]:
         raise ValueError(f"Unsupported correlation method: {correlation_method}.")
 
-    if image_a.dtype != "float64":
-        image_a = image_a.astype("float64")
+    if image_a.dtype != Float:
+        image_a = image_a.astype(Float, copy=False)
 
-    if image_b.dtype != "float64":
-        image_b = image_b.astype("float64")
+    if image_b.dtype != Float:
+        image_b = image_b.astype(Float, copy=False)
 
     if correlation_method == "circular":
         correlation_method = 0  # circular
@@ -198,6 +206,64 @@ def fft_correlate_images(
     )
 
 
+def correlation_based_correction(
+    corr_in,
+    n_rows,
+    n_cols,
+    corr_out=None,
+    thread_count=1
+):
+    """Correlation based correction
+
+    Correlation based correction by multiplying its neighbors to hopefully
+    enhance a primary peak and lower noise.
+    
+    Parameters
+    ----------
+    corr_in : 3D float64 array
+        A three dimensional array with axis 0 being the two dimensional correlation matrix
+        of an interrogation window.
+    corr_out : 3D float64 array, optional
+        A three dimensional array with axis 0 being the two dimensional correlation matrix
+        of an interrogation window.
+    n_rows, n_cols : int
+        Number of rows and columns of the vector field being evaluated, output of
+        get_field_shape.
+    thread_count : int
+        The number of threads to use with values < 1 automatically setting thread_count
+        to the maximum of concurrent threads - 1, [default: 1].
+
+    Returns
+    -------
+    corr : 3D float64 array
+        A three dimensional array with axis 0 being the two dimensional correlation matrix
+        of an interrogation window.
+
+    """
+    _check(ndim=3, corr_in=corr_in)
+
+    if corr_in.dtype != Float:
+        corr_in = corr_in.astype(Float, copy=False)
+    
+    if corr_out is None:
+        corr_out = np.zeros_like(corr_in)
+    else:
+        _check(ndim=3, corr_out=corr_out)
+        
+        if corr_out.dtype != Float:
+            corr_out = corr_out.astype(Float, copy=False)
+
+    _proc._correlation_based_correction(
+        corr_in,
+        corr_out,
+        int(n_cols), # n_cols instead of n_rows because n_cols is the x-axis
+        int(n_rows), # n_rows instead of n_cols because n_rows is the y-axis
+        int(thread_count)
+    )
+    
+    return corr_out
+
+
 def correlation_to_displacement(
     corr,
     n_rows=None,
@@ -205,13 +271,13 @@ def correlation_to_displacement(
     kernel="2x3",
     limit_peak_search=True,
     thread_count=1,
-    return_type="first_peak",
+    return_type="first peak",
 ):
     """Standard subpixel estimation.
 
     Parameters
     ----------
-    corr : 3D ndarray
+    corr : 3D 2D float64 array
         A three dimensional array with axis 0 being the two dimensional correlation matrix
         of an interrogation window.
     n_rows, n_cols : int, optional
@@ -231,15 +297,15 @@ def correlation_to_displacement(
 
     Returns
     -------
-    u, v : ndarray
+    u, v : 2D float64 array
         2D array of displacements in pixels/dt.
-    peakHeight : ndarray
+    peakHeight : 2D float64 array
         2D array of correlation peak heights
-    peak2peak : ndarray
+    peak2peak : 2D float64 array
         2D array of signal-to-noise ratios.
-    u2, v2 : ndarray, optional
+    u2, v2 : 2D float64 array, optional
         2D array of displacements in pixels/dt for a second peak.
-    u3, v3 : ndarray, optional
+    u3, v3 : 2D float64 array, optional
         2D array of displacements in pixels/dt for a third peak.
 
     """
@@ -248,10 +314,10 @@ def correlation_to_displacement(
     if kernel not in ["2x3"]:
         raise ValueError(f"Unsupported peak search method method: {kernel}.")
 
-    if return_type not in ["first_peak", "second_peak", "third_peak", "all_peaks"]:
+    if return_type not in ["first peak", "second peak", "third peak", "all peaks"]:
         raise ValueError(
             f"Unsupported return type: {return_type}. \nSupported "
-            + "peak types are 'first_peak', 'second_peak', 'third_peak', 'all_peaks'"
+            + "peak types are 'first peak', 'second peak', 'third peak', 'all peaks'"
         )
 
     if kernel == "2x3":
@@ -267,36 +333,20 @@ def correlation_to_displacement(
     else:
         shape = (8, n_rows, n_cols)
 
-    if return_type == "first_peak":
+    if return_type == "first peak":
         return_type = 1
-    elif return_type == "second_peak":
+    elif return_type == "second peak":
         return_type = 2
-    elif return_type == "third_peak":
+    elif return_type == "third peak":
         return_type = 3
     else:
         return_type = 0
 
-    if limit_peak_search == True and corr.shape[1] >= 12 and corr.shape[1] >= 12:
-        corr_slice = (  # use the one-quarter rule for limited peak search
-            slice(0, corr.shape[0]),
-            slice(
-                corr.shape[1] // 2 - corr.shape[1] // 4,
-                corr.shape[1] // 2 + corr.shape[1] // 4,
-            ),
-            slice(
-                corr.shape[2] // 2 - corr.shape[2] // 4,
-                corr.shape[2] // 2 + corr.shape[2] // 4,
-            ),
-        )
-    else:
-        corr_slice = (
-            slice(0, corr.shape[0]),
-            slice(0, corr.shape[1]),
-            slice(0, corr.shape[2]),
-        )
+    if limit_peak_search == True and corr.shape[1] <= 12 and corr.shape[1] <= 12:
+        corr_slice = 0
 
     u1, v1, peakHeight, peak2peak, u2, v2, u3, v3 = _proc._corr2vec(
-        corr[corr_slice], kernel, limit_peak_search, int(thread_count), return_type
+        corr, kernel, limit_peak_search, int(thread_count), return_type
     ).reshape(shape)
 
     if return_type == 1:

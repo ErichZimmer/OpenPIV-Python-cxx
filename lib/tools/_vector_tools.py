@@ -60,16 +60,16 @@ def transform_coordinates(x, y, u, v):
 
     Parameters
     ----------
-    x, y : ndarray
+    x, y : 2D array
         2D arrays of x/y coordinates.
-    u, v : ndarray
+    u, v : 2D array
         2D arrays of u/v components.
 
     Returns
     -------
-    x, y : ndarray
+    x, y : 2D array
         2D arrays of x/y coordinates.
-    u, v : ndarray
+    u, v : 2D array
         2D arrays of u/v components.
 
     """
@@ -87,18 +87,18 @@ def uniform_scaling(x, y, u, v, scaling_factor):
 
     Parameters
     ----------
-    x, y : ndarray
+    x, y : 2D array
         2D arrays of x/y coordinates.
-    u, v : ndarray
+    u, v : 2D array
         2D arrays of u/v components.
     scaling_factor : float
         The image scaling factor in pixels per meter.
 
     Returns
     -------
-    x, y : ndarray
+    x, y : 2D array
         2D arrays of scaled x/y coordinates.
-    u, v : ndarray
+    u, v : 2D array
         2D arrays of scaled u/v components.
 
     """

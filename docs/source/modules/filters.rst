@@ -4,6 +4,14 @@
 Filters
 =======
 
+Convolution kernels
+---------------------
+
+.. autosummary::
+    :toctree: generated/
+    
+    gaussian_kernel
+    
 Preprocessing filters
 ---------------------
 
@@ -11,6 +19,7 @@ Preprocessing filters
     :toctree: generated/
     
     contrast_stretch
+    convolve_2D_sep
     gaussian_filter
     highpass_filter
     intensity_cap

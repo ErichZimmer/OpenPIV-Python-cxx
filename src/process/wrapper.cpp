@@ -9,17 +9,21 @@
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 
-// select appropriate header file
-#ifdef USE_FFTW
-    #include "fftw_correlation.h"
-#else
-    #include "openpiv_correlation.h"
-#endif
+// openpiv
+#include "core/image.h"
 
+// functions to wrap
 #include "cc_subpixel.h"
+#include "openpiv_correlation.h"
+
+// utils
+#include "openpiv_utils.h"
+#include "constants.h"
 
 namespace py = pybind11;
 using namespace openpiv;
+using imgDtype = constants::imgDtype;
+
 
 // ----------------
 // Python interface
@@ -29,9 +33,9 @@ using namespace openpiv;
 
 
 // wrap C++ function with NumPy array IO
-py::array_t<double> fft_correlate_window_wrapper(
-    py::array_t<double, py::array::c_style | py::array::forcecast>& np_img_a,
-    py::array_t<double, py::array::c_style | py::array::forcecast>& np_img_b
+py::array_t<imgDtype> fft_correlate_window_wrapper(
+    py::array_t<imgDtype, py::array::c_style | py::array::forcecast>& np_img_a,
+    py::array_t<imgDtype, py::array::c_style | py::array::forcecast>& np_img_b
 ){
     // check inputs
     if ( np_img_a.ndim() != 2 )
@@ -40,40 +44,40 @@ py::array_t<double> fft_correlate_window_wrapper(
     if ( np_img_a.size() != np_img_b.size() )
         throw std::runtime_error("Inputs should have same sizes");
 
-    std::vector<double> result = process_window(
-            np_img_a,
-            np_img_b
-        );
+    core::image<core::g<imgDtype>> img_a{ convert_image(np_img_a) };
+    core::image<core::g<imgDtype>> img_b{ convert_image(np_img_b) };
+
+    std::vector<imgDtype> result = process_window(
+        img_a,
+        img_b
+    );
 
     std::vector<std::size_t> field_shape(2);
-    field_shape[0] = static_cast<std::size_t>(np_img_a.shape(1));
-    field_shape[1] = static_cast<std::size_t>(np_img_a.shape(0));
-    
+    field_shape[0] = static_cast<std::size_t>(np_img_a.shape(0));
+    field_shape[1] = static_cast<std::size_t>(np_img_a.shape(1));
 
     // return 2-D NumPy array  
     std::size_t              ndim    = 2;
     std::vector<std::size_t> shape   = { field_shape[0], field_shape[1] };
     std::vector<std::size_t> strides = {
-        static_cast<std::size_t>(sizeof(double)) * field_shape[0] * field_shape[1], 
-        static_cast<std::size_t>(sizeof(double)) * field_shape[1],
-        static_cast<std::size_t>(sizeof(double))
+        static_cast<std::size_t>(sizeof(imgDtype)) * field_shape[1],
+        static_cast<std::size_t>(sizeof(imgDtype))
     };
 
-    // return 3-D NumPy array
     return py::array(py::buffer_info(
-        result.data(),                           /* data as contiguous array  */
-        sizeof(double),                          /* size of one scalar        */
-        py::format_descriptor<double>::format(), /* data type                 */
-        ndim,                                    /* number of dimensions      */
-        shape,                                   /* shape of the matrix       */
-        strides                                  /* strides for each axis     */
+        result.data(),                              /* data as contiguous array  */
+        sizeof(imgDtype),                           /* size of one scalar        */
+        py::format_descriptor<imgDtype>::format(),  /* data type                 */
+        ndim,                                       /* number of dimensions      */
+        shape,                                      /* shape of the matrix       */
+        strides                                     /* strides for each axis     */
     ));
 }
 
 
-py::array_t<double> fft_correlate_images_standard_wrapper( // big function name lol
-    py::array_t<double, py::array::c_style | py::array::forcecast>& np_img_a,
-    py::array_t<double, py::array::c_style | py::array::forcecast>& np_img_b,
+py::array_t<imgDtype> fft_images_to_correlation_standard_wrapper( // big function name lol
+    py::array_t<imgDtype, py::array::c_style | py::array::forcecast>& np_img_a,
+    py::array_t<imgDtype, py::array::c_style | py::array::forcecast>& np_img_b,
     int window_size,
     int overlap,
     int correlation_method,
@@ -99,14 +103,17 @@ py::array_t<double> fft_correlate_images_standard_wrapper( // big function name 
     std::uint32_t window_size_t = static_cast<std::uint32_t>(window_size);
     std::uint32_t overlap_t = static_cast<std::uint32_t>(overlap);
 
-    std::vector<double> result = process_images_standard(
-            np_img_a,
-            np_img_b,
-            window_size_t,
-            overlap_t,
-            correlation_method,
-            thread_count
-        );
+    core::image<core::g<imgDtype>> img_a{ convert_image(np_img_a) };
+    core::image<core::g<imgDtype>> img_b{ convert_image(np_img_b) };
+
+    std::vector<imgDtype> result = images_to_correlation_standard(
+        img_a,
+        img_b,
+        window_size_t,
+        overlap_t,
+        correlation_method,
+        thread_count
+    );
 
     // return 3-D NumPy array  
     std::size_t window_num = result.size() / (window_size * window_size);
@@ -116,24 +123,79 @@ py::array_t<double> fft_correlate_images_standard_wrapper( // big function name 
     std::size_t              ndim    = 3;
     std::vector<std::size_t> shape   = { window_num, stride_2d, stride_2d };
     std::vector<std::size_t> strides = {
-        static_cast<std::size_t>(sizeof(double))*stride_3d, 
-        static_cast<std::size_t>(sizeof(double))*stride_2d,
-        static_cast<std::size_t>(sizeof(double))
+        static_cast<std::size_t>(sizeof(imgDtype))*stride_3d, 
+        static_cast<std::size_t>(sizeof(imgDtype))*stride_2d,
+        static_cast<std::size_t>(sizeof(imgDtype))
     };
 
     return py::array(py::buffer_info(
-        result.data(),                           /* data as contiguous array  */
-        sizeof(double),                          /* size of one scalar        */
-        py::format_descriptor<double>::format(), /* data type                 */
-        ndim,                                    /* number of dimensions      */
-        shape,                                   /* shape of the matrix       */
-        strides                                  /* strides for each axis     */
+        result.data(),                              /* data as contiguous array  */
+        sizeof(imgDtype),                           /* size of one scalar        */
+        py::format_descriptor<imgDtype>::format(),  /* data type                 */
+        ndim,                                       /* number of dimensions      */
+        shape,                                      /* shape of the matrix       */
+        strides                                     /* strides for each axis     */
     ));
 }
 
 
+int correlate_based_correction_wrapper(
+    py::array_t<imgDtype, py::array::c_style | py::array::forcecast>& np_cmatrix_in,
+    py::array_t<imgDtype, py::array::c_style | py::array::forcecast>& np_cmatrix_out,
+    int n_rows,
+    int n_cols,
+    int thread_count
+){
+    // check inputs
+    if ( np_cmatrix_in.ndim() != 3 )
+        throw std::runtime_error("Input should be 3-D NumPy array");
+
+    if ( np_cmatrix_in.ndim() != 3 )
+        throw std::runtime_error("Output should be 3-D NumPy array");
+    
+    if ( np_cmatrix_in.size() != np_cmatrix_out.size() )
+        throw std::runtime_error("Input and output size must match");
+
+    if ( n_rows < 1 )
+        throw std::runtime_error("n_rows must be positive and non-zero");
+
+    if ( n_cols < 1 )
+        throw std::runtime_error("n_cols must be positive and non-zero");
+    
+    if ( n_cols * n_rows != np_cmatrix_in.shape(0) )
+        throw std::runtime_error("Input/output row-column mismatch");
+
+    // Get buffers and pointers
+    auto np_buff_in = np_cmatrix_in.request();
+    auto np_buff_out = np_cmatrix_out.request();
+
+    // get cmatrix pointer
+    imgDtype* cmatrix_ptr_in = (imgDtype*) np_buff_in.ptr;
+    imgDtype* cmatrix_ptr_out = (imgDtype*) np_buff_out.ptr;
+    
+    std::uint32_t window_size_y = np_buff_in.shape[1];
+    std::uint32_t window_size_x = np_buff_in.shape[2];
+
+    // cast ints to proper dtype
+    std::uint32_t window_size_x_t = static_cast<std::uint32_t>(window_size_x);
+    std::uint32_t window_size_y_t = static_cast<std::uint32_t>(window_size_y);
+
+    correlation_based_correction(
+        cmatrix_ptr_in,
+        cmatrix_ptr_out,
+        window_size_x_t,
+        window_size_y_t,
+        n_rows,
+        n_cols,
+        thread_count
+    );
+
+    return 1;
+}
+
+
 py::array_t<double> find_subpixel_wrapper(
-    py::array_t<double, py::array::c_style | py::array::forcecast>& np_cmatrix,
+    py::array_t<imgDtype, py::array::c_style | py::array::forcecast>& np_cmatrix,
     int search_method,
     int limit_peak_search,
     int num_peaks,
@@ -155,7 +217,7 @@ py::array_t<double> find_subpixel_wrapper(
     stride_2d[1] = window_size_x;
 
     // get cmatrix pointer
-    double* cmatrix_ptr = (double*) np_buff.ptr;
+    imgDtype* cmatrix_ptr = (imgDtype*) np_buff.ptr;
 
     // get result array pointer
     std::vector<std::size_t> dims{
@@ -190,7 +252,8 @@ py::array_t<double> find_subpixel_wrapper(
 PYBIND11_MODULE(_process_cpp, m)
 {
     m.doc() = "pybind11 wrapper of main openpivcore functions";
-    m.def("_img2corr_iw", &fft_correlate_window_wrapper, "Correlate two interrogation windows for testing");
-    m.def("_img2corr_standard", &fft_correlate_images_standard_wrapper, "Correlate two images");
+    m.def("_img2corr_iw_cross", &fft_correlate_window_wrapper, "Correlate two interrogation windows for testing");
+    m.def("_img2corr_standard", &fft_images_to_correlation_standard_wrapper, "Correlate two images and normalize by STD of input images");
+    m.def("_correlation_based_correction", &correlate_based_correction_wrapper, "Correct correlation by multiplying its neighbors");
     m.def("_corr2vec", &find_subpixel_wrapper, "Extract displacement and peak information from correlation matrixes");
 }

@@ -1,4 +1,4 @@
-from imageio import imread as _imread, imsave as _imsave
+from imageio.v3 import imread as _imread, imwrite as _imsave
 
 import numpy as np
 
@@ -11,13 +11,13 @@ def rgb2gray(rgb):
 
     Parameters
     ----------
-    rgb : ndarray
+    rgb : 2D array
         2D RGB image
 
     Returns
     -------
 
-    img : ndarray
+    img : 2D array
         2D grayscale image
 
     """
@@ -38,7 +38,7 @@ def imread(filename, flatten=False):
 
     Returns
     -------
-    frame : ndarray
+    frame : 2D array
         A 2-dimensional numpy array with grey levels.
 
     Examples
@@ -65,7 +65,7 @@ def imsave(filename, arr) -> None:
     filename :  string
         The absolute path of the image file that will be created.
 
-    arr : ndarray
+    arr : 2D array
         A 2D numpy array with grey levels.
 
     """
@@ -91,7 +91,7 @@ def negative(image):
 
     Parameter
     ----------
-    image : ndarray
+    image : 2D array
         2D array of grey levels.
 
     Returns

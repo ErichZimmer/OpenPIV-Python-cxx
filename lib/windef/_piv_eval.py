@@ -1,16 +1,22 @@
-from numpy import array
-from numpy.ma import MaskedArray
 from openpiv_cxx import process as piv_proc
 from openpiv_cxx.interpolate import bilinear2D, whittaker2D
 from ._window_deformation import deform_windows, create_deformation_field
 from openpiv_cxx.input_checker import check_nd as _check
 
+import numpy as np
 
 __all__ = ["first_pass", "multipass_img_deform"]
 
 
+Float = np.float64
+
+
 def first_pass(
-    frame_a, frame_b, window_size=32, overlap=16, correlation_method="circular"
+    frame_a,
+    frame_b, 
+    window_size=32,
+    overlap=16, 
+    correlation_method="circular"
 ):
     """Zero order PIV
 
@@ -22,10 +28,10 @@ def first_pass(
 
     Parameters
     ----------
-    frame_a : ndarray
+    frame_a : 2D float32 array
         A two dimensional array of integers containing grey levels of
         the first frame.
-    frame_b : ndarray
+    frame_b : 2D float32 array
         A two dimensional array of integers containing grey levels of
         the second frame.
     window_size : int
@@ -35,11 +41,11 @@ def first_pass(
 
     Returns
     -------
-    x, y : ndarray
+    x, y : 2D int32 array
         Array containg the x coordinates of the interrogation window centres.
-    u, v : ndarray
+    u, v : 2D float64 array
         Array containing the u/v displacement for every interrogation window.
-    s2n : ndarray
+    s2n : 2D float64 array
         Array consisting of signal to noise ratio values.
 
     """
@@ -85,24 +91,24 @@ def multipass_img_deform(
 
     Parameters
     ----------
-    frame_a : ndarray
+    frame_a : 2D float32 array
         A two dimensional array of integers containing grey levels of
         the first frame.
-    frame_b : ndarray
+    frame_b : 2D float32 array
         A two dimensional array of integers containing grey levels of
         the second frame.
     window_size : ints
          The size of the interrogation window.
     overlap : ints
         The overlap of the interrogation window, e.g. window_size/2.
-    x_old : ndarray
+    x_old : 2D int32 array
         The x coordinates of the vector field of the previous pass.
-    y_old : ndarray
+    y_old : 2D int32 array
         The y coordinates of the vector field of the previous pass.
-    u_old : ndarray
+    u_old : 2D float64 array
         The u displacement of the vector field of the previous pass
         in case of the image mask - u_old and v_old are MaskedArrays.
-    v_old : ndarray
+    v_old : 2D float64 array
         The v displacement of the vector field of the previous pass.
     correlation_method : str
         Type of correlation to use where linear is zero padded to
@@ -118,11 +124,11 @@ def multipass_img_deform(
 
     Returns
     -------
-    x, y : ndarray
+    x, y : 2D int32 array
         Array containg the x coordinates of the interrogation window centres.
-    u, v : ndarray
+    u, v : 2D float64 array
         Array containing the u/v displacement for every interrogation window.
-    s2n : ndarray
+    s2n : 2D float64 array
         Array consisting of signal to noise ratio values.
 
     """
@@ -150,7 +156,7 @@ def multipass_img_deform(
 
     # interpolating the displacements from the old grid onto the new grid
     # y befor x because of numpy works row major
-    if isinstance(u_old, MaskedArray):
+    if isinstance(u_old, np.ma.MaskedArray):
         u_old = u_old.filled(0.0)
         v_old = v_old.filled(0.0)
 
@@ -165,8 +171,8 @@ def multipass_img_deform(
         raise ValueError(f"Deformation method {deformation_method} not supported")
 
     frame_a, frame_b = deform_windows(
-        frame_a.astype("float64"),  # force the result to be float64
-        frame_b.astype("float64"),
+        frame_a.astype(Float),  # force the result to be float64
+        frame_b.astype(Float),
         x,
         y,
         u_pre,

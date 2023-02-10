@@ -10,9 +10,15 @@
 #include "core/image_utils.h"
 #include "core/vector.h"
 
+// utils
+#include "constants.h"
+
+
+using imgDtype = constants::imgDtype;
 using namespace openpiv;
 
-core::peaks_t<core::g_f> find_peaks_brute(
+
+core::image<core::g<imgDtype>> find_peaks_brute(
     const core::gf_image&,
     std::uint16_t,
     std::uint32_t
@@ -20,7 +26,7 @@ core::peaks_t<core::g_f> find_peaks_brute(
 
 
 void process_cmatrix_2x3(
-    double*,
+    const imgDtype*,
     double*,
     std::uint32_t,
     std::uint32_t,

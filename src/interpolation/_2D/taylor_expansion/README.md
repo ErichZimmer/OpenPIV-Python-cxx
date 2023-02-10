@@ -1,4 +1,4 @@
-c++ implementation of Taylor Expansion via finite differences based on fast_interp by David Stein. This implementations difers from the original as it is written to perform image mapping for window deformations, hence the need to rewrite the library. 
+c++ implementation of Taylor Expansion via finite differences based on fast_interp by David Stein. This implementations differs from the original as it is written to perform image mapping for window deformations, hence the need to rewrite the library. 
 
 The original source code can be found at:
 - https://github.com/dbstein/fast_interp
@@ -9,20 +9,15 @@ This library has been rewritten from the Numba accelerated Python version into c
 Contents:
 - include/taylor_expansion.h : Header
 - src/taylor_expansion.cpp : Source
-- wrapper.cpp : wrapper interface to module
-- CMakeLists.txt : Used to compile module
+- wrapper.cpp : wrapper interface to submodule
+- CMakeLists.txt : Used to compile submodule
+- LICENSE.txt : License of this submodule
 - README : This file
 
-Copyright Statement:
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+History:
+- 09/02/2022: Created original submodule
+- ??/??/2022: Bug fix caused by implicit casting to integer values
+- 02/03/2023: Fix license issue
 
-
+Notice:
+The code under this submodule is licensed under Apache License Version 2.0. All other code that is not third-party is licensed under GPLv3. Please read the LICENSE.txt located in this submodule for more information about the use of the modified and the original source code.

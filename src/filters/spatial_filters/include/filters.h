@@ -2,6 +2,7 @@
 #define FILTER_H
 
 // std
+#include <cstdint>
 #include <vector>
 
 // utils
@@ -10,34 +11,23 @@
 
 using imgDtype = constants::imgDtype;
 
+
 void intensity_cap_filter(
     imgDtype*,
-    int,
+    imgDtype*,
+    std::size_t,
     imgDtype
 );
 
-void binarize_filter(
-    imgDtype*,
-    imgDtype*,
-    int,
-    imgDtype
-);
 
-void apply_kernel_lowpass(
-    imgDtype*,
-    imgDtype*,
-    std::vector<imgDtype>&,
-    int, int,
-    int
-);
-
-void apply_kernel_highpass(
-    imgDtype*,
-    imgDtype*,
-    std::vector<imgDtype>&,
-    int, int,
-    int,
-    bool
+void convolve2D(
+    const imgDtype*, 
+    imgDtype*, 
+    std::uint32_t, 
+    std::uint32_t, 
+    const imgDtype*,
+    const imgDtype*, 
+    std::uint32_t
 );
 
 

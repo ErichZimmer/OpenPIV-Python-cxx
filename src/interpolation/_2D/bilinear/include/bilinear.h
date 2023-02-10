@@ -5,11 +5,10 @@
 #include <cstdint>
 
 
-uint32_t find_index(
-    const uint32_t*,
+std::uint32_t find_index(
+    const int*,
     double,
-    uint32_t, // lower bound
-    uint32_t  // upper bound
+    std::uint32_t  // upper bound
 );
 
 
@@ -20,11 +19,11 @@ void bilinear2D(
     const double*,
     const double*,
     double*,
-    uint32_t,
-    uint32_t,
-    uint32_t,
-    uint32_t,
-    uint32_t
+    std::uint32_t,
+    std::uint32_t,
+    std::uint32_t,
+    std::uint32_t,
+    std::uint32_t
 );
 
 

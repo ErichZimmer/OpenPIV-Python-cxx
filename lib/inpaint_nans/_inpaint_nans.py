@@ -234,7 +234,7 @@ def replace_outliers(
     # regardless the grid_mask (which is a user-provided masked region)
     _check(ndim=2, u=u, v=v, invalid_mask=invalid_mask)
     
-    if invalid_mask.shapee != u.shape:
+    if invalid_mask.shape != u.shape:
         raise ValueError(
             "invalid mask must have same shape as u and v"
         )             
@@ -251,11 +251,11 @@ def replace_outliers(
     u[invalid_mask] = np.nan
     v[invalid_mask] = np.nan
     
-    uf = replace_nans(
+    uf = _replace_nans(
         u, method=method, max_iter=max_iter, tol=tol,
         kernel_size=kernel_size
     )
-    vf = replace_nans(
+    vf = _replace_nans(
         v, method=method, max_iter=max_iter, tol=tol,
         kernel_size=kernel_size
     )
