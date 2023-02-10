@@ -3,6 +3,8 @@
 Filters
 =======
 
+This module contains various various functions for image processing.
+
 Kernels
 =======
 

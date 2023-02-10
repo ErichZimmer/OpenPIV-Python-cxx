@@ -6,7 +6,7 @@ __all__ = [
 ]
 
 
-Float = np.float32
+Float = np.float64
 
 
 def _gaussian_kernel_size_1D(half_width=1):

@@ -74,6 +74,94 @@ def test_fft_correlate_images_02():
     assert_equal(max_idx[1], corr.shape[1] // 2)
 
 
+def test_correlation_based_correction_wrong_inputs():
+    corr = np.random.rand(64, 32, 32)
+    corr2 = np.random.rand(32, 32)
+    corr3 = np.random.rand(32, 32, 32)
+    
+    n_rows = 8
+    n_cols = 8
+
+    with pytest.raises(ValueError):
+        # corr_in is not 3D array
+        out = process.correlation_based_correction(
+            corr2,
+            n_rows,
+            n_cols
+        )
+        
+        # corr_out is not 3D array
+        out = process.correlation_based_correction(
+            corr,
+            n_rows,
+            n_cols,
+            corr_out=corr2
+        )
+
+    with pytest.raises(RuntimeError):  # error raised by wrapper
+        # corr_in/corr_out mismatch
+        out = process.correlation_based_correction(
+            corr,
+            n_rows,
+            n_cols,
+            corr_out=corr3
+        )
+        
+        # invalid row input
+        out = process.correlation_based_correction(
+            corr,
+            0,
+            n_cols
+        )
+        
+        # invalid column input
+        out = process.correlation_based_correction(
+            corr,
+            n_rows,
+            0
+        )
+        
+        # input row-column mismatch
+        out = process.correlation_based_correction(
+            corr,
+            n_rows,
+            n_cols + 1
+        )
+        
+
+def test_correlation_based_correction_01():
+    frame_a, frame_b = Frame_a.copy(), Frame_b.copy()
+
+    window_size = 32
+    overlap = 28
+    
+    n_rows, n_cols = process.get_field_shape(
+        frame_a.shape,
+        window_size,
+        overlap
+    )
+    
+    corr = process.fft_correlate_images(
+        frame_a,
+        frame_b,
+        window_size,
+        overlap
+    )
+
+    process.correlation_based_correction(
+        corr,
+        n_rows,
+        n_cols,
+        corr_out=corr
+    )
+    
+    # index the second correlation matrix becuase the first one is not corrected
+    max_idx = np.unravel_index(np.argmax(corr[1,:,:]), corr.shape[-2:])
+
+    assert_equal(max_idx[0], corr.shape[-2] // 2 + 1)
+    assert_equal(max_idx[1], corr.shape[-1] // 2)
+    
+    
 def test_correlation_to_displacement_wrong_inputs():
     corr = np.random.rand(32, 32, 32)
     corr2 = np.random.rand(32, 32)
@@ -187,3 +275,5 @@ def test_correlation_to_displacement_02():
 
     assert_(np.nanmean(np.abs(u - shift_u)) < 0.05)
     assert_(np.nanmean(np.abs(v - shift_v)) < 0.05)
+
+    

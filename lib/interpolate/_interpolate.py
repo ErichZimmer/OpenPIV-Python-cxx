@@ -8,7 +8,7 @@ __all__ = ["bilinear2D"]
 
 
 Float = np.float64
-Int = np.int64
+Int = np.int32
 
 
 def bilinear2D(x, y, z, xi, yi, keep_dtype=False):

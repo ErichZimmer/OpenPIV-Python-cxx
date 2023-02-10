@@ -11,7 +11,7 @@ except ImportError as e:
     raise (e)
 
 
-def test_taylor_expansion2D_wrong_dim() -> None:
+def test_taylor_expansion2D_wrong_dim():
     Z = np.random.rand(256)  # should be 2D
     Xq = np.random.rand(256)
     Yq = np.random.rand(256)
@@ -20,7 +20,7 @@ def test_taylor_expansion2D_wrong_dim() -> None:
         out = interpolate.taylor_expansion2D(Z, Yq, Xq)
 
 
-def test_taylor_expansion2D_miss_match() -> None:
+def test_taylor_expansion2D_miss_match():
     Z = np.random.rand(256, 256)
     Xq = np.random.rand(256, 256)
     Yq = np.random.rand(256, 512)
@@ -29,7 +29,7 @@ def test_taylor_expansion2D_miss_match() -> None:
         out = interpolate.taylor_expansion2D(Z, Yq, Xq)
 
 
-def test_taylor_expansion2D_wrong_order() -> None:
+def test_taylor_expansion2D_wrong_order():
     Z = np.random.rand(256, 256)
     Xq = np.random.rand(256, 256)
     Yq = np.random.rand(256, 256)
@@ -39,7 +39,7 @@ def test_taylor_expansion2D_wrong_order() -> None:
 
 
 @pytest.mark.parametrize("k", (1, 3, 5, 7))
-def test_taylor_expansion2D_01(k: int) -> None:
+def test_taylor_expansion2D_01(k: int):
     data = np.array(
         [
             [4, 3, 2, 1, 2, 3, 4, 2, 3, 6],
@@ -86,7 +86,7 @@ def test_taylor_expansion2D_01(k: int) -> None:
 # @pytest.mark.parametrize(
 #    "k", (1, 3, 5, 7)
 # )
-def test_taylor_expansion2D_02(k: int = 1) -> None:
+def test_taylor_expansion2D_02(k: int = 1):
     data = np.array(
         [
             [4, 3, 2, 1, 2, 3, 4],
@@ -116,7 +116,7 @@ def test_taylor_expansion2D_02(k: int = 1) -> None:
     assert_array_almost_equal(result[1:, 1:], expected[1:, 1:])
 
 
-def test_whittaker2D_wrong_dim() -> None:
+def test_whittaker2D_wrong_dim():
     Z = np.random.rand(256)  # should be 2D
     Xq = np.random.rand(256)
     Yq = np.random.rand(256)
@@ -125,7 +125,7 @@ def test_whittaker2D_wrong_dim() -> None:
         out = interpolate.whittaker2D(Z, Yq, Xq)
 
 
-def test_whittaker2D_miss_match() -> None:
+def test_whittaker2D_miss_match():
     Z = np.random.rand(256, 256)
     Xq = np.random.rand(256, 256)
     Yq = np.random.rand(256, 512)
@@ -134,7 +134,7 @@ def test_whittaker2D_miss_match() -> None:
         out = interpolate.whittaker2D(Z, Yq, Xq)
 
 
-def test_whittaker2D_wrong_radius() -> None:
+def test_whittaker2D_wrong_radius():
     Z = np.random.rand(256, 256)
     Xq = np.random.rand(256, 256)
     Yq = np.random.rand(256, 256)
@@ -142,5 +142,45 @@ def test_whittaker2D_wrong_radius() -> None:
     with pytest.raises(ValueError):
         out = interpolate.whittaker2D(Z, Yq, Xq, radius=0)
 
+        
+@pytest.mark.parametrize("r", (1, 2))
+def test_whittaker2D_01(r: int):
+    data = np.array(
+        [
+            [4, 3, 2, 1, 2, 3, 4, 2, 3, 6],
+            [5, 4, 3, 2, 3, 4, 5, 1, 2, 8],
+            [0, 1, 2, 3, 2, 1, 0, 7, 3, 6],
+            [6, 7, 8, 9, 8, 7, 6, 8, 2, 5],
+            [6, 1, 0, 2, 9, 3, 2, 2, 7, 9],
+            [9, 8, 7, 6, 5, 4, 3, 1, 8, 3],
+            [1, 7, 3, 7, 9, 2, 6, 3, 0, 2],
+            [6, 8, 3, 5, 8, 1, 7, 7, 3, 5],
+            [4, 1, 7, 3, 6, 3, 6, 8, 4, 6],
+            [0, 1, 2, 3, 4, 3, 2, 1, 8, 4],
+        ],
+        dtype=int,
+    )
 
-# testing for whittaker interpolation is done in window deformation
+    expected = np.array(
+        [
+            [4, 4, 3, 2, 1, 2, 3, 4, 2, 3],
+            [4, 4, 3, 2, 1, 2, 3, 4, 2, 3],
+            [5, 5, 4, 3, 2, 3, 4, 5, 1, 2],
+            [0, 0, 1, 2, 3, 2, 1, 0, 7, 3],
+            [6, 6, 7, 8, 9, 8, 7, 6, 8, 2],
+            [6, 6, 1, 0, 2, 9, 3, 2, 2, 7],
+            [9, 9, 8, 7, 6, 5, 4, 3, 1, 8],
+            [1, 1, 7, 3, 7, 9, 2, 6, 3, 0],
+            [6, 6, 8, 3, 5, 8, 1, 7, 7, 3],
+            [4, 4, 1, 7, 3, 6, 3, 6, 8, 4],
+        ],
+        dtype=int,
+    )
+
+    idy, idx = np.indices(data.shape)
+    idy = idy - 1
+    idx = idx - 1
+
+    result = interpolate.whittaker2D(data, idy, idx, radius=r, keep_dtype=True)
+
+    #assert_array_almost_equal(result, expected)

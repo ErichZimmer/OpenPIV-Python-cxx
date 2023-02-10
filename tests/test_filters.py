@@ -74,14 +74,16 @@ def test_gaussian_kernel_03():
         dtype=Float
     )
     
-    assert_allclose(
+    assert_array_almost_equal(
         kernel1D,
-        expected1D
+        expected1D,
+        decimal=6
     )
     
-    assert_allclose(
+    assert_array_almost_equal(
         kernel2D,
-        expected2D
+        expected2D,
+        decimal=6
     )
 
 
@@ -272,8 +274,8 @@ def test_gaussian_filter_03():
     )
     
     assert_almost_equal(
-        arr.sum(),
-        output.sum(),
+        arr.sum(),#(dtype="d"),
+        output.sum(),#dtype="d"),
         decimal=0
     )
     

@@ -20,7 +20,7 @@ __all__ = [
 ]
 
 
-Float = np.float32
+Float = np.float64
 Int = np.int32
 
 kernel_size_error = "kernel_size must be an odd number"
@@ -38,7 +38,7 @@ def contrast_stretch(
 
     Parameters
     ----------
-    img : 2D float32 array
+    img : 2D float64 array
         A two dimensional array containing pixel intenensities.
     lower_limit: int
         Lower percentile limit.
@@ -47,7 +47,7 @@ def contrast_stretch(
 
     Returns
     -------
-    img: 2D float32 array
+    img: 2D float64 array
         A filtered two dimensional array of the input image
 
     """
@@ -83,16 +83,16 @@ def convolve_2D_sep(
     
     Parameters
     ----------
-    img : 2D float32 array
+    img : 2D float64 array
         A two dimensional array containing pixel intenensities.
-    kernel_h : 1D float32 array
+    kernel_h : 1D float64 array
         A one dimensional array containing kernel values for the x-axis.
-    kernel_v : 1D float32 array
+    kernel_v : 1D float64 array
         A one dimensional array containing kernel values for the y-axis.
 
     Returns
     -------
-    new_img : 2D float32 array
+    new_img : 2D float64 array
         A two dimensional array containing pixel intenensities.
 
     """
@@ -105,7 +105,7 @@ def convolve_2D_sep(
             f"kernel_v (size={kernel_v})"
         )
     
-    # img, kernel_h, and kernel_v are automatically float32 in c++
+    # img, kernel_h, and kernel_v are automatically float64 in c++
     return _convolve2D(
         img,
         kernel_h,
@@ -125,7 +125,7 @@ def gaussian_filter(
 
     Parameters
     ----------
-    img : 2D float32 array
+    img : 2D float64 array
         A two dimensional array containing pixel intenensities.
     sigma : float
         Standard deviation of gaussian kernel.
@@ -134,7 +134,7 @@ def gaussian_filter(
 
     Returns
     -------
-    new_img : 2D float32 array
+    new_img : 2D float64 array
         A two dimensional array containing pixel intenensities.
 
     """
@@ -172,7 +172,7 @@ def highpass_filter(
     
     Parameters
     ----------
-    img : 2D float32 array
+    img : 2D float64 array
         A two dimensional array containing pixel intenensities.
     sigma : float
         Standard deviation of gaussian kernel.
@@ -183,7 +183,7 @@ def highpass_filter(
 
     Returns
     -------
-    new_img : 2D float32 array
+    new_img : 2D float64 array
         A two dimensional array containing pixel intenensities.
     """
     _check(ndim=2, img=img)
@@ -215,14 +215,14 @@ def intensity_cap(
 
     Parameters
     ----------
-    img : 2D float32 array
+    img : 2D float64 array
         A two dimensional array containing pixel intenensities.
     std_mult : float
         Lower values yields a lower threshold.
 
     Returns
     -------
-    img : 2D float32 array
+    img : 2D float64 array
         A filtered two dimensional array of the input image.
 
     """
@@ -249,12 +249,12 @@ def sobel_filter(
     
     Parameters
     ----------
-    img : 2D float32 array
+    img : 2D float64 array
         A two dimensional array containing pixel intenensities.
     
     Returns
     -------
-    new_img : 2D float32 array
+    new_img : 2D float64 array
         A two dimensional array containing pixel intenensities.
     
     """
@@ -297,7 +297,7 @@ def variance_normalization_filter(
 
     Parameters
     ----------
-    img : 2D float32 array
+    img : 2D float64 array
         A two dimensional array containing pixel intenensities.
     sigma1 : float
         Sigma of nxn gaussian convolution kernel.
@@ -310,7 +310,7 @@ def variance_normalization_filter(
 
     Returns
     -------
-    new_img : 2D float32 array
+    new_img : 2D float64 array
         A two dimensional array containing pixel intenensities.
 
     """
@@ -346,8 +346,7 @@ def variance_normalization_filter(
 
 def threshold_binarization(
     img, 
-    threshold = 0.5,
-    out = None
+    threshold = 0.5
 ):
     """Threshold binarization filter.
     
@@ -356,18 +355,15 @@ def threshold_binarization(
 
     Parameters
     ----------
-    img : 2D float32 array
+    img : 2D float64 array
         A two dimensional array containing pixel intenensities.
-    kernel_size : int
-        nxn size of the convolution kernel.
-    sigma : float
-        sigma of nxn gaussian convolution kernel.
-    keep_dtype : bool
-        Cast output to original dtype.
+    threshold :float
+        Threshold value where values above threshold are set to one and
+        below the threshold are set to zero.
 
     Returns
     -------
-    new_img : 2D float32 array
+    new_img : 2D float64 array
         A two dimensional array containing pixel intenensities.
 
     """

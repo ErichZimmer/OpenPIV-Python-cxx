@@ -9,14 +9,14 @@ __all__ = ["taylor_expansion2D", "whittaker2D"]
 
 
 Float = np.float64
-Int = np.int64
+Int = np.int32
 
 
 def taylor_expansion2D(image, yi, xi, order=1, keep_dtype=False):
     """Taylor expansion mapping
 
     Perform Taylor expansions with finite differences mapping over a 2D
-    regular mesh.
+    regular mesh. Borders are treated by replicating the last pixel.
 
     Parameters
     ----------
@@ -73,6 +73,7 @@ def whittaker2D(image, yi, xi, radius=3, keep_dtype=False):  # optimal radius is
     """Whittaker-Shanon (sinc) mapping
 
     Perform Whittaker-Shannon mapping over a 2D regular mesh.
+    Borders are treated by replicating the last pixel.
 
     Parameters
     ----------
