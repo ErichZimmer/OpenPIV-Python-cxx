@@ -90,7 +90,7 @@ core::image<core::g<imgDtype>> find_peaks_brute(
 
 void process_cmatrix_2x3(
     const imgDtype* cmatrix,
-    imgDtype* results,
+    double* results,
     std::uint32_t maxStep,
     std::uint32_t stride_2d,
     std::vector<std::uint32_t> stride_1d,
@@ -126,7 +126,7 @@ void process_cmatrix_2x3(
         return_type
      ]( std::size_t step )
      {
-        uint16_t num_peaks = 3;
+        std::uint16_t num_peaks = 3;
         constexpr uint16_t radius = 1;
 
         auto ia = core::size{stride_1d[0], stride_1d[1]};
@@ -160,26 +160,26 @@ void process_cmatrix_2x3(
             return;
         }
 
-        core::point2<imgDtype> uv;
+        core::point2<double> uv;
         if (return_type == 1 || return_type == 0) // peak 1
         {
             uv = core::fit_simple_gaussian( peaks[0] );
-            results[step + U] = uv[0] - static_cast<imgDtype>( stride_1d[0] ) / 2.0;
-            results[step + V] = uv[1] - static_cast<imgDtype>( stride_1d[1] ) / 2.0;
+            results[step + U] = uv[0] - static_cast<double>( stride_1d[0] ) / 2.0;
+            results[step + V] = uv[1] - static_cast<double>( stride_1d[1] ) / 2.0;
         }
 
         if (return_type == 2 || return_type == 0) // peak 2
         {
             uv = core::fit_simple_gaussian( peaks[1] );
-            results[step + U2] = uv[0] - static_cast<imgDtype>( stride_1d[0] ) / 2.0;
-            results[step + V2] = uv[1] - static_cast<imgDtype>( stride_1d[1] ) / 2.0;
+            results[step + U2] = uv[0] - static_cast<double>( stride_1d[0] ) / 2.0;
+            results[step + V2] = uv[1] - static_cast<double>( stride_1d[1] ) / 2.0;
         }
 
         if (return_type == 3 || return_type == 0) // peak 3
         {
             uv = core::fit_simple_gaussian( peaks[2] );
-            results[step + U3] = uv[0] - static_cast<imgDtype>( stride_1d[0] ) / 2.0;
-            results[step + V3] = uv[1] - static_cast<imgDtype>( stride_1d[1] ) / 2.0;
+            results[step + U3] = uv[0] - static_cast<double>( stride_1d[0] ) / 2.0;
+            results[step + V3] = uv[1] - static_cast<double>( stride_1d[1] ) / 2.0;
         }
 
         // primary peak information

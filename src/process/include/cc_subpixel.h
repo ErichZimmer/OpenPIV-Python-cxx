@@ -27,7 +27,7 @@ core::image<core::g<imgDtype>> find_peaks_brute(
 
 void process_cmatrix_2x3(
     const imgDtype*,
-    imgDtype*,
+    double*,
     std::uint32_t,
     std::uint32_t,
     std::vector<std::uint32_t>,

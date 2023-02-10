@@ -3,6 +3,8 @@
 PIV processing
 ==============
 
+This module contains various functions for PIV processing.
+
 Grid Generation
 ===============
    get_coordinates - Get x and y coordinates of a square interrogation window
@@ -13,7 +15,6 @@ Correlation
 ===========
     correlation_to_displacement - Obtain displacements from correlation matrixes
     fft_correlate_images - Cross correlate two images to obtain a correlation matrix
-    fft_evaluate_images - Cross correlate two images to obtain x, y, u, v, s2n components
     
 """
 from ._pyprocess import *

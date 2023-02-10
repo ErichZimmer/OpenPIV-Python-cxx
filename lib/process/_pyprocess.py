@@ -9,12 +9,13 @@ __all__ = [
     "get_coordinates",
     "get_rect_coordinates",
     "fft_correlate_images",
-    "correlation_to_displacement",
+    "correlation_based_correction",
+    "correlation_to_displacement"
 ]
 
 
 Float = np.float64
-Int = np.int64
+Int = np.int32
 
 
 def get_field_shape(image_size, window_size, overlap):
@@ -151,11 +152,14 @@ def fft_correlate_images(
 ):
     """Standard FFT based cross-correlation of two images.
 
+    Simple zero-order Particle Image Velocimetry (PIV) with CPU thread
+    parellalization for faster processing.
+    
     Parameters
     ----------
-    frame_a : 2D float32 array
+    frame_a : 2D float64 array
         A two dimensionional array containing grey levels of the first frame.
-    frame_b : 2D float32 array
+    frame_b : 2D float64 array
         A two dimensionional array containing grey levels of the second frame.
     window_size : int
         The size of the (square) interrogation window, [default: 32 pix].
@@ -171,7 +175,7 @@ def fft_correlate_images(
 
     Returns
     -------
-    corr : 2D float32 array
+    corr : 3D float64 array
         A three dimensional array with axis 0 being the two dimensional correlation matrix
         of an interrogation window.
 
@@ -182,10 +186,10 @@ def fft_correlate_images(
         raise ValueError(f"Unsupported correlation method: {correlation_method}.")
 
     if image_a.dtype != Float:
-        image_a = image_a.astype(Float)
+        image_a = image_a.astype(Float, copy=False)
 
     if image_b.dtype != Float:
-        image_b = image_b.astype(Float)
+        image_b = image_b.astype(Float, copy=False)
 
     if correlation_method == "circular":
         correlation_method = 0  # circular
@@ -202,6 +206,64 @@ def fft_correlate_images(
     )
 
 
+def correlation_based_correction(
+    corr_in,
+    n_rows,
+    n_cols,
+    corr_out=None,
+    thread_count=1
+):
+    """Correlation based correction
+
+    Correlation based correction by multiplying its neighbors to hopefully
+    enhance a primary peak and lower noise.
+    
+    Parameters
+    ----------
+    corr_in : 3D float64 array
+        A three dimensional array with axis 0 being the two dimensional correlation matrix
+        of an interrogation window.
+    corr_out : 3D float64 array, optional
+        A three dimensional array with axis 0 being the two dimensional correlation matrix
+        of an interrogation window.
+    n_rows, n_cols : int
+        Number of rows and columns of the vector field being evaluated, output of
+        get_field_shape.
+    thread_count : int
+        The number of threads to use with values < 1 automatically setting thread_count
+        to the maximum of concurrent threads - 1, [default: 1].
+
+    Returns
+    -------
+    corr : 3D float64 array
+        A three dimensional array with axis 0 being the two dimensional correlation matrix
+        of an interrogation window.
+
+    """
+    _check(ndim=3, corr_in=corr_in)
+
+    if corr_in.dtype != Float:
+        corr_in = corr_in.astype(Float, copy=False)
+    
+    if corr_out is None:
+        corr_out = np.zeros_like(corr_in)
+    else:
+        _check(ndim=3, corr_out=corr_out)
+        
+        if corr_out.dtype != Float:
+            corr_out = corr_out.astype(Float, copy=False)
+
+    _proc._correlation_based_correction(
+        corr_in,
+        corr_out,
+        int(n_cols), # n_cols instead of n_rows because n_cols is the x-axis
+        int(n_rows), # n_rows instead of n_cols because n_rows is the y-axis
+        int(thread_count)
+    )
+    
+    return corr_out
+
+
 def correlation_to_displacement(
     corr,
     n_rows=None,
@@ -215,7 +277,7 @@ def correlation_to_displacement(
 
     Parameters
     ----------
-    corr : 3D 2D float32 array
+    corr : 3D 2D float64 array
         A three dimensional array with axis 0 being the two dimensional correlation matrix
         of an interrogation window.
     n_rows, n_cols : int, optional

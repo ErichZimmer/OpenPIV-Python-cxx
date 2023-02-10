@@ -76,11 +76,18 @@ void placeIntoPadded(
 
     std::size_t image_stride = image.width();
     std::size_t result_stride = intWindow.width();
+    
+    imgDtype val = 0.0;
 
     for (std::size_t row = 0; row < maxRow; ++row)
+    {
         for (std::size_t col = 0; col < maxCol; ++col)
-            intWindow[(pad  + row) * result_stride + pad  + col] = 
-                image[(imgY + row) * image_stride  + imgX + col] - meanI;
+        {
+            val = image[(imgY + row) * image_stride  + imgX + col] - meanI;
+            intWindow[(pad  + row) * result_stride + pad  + col] =  val;
+//                ( val > 0.0 ) ? val : 0.0;
+        }
+    }
 }
 
 

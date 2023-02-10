@@ -33,12 +33,6 @@ target_link_libraries(_process_cpp
     openpivcore
 )
 
-# used in pocketfft
-target_compile_definitions(_process_cpp PRIVATE
-    POCKETFFT_NO_MULTITHREADING
-    POCKETFFT_NO_VECTORS
-)
-
 # install to namespace package
 install(TARGETS _process_cpp DESTINATION lib/process)
 
