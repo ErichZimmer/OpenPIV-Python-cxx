@@ -5,7 +5,9 @@ from ._validation_cpp import (
     _normalized_local_median_test,
 )
 
+
 import numpy as np
+import warnings
 
 
 __all__ = [
@@ -59,7 +61,7 @@ def global_val(
 
     """
 
-    np.warnings.filterwarnings("ignore")
+    warnings.filterwarnings("ignore")
 
     _check(ndim=2, u=u, v=v)
 
