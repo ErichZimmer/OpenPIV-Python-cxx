@@ -5,11 +5,6 @@ import pytest
 
 from openpiv_cxx import interpolate
 
-try:
-    from scipy.ndimage import shift
-except ImportError as e:
-    raise (e)
-
 
 def test_taylor_expansion2D_wrong_dim():
     Z = np.random.rand(256)  # should be 2D
@@ -82,24 +77,38 @@ def test_taylor_expansion2D_01(k: int):
 
 
 # k > 1 does not match up with spline interpolation (leading to assert errors),
-# but has similar accuracy on deformation tests.
-# @pytest.mark.parametrize(
-#    "k", (1, 3, 5, 7)
-# )
-def test_taylor_expansion2D_02(k: int = 1):
+def test_taylor_expansion2D_02():
     data = np.array(
         [
-            [4, 3, 2, 1, 2, 3, 4],
-            [5, 4, 3, 2, 3, 4, 5],
-            [0, 1, 2, 3, 2, 1, 0],
-            [6, 7, 8, 9, 8, 7, 6],
-            [6, 1, 0, 2, 9, 3, 2],
-            [9, 8, 7, 6, 5, 4, 3],
+            [4, 3, 2, 1, 2, 3, 4, 2, 3, 6],
+            [5, 4, 3, 2, 3, 4, 5, 1, 2, 8],
+            [0, 1, 2, 3, 2, 1, 0, 7, 3, 6],
+            [6, 7, 8, 9, 8, 7, 6, 8, 2, 5],
+            [6, 1, 0, 2, 9, 3, 2, 2, 7, 9],
+            [9, 8, 7, 6, 5, 4, 3, 1, 8, 3],
+            [1, 7, 3, 7, 9, 2, 6, 3, 0, 2],
+            [6, 8, 3, 5, 8, 1, 7, 7, 3, 5],
+            [4, 1, 7, 3, 6, 3, 6, 8, 4, 6],
+            [0, 1, 2, 3, 4, 3, 2, 1, 8, 4],
         ],
         dtype=float,
     )
 
-    expected = shift(data, 0.5, order=k)
+    expected = np.array(
+        [
+            [0.  , 0.  , 0.  , 0.  , 0.  , 0.  , 0.  , 0.  , 0.  , 0.  ],
+            [0.  , 4.  , 3.  , 2.  , 2.  , 3.  , 4.  , 3.  , 2.  , 4.75],
+            [0.  , 2.5 , 2.5 , 2.5 , 2.5 , 2.5 , 2.5 , 3.25, 3.25, 4.75],
+            [0.  , 3.5 , 4.5 , 5.5 , 5.5 , 4.5 , 3.5 , 5.25, 5.  , 4.  ],
+            [0.  , 5.  , 4.  , 4.75, 7.  , 6.75, 4.5 , 4.5 , 4.75, 5.75],
+            [0.  , 6.  , 4.  , 3.75, 5.5 , 5.25, 3.  , 2.  , 4.5 , 6.75],
+            [0.  , 6.25, 6.25, 5.75, 6.75, 5.  , 3.75, 3.25, 3.  , 3.25],
+            [0.  , 5.5 , 5.25, 4.5 , 7.25, 5.  , 4.  , 5.75, 3.25, 2.5 ],
+            [0.  , 4.75, 4.75, 4.5 , 5.5 , 4.5 , 4.25, 7.  , 5.5 , 4.5 ],
+            [0.  , 1.5 , 2.75, 3.75, 4.  , 4.  , 3.5 , 4.25, 5.25, 5.5 ]
+        ],
+        dtype=float
+    )
 
     idy, idx = np.indices(data.shape)
 
@@ -110,7 +119,7 @@ def test_taylor_expansion2D_02(k: int = 1):
     idx -= 0.5
 
     result = interpolate.taylor_expansion2D(
-        data, idy, idx, order=k * 2 - 1, keep_dtype=False
+        data, idy, idx, order=1, keep_dtype=False
     )
 
     assert_array_almost_equal(result[1:, 1:], expected[1:, 1:])

@@ -155,11 +155,12 @@ def test_correlation_based_correction_01():
         corr_out=corr
     )
     
-    # index the second correlation matrix becuase the first one is not corrected
-    max_idx = np.unravel_index(np.argmax(corr[1,:,:]), corr.shape[-2:])
+    corr = corr[1]
+    
+    max_idx = np.unravel_index(np.argmax(corr), corr.shape)
 
-    assert_equal(max_idx[0], corr.shape[-2] // 2 + 1)
-    assert_equal(max_idx[1], corr.shape[-1] // 2)
+    assert_equal(max_idx[0], corr.shape[0] // 2 + 1)
+    assert_equal(max_idx[1], corr.shape[1] // 2)
     
     
 def test_correlation_to_displacement_wrong_inputs():
